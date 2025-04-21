@@ -1,0 +1,135 @@
+// Project: Coachera-Backend
+// Author: Coachera Team
+// Version: 1.0
+
+Table users {
+  id int [pk, increment]
+  password varchar [not null]
+  email varchar [not null, unique, note: 'Email of the user']
+  is_verified bool
+  profile_image string
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table students {
+  id int [pk, increment]
+  user_id int [ref: > users.id, not null, unique]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  birth_date date [not null]
+  gender string [not null]
+  education string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table admins {
+  id int [pk, increment]
+  user_id int [ref: > users.id, not null, unique]
+  admin_name string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table organizations {
+  id int [pk, increment]
+  user_id int [ref: > users.id, not null, unique]
+  org_name string [not null]
+  org_description string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table courses {
+  id int [pk, increment]
+  org_id int [ref: > organizations.id, not null]
+  title string [not null]
+  description string [not null]
+  instructor_name string [not null]
+  duration_hours string [not null]
+  price decimal(10,2)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table categories {
+  id int [pk, increment]
+  name string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table categories_course {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  category_id int [ref: > categories.id, not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table favorites {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  student_id int [ref: > students.id, not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table course_videos {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  title string [not null]
+  video_url string [not null]
+  duration time [not null]
+  order_number int [not null, note: "Order of the video in course"]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table course_files {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  title string [not null]
+  file_url string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table course_quizzes {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  title string [not null]
+  description string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table quiz_questions {
+  id int [pk, increment]
+  quiz_id int [ref: > course_quizzes.id, not null]
+  question_text string [not null]
+  options string [not null]
+  correct_answer string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table enrollments {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  student_id int [ref: > students.id, not null]
+  progress string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table certificates {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  student_id int [ref: > students.id, not null]
+  issued_at date [not null]
+  certificate_url string [not null]
+  created_at timestamp
+  updated_at timestamp
+}
