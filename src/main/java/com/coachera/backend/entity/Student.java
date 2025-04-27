@@ -1,6 +1,6 @@
-package com.coachera.backend.entities;
+package com.coachera.backend.entity;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -18,29 +18,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "courses")
+@Table(name = "students")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Course extends Auditable {
+public class Student extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "org_id", nullable = false)
-    private Organization organization;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @Column(nullable = false)
-    private String title;
+    private String firstName;
 
     @Column(nullable = false)
-    private String description;
+    private String lastName;
 
     @Column(nullable = false)
-    private String instructorName;
+    private LocalDate birthDate;
 
     @Column(nullable = false)
-    private String durationHours;
+    private String gender;
 
-    private BigDecimal price;
+    @Column(nullable = false)
+    private String education;
 }
 

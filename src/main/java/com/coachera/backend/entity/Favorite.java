@@ -1,4 +1,4 @@
-package com.coachera.backend.entities;
+package com.coachera.backend.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

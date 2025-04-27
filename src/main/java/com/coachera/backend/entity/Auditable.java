@@ -1,4 +1,4 @@
-package com.coachera.backend.entities;
+package com.coachera.backend.entity;
 
 import java.time.LocalDateTime;
 
