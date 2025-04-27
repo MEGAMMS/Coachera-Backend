@@ -1,4 +1,4 @@
-package com.coachera.backend.entities;
+package com.coachera.backend.entity;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -18,30 +18,25 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "students")
+@Table(name = "certificates")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Student extends Auditable {
+public class Certificate extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
 
     @Column(nullable = false)
-    private String firstName;
+    private LocalDate issuedAt;
 
     @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false)
-    private LocalDate birthDate;
-
-    @Column(nullable = false)
-    private String gender;
-
-    @Column(nullable = false)
-    private String education;
+    private String certificateUrl;
 }
 
