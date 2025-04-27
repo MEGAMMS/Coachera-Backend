@@ -1,4 +1,4 @@
-package com.coachera.backend.repositories;
+package com.coachera.backend.repository;
 
 import java.util.Optional;
 
