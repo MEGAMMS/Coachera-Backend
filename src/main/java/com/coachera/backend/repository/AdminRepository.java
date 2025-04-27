@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.coachera.backend.entity.Admin;
 
 public interface AdminRepository extends JpaRepository<Admin,Integer> {
-    Optional<Admin> FindById(Integer userId);
+    Optional<Admin> findByUserId(Integer userId);
 }
