@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.entity.Admin;
 import com.coachera.backend.entity.Category;
+import com.coachera.backend.entity.Certificate;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Organization;
@@ -15,6 +16,7 @@ import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.generator.AdminGenerator;
 import com.coachera.backend.generator.CategoryGenerator;
+import com.coachera.backend.generator.CertificateGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
@@ -90,7 +92,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         // enrollmentRepo.saveAll(enrollments);
         
         // Seed certificates
-        // List<Certificate> certificates = generateCertificates(students, courses.subList(0, 3));
+        // List<Certificate> certificates = CertificateGenerator.forStudentsAndCourses(students, courses.subList(0, 3));
         // certificateRepo.saveAll(certificates);
 
     }
