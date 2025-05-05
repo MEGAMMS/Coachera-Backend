@@ -7,11 +7,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.entity.Admin;
+import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.generator.AdminGenerator;
+import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.StudentGenerator;
@@ -77,6 +80,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         // List<Course> courses = CourseGenerator.forOrgs(orgs, 3);
         // courseRepo.saveAll(courses);
 
+        // Seed categories
+        List<Category> categories = CategoryGenerator.fromNames(List.of("AI", "Web", "Business", "Data"));
+        categoryRepo.saveAll(categories);
+
+        // Seed enrollments and certificates
+        // List<Enrollment> enrollments = generateEnrollments(students, courses.subList(0, 5));
+        // List<Certificate> certificates = generateCertificates(students, courses.subList(0, 3));
+        // enrollmentRepo.saveAll(enrollments);
+        // certificateRepo.saveAll(certificates);
 
     }
     
