@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
@@ -19,6 +20,7 @@ import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
 @Component
+@Transactional
 public class DatabaseSeeder implements CommandLineRunner {
 
     private final UserRepository userRepo;

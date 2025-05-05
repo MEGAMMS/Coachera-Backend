@@ -14,6 +14,7 @@ public class StudentGenerator {
     public static List<Student> fromUsers(List<User> users) {
         return users.stream().map(user ->
             Instancio.of(Student.class)
+                .ignore(Select.field(Student::getId)) // ← prevent random ID generation
                 .supply(Select.field(Student::getUser), () -> user)
                 .supply(Select.field(Student::getGender), () -> "male")
                 .supply(Select.field(Student::getEducation), () -> "Bachelor")
