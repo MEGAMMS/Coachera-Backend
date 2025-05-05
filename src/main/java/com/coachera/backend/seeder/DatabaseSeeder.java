@@ -5,6 +5,10 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.coachera.backend.entity.Student;
+import com.coachera.backend.entity.User;
+import com.coachera.backend.generator.StudentGenerator;
+import com.coachera.backend.generator.UserGenerator;
 import com.coachera.backend.repository.AdminRepository;
 import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
@@ -48,8 +52,13 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
+
+        // Seed users
+        List<User> users = UserGenerator.generate(10);
+        userRepo.saveAll(users);
+
+        List<Student> students = StudentGenerator.fromUsers(users.subList(0, 4));
+        studentRepo.saveAll(students);
     }
     
 }
