@@ -16,6 +16,7 @@ import com.coachera.backend.entity.User;
 import com.coachera.backend.generator.AdminGenerator;
 import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CourseGenerator;
+import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
@@ -84,10 +85,12 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<Category> categories = CategoryGenerator.fromNames(List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
 
-        // Seed enrollments and certificates
-        // List<Enrollment> enrollments = generateEnrollments(students, courses.subList(0, 5));
-        // List<Certificate> certificates = generateCertificates(students, courses.subList(0, 3));
+        // Seed enrollments
+        // List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
         // enrollmentRepo.saveAll(enrollments);
+        
+        // Seed certificates
+        // List<Certificate> certificates = generateCertificates(students, courses.subList(0, 3));
         // certificateRepo.saveAll(certificates);
 
     }
