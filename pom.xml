@@ -80,7 +80,7 @@
 			<groupId>org.instancio</groupId>
 			<artifactId>instancio-core</artifactId>
 			<version>3.3.0</version> <!-- Check for the latest version -->
-			<scope>test</scope> <!-- Usually used for tests -->
+			
 		</dependency>
 	</dependencies>
 
