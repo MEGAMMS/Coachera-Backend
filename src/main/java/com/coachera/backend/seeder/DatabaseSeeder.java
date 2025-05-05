@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.entity.Admin;
+import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.generator.AdminGenerator;
+import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
 import com.coachera.backend.repository.AdminRepository;
@@ -60,13 +62,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         // Seed users
         List<User> users = UserGenerator.generate(10);
         userRepo.saveAll(users);
-
+        // Seed students
         List<Student> students = StudentGenerator.fromUsers(users.subList(0, 4));
         studentRepo.saveAll(students);
-
-        List<Admin> admins = AdminGenerator.fromUsers(users.subList(4, 5));
-        adminRepo.saveAll(admins);
-        
+        // Seed admin
+        List<Admin> admin = AdminGenerator.fromUsers(users.subList(4, 5));
+        adminRepo.saveAll(admin);
+        // Seed orgs
+        List<Organization> orgs = OrganizationGenerator.fromUsers(users.subList(5, 10));
+        orgRepo.saveAll(orgs);
     }
     
 }
