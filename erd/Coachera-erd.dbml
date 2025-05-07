@@ -6,6 +6,7 @@ Table users {
   id int [pk, increment]
   password varchar [not null]
   email varchar [not null, unique, note: 'Email of the user']
+  username varchar [not null, unique]
   is_verified bool
   profile_image string
   created_at timestamp
