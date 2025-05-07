@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Student;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.StudentRepository;
+import com.coachera.backend.repository.UserRepository;
 import com.coachera.backend.service.StudentService;
 
 @Service
@@ -19,6 +22,9 @@ public class StudentImpl implements StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<StudentDTO> getAllStudents()
@@ -53,6 +59,13 @@ public class StudentImpl implements StudentService {
         student.setBirthDate(studentDTO.getBirthDate());
         student.setEducation(studentDTO.getEducation());
         student.setGender(studentDTO.getGender());
+
+        User user= userRepository.findById(studentDTO.getId())
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+        student.setUser(user);
+        
+
         Student savedStudent = studentRepository.save(student);
         return convertToDto(savedStudent);
     }
@@ -66,6 +79,11 @@ public class StudentImpl implements StudentService {
                 student.setBirthDate(studentDTO.getBirthDate());
                 student.setEducation(studentDTO.getEducation());
                 student.setGender(studentDTO.getGender());
+
+                UserDTO userDTO=new UserDTO();
+                userDTO.setEmail(studentDTO.getUser().getEmail());
+                userDTO.setPassword(studentDTO.getUser().getPassword());
+
                 Student savedStudent = studentRepository.save(student);
         return convertToDto(savedStudent);
     }

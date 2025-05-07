@@ -25,4 +25,8 @@ public class StudentDTO {
     @Schema(example = "ITE_third_year")
     private String education;
 
+    @Schema(description = "User account information")
+    private UserDTO user;
+
+
 }
