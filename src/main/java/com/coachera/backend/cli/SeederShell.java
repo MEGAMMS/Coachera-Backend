@@ -19,5 +19,12 @@ public class SeederShell {
         seeder.run();
         return "Database seeded successfully.";
     }
+
+    @ShellMethod(key = "clear-db", value = "Clear the database of all seeded data.")
+    public String cleanDatabase() {
+        seeder.clean();
+        return "Database cleared successfully.";
+    }
+
 }
 

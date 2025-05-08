@@ -62,7 +62,7 @@ public class DatabaseSeeder {
         this.enrollmentRepo = enrollmentRepo;
         this.certificateRepo = certificateRepo;
     }
-    
+
     @Transactional
     public void run()
     {
@@ -96,5 +96,19 @@ public class DatabaseSeeder {
         // certificateRepo.saveAll(certificates);
 
     }
+
+    @Transactional
+    public void clean() {
+        // Delete in the correct order to avoid FK constraint violations
+        certificateRepo.deleteAll();
+        enrollmentRepo.deleteAll();
+        courseRepo.deleteAll();
+        categoryRepo.deleteAll();
+        orgRepo.deleteAll();
+        adminRepo.deleteAll();
+        studentRepo.deleteAll();
+        userRepo.deleteAll();
+    }
+
     
 }
