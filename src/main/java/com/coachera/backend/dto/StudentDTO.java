@@ -19,17 +19,21 @@ public class StudentDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the student")
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @Schema(description = "Associated user information")
     private UserDTO user;
 
+    @Schema(required = true, example = "john", description = "firstname of the student")
     private String firstName;
 
+    @Schema(required = true, example = "doe", description = "lastname of the student")
     private String lastName;
 
+    @Schema(required = true, example = "2024-05-08T14:30:00", description = "dude's birthdate")
     private LocalDate birthDate;
 
+    @Schema(required = true, example = "male")
     private String gender;
-
+    
+    @Schema(required = true, example = "Bachelor", description = "level of education")
     private String education;
 }

@@ -19,7 +19,7 @@ public class UserDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the user")
     private Integer id;
 
-    @Schema(required = true, example = "strongP@ssword", description = "Password for user authentication")
+    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY,required = true, example = "strongP@ssword", description = "Password for user authentication")
     private String password;
 
     @Schema(required = true, example = "user@example.com", description = "User's email address")
@@ -36,7 +36,6 @@ public class UserDTO extends AuditableDTO {
 
     public UserDTO(User user){
         this.id = user.getId();
-        this.password = user.getPassword();
         this.email = user.getEmail();
         this.username = user.getUsername();
         this.isVerified = user.getIsVerified();
