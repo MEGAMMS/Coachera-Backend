@@ -3,14 +3,11 @@ package com.coachera.backend.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter 
 @Schema(description = "User Data Transfer Object")
 public class UserDTO {
 
