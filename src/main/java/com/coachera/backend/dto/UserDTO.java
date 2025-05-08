@@ -1,7 +1,10 @@
 package com.coachera.backend.dto;
 
+import com.coachera.backend.entity.User;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -30,4 +33,13 @@ public class UserDTO extends AuditableDTO {
 
     @Schema(description = "URL to the user's profile image", example = "https://example.com/images/avatar.png")
     private String profileImage;
+
+    public UserDTO(User user){
+        this.id = user.getId();
+        this.password = user.getPassword();
+        this.email = user.getEmail();
+        this.username = user.getUsername();
+        this.isVerified = user.getIsVerified();
+        this.profileImage = user.getProfileImage();
+    }
 }
