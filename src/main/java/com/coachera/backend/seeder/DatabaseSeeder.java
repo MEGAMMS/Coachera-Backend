@@ -32,8 +32,7 @@ import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
 @Component
-@Transactional
-public class DatabaseSeeder implements CommandLineRunner {
+public class DatabaseSeeder {
 
     private final UserRepository userRepo;
     private final StudentRepository studentRepo;
@@ -63,9 +62,10 @@ public class DatabaseSeeder implements CommandLineRunner {
         this.enrollmentRepo = enrollmentRepo;
         this.certificateRepo = certificateRepo;
     }
-
-    @Override
-    public void run(String... args) throws Exception {
+    
+    @Transactional
+    public void run()
+    {
 
         // Seed users
         List<User> users = UserGenerator.generate(10);
