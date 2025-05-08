@@ -2,9 +2,9 @@ package com.coachera.backend.dto;
 
 import java.time.LocalDate;
 
+import com.coachera.backend.entity.Student;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,7 +33,19 @@ public class StudentDTO extends AuditableDTO {
 
     @Schema(required = true, example = "male")
     private String gender;
-    
+
     @Schema(required = true, example = "Bachelor", description = "level of education")
     private String education;
+
+    public StudentDTO(Student student) {
+        this.id = student.getId();
+        this.user = new UserDTO(student.getUser()); // Assuming UserDTO has a constructor taking User
+        this.firstName = student.getFirstName();
+        this.lastName = student.getLastName();
+        this.birthDate = student.getBirthDate();
+        this.gender = student.getGender();
+        this.education = student.getEducation();
+        this.setCreatedAt(student.getCreatedAt());
+        this.setUpdatedAt(student.getUpdatedAt());
+    }
 }

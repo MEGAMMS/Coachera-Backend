@@ -1,5 +1,7 @@
 package com.coachera.backend.dto;
 
+import com.coachera.backend.entity.Organization;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,4 +25,13 @@ public class OrganizationDTO extends AuditableDTO {
 
     @Schema(example = "An Organiazation specialized in Java dev.....")
     private String orgDescription;
+
+    public OrganizationDTO(Organization organization) {
+        this.id = organization.getId();
+        this.user = new UserDTO(organization.getUser()); // assumes UserDTO has a constructor taking User
+        this.orgName = organization.getOrgName();
+        this.orgDescription = organization.getOrgDescription();
+        this.setCreatedAt(organization.getCreatedAt());
+        this.setUpdatedAt(organization.getUpdatedAt());
+    }
 }
