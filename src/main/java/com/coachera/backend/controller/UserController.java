@@ -9,13 +9,13 @@ import com.coachera.backend.entity.User;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-
+    
     // public route
     @GetMapping("/public-info")
     public String publicInfo() {
         return "This is public";
     }
-
+    
     // protected route: requires valid token
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
