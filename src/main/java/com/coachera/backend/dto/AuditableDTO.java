@@ -15,12 +15,12 @@ public abstract class AuditableDTO {
         example = "2024-05-08T14:30:00",
         accessMode = Schema.AccessMode.READ_ONLY
     )
-    protected LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Schema(
         description = "Timestamp of when the entity was last updated",
         example = "2024-05-08T15:45:00",
         accessMode = Schema.AccessMode.READ_ONLY
     )
-    protected LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }
