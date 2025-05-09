@@ -25,9 +25,9 @@ public class Course extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // @ManyToOne
-    // @JoinColumn(name = "org_id", nullable = false)
-    // private Organization org;
+    @ManyToOne
+    @JoinColumn(name = "org_id", nullable = false)
+    private Organization org;
 
     @Column(nullable = false)
     private String title;

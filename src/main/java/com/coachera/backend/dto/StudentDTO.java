@@ -2,34 +2,50 @@ package com.coachera.backend.dto;
 
 import java.time.LocalDate;
 
-import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.Student;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-public class StudentDTO {
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
+@Schema(description = "Student Data Transfer Object")
+public class StudentDTO extends AuditableDTO {
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the student")
     private Integer id;
 
-    @Schema(example = "Tariq")
+    @Schema(description = "Associated user information")
+    private UserDTO user;
+
+    @Schema(required = true, example = "john", description = "firstname of the student")
     private String firstName;
 
-    @Schema(example="sadooo")
+    @Schema(required = true, example = "doe", description = "lastname of the student")
     private String lastName;
 
-    @Schema(example = "27-07-2004")
+    @Schema(required = true, example = "2024-05-08T14:30:00", description = "dude's birthdate")
     private LocalDate birthDate;
 
-    @Schema(example = "male")
+    @Schema(required = true, example = "male")
     private String gender;
 
-    @Schema(example = "ITE_third_year")
+    @Schema(required = true, example = "Bachelor", description = "level of education")
     private String education;
 
-    @Schema(example = "1")
-    private Integer userId;
-
+    public StudentDTO(Student student) {
+        this.id = student.getId();
+        this.user = new UserDTO(student.getUser()); // Assuming UserDTO has a constructor taking User
+        this.firstName = student.getFirstName();
+        this.lastName = student.getLastName();
+        this.birthDate = student.getBirthDate();
+        this.gender = student.getGender();
+        this.education = student.getEducation();
+        this.setCreatedAt(student.getCreatedAt());
+        this.setUpdatedAt(student.getUpdatedAt());
+    }
 }
