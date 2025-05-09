@@ -3,6 +3,7 @@ package com.coachera.backend.security;
 import com.coachera.backend.dto.AuthResponse;
 import com.coachera.backend.dto.LoginRequest;
 import com.coachera.backend.dto.RegisterRequest;
+import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -74,12 +75,13 @@ public class AuthService {
 
                 // If authentication is successful, the principal is UserDetails.
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                String username = userDetails.getUsername(); // This is the actual username stored in the User entity
+                User user = userRepository.findByUsername(userDetails.getUsername()).get();
+                String username = user.getUsername(); // This is the actual username stored in the User entity
 
                 // Generate our custom simple token
                 String token = tokenService.generateToken(username);
-
-                return new AuthResponse(token, username);
+                UserDTO userDTO = new UserDTO(user);
+                return new AuthResponse(token, userDTO);
         }
 
         /**

@@ -2,8 +2,12 @@
 target/
 **/target/
 
-# Eclipse-specific files
+# shell files
+coachera.log
+
+# MG3MZ-specific files
 .project
 .classpath
 .factorypath
 .settings/
+**/.settings/
