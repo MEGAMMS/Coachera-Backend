@@ -4,7 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: coachera-app
-    restart: always
     ports:
       - "8080:8080"
     depends_on:
