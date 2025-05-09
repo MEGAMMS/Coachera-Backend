@@ -2,7 +2,7 @@ package com.coachera.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,8 +23,13 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @RequestMapping("/api/students")
 public class StudentController {
     
-    @Autowired
-    private StudentService studentService;
+ 
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService)
+    {
+        this.studentService=studentService;
+    }
 
     @GetMapping
     public ResponseEntity<List<StudentDTO>> getAllStudent()
@@ -32,10 +37,10 @@ public class StudentController {
         return new ResponseEntity<>(studentService.getAllStudents() ,HttpStatus.OK);
     }
 
-    @GetMapping("/{studentId}")
-    public ResponseEntity<StudentDTO> getStudentById(@PathVariable Integer studentId)
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentDTO> getStudentById(@PathVariable Integer id)
     {
-        return new ResponseEntity<>(studentService.getStudentById(studentId),HttpStatus.OK);
+        return new ResponseEntity<>(studentService.getStudentById(id),HttpStatus.OK);
     }
 
     @DeleteMapping("/{studentId}")
@@ -54,7 +59,7 @@ public class StudentController {
     @PutMapping("/{studentId}")
     public ResponseEntity<StudentDTO> updateStudent(@PathVariable Integer studentId , @RequestBody StudentDTO studentDTO)
     {
-        return new ResponseEntity<>(studentService.updateStudent(studentDTO, studentId),HttpStatus.OK);
+        return new ResponseEntity<>(studentService.updateStudent(studentId,studentDTO ),HttpStatus.OK);
     }
 
 
