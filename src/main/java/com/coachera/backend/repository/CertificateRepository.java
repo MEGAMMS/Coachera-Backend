@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.coachera.backend.entity.Certificate;
 
 public interface CertificateRepository extends JpaRepository<Certificate, Integer> {
-    List<Certificate> findByStudentId(Integer studentId);
-    Optional<Certificate> findByCourseIdAndStudentId(Integer courseId, Integer studentId);
+    // List<Certificate> findByStudentId(Integer studentId);
+    // Optional<Certificate> findByCourseIdAndStudentId(Integer courseId, Integer studentId);
+    // boolean existsByCourseIdAndStudentId(Integer courseId, Integer studentId);
+    List<Certificate> findByCourseId(Integer courseId);
 }

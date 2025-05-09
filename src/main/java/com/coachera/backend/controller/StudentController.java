@@ -16,51 +16,50 @@ import org.springframework.web.bind.annotation.RestController;
 import com.coachera.backend.dto.StudentDTO;
 import com.coachera.backend.service.StudentService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import jakarta.validation.Valid;
 
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
-    
- 
+
     private final StudentService studentService;
 
-    public StudentController(StudentService studentService)
-    {
-        this.studentService=studentService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<StudentDTO>> getAllStudent()
-    {
-        return new ResponseEntity<>(studentService.getAllStudents() ,HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<StudentDTO> getStudentById(@PathVariable Integer id)
-    {
-        return new ResponseEntity<>(studentService.getStudentById(id),HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{studentId}")
-    public ResponseEntity<Void> deletStudent(@PathVariable Integer studentId)
-    {
-        studentService.deleteStudent(studentId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @PostMapping
-    public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO)
-    {
-        return new ResponseEntity<>(studentService.createStudent(studentDTO),HttpStatus.CREATED);
+    public ResponseEntity<StudentDTO> createStudent( @RequestBody @Valid StudentDTO studentDTO) {
+        StudentDTO createdStudent = studentService.createStudent(studentDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
     }
 
-    @PutMapping("/{studentId}")
-    public ResponseEntity<StudentDTO> updateStudent(@PathVariable Integer studentId , @RequestBody StudentDTO studentDTO)
-    {
-        return new ResponseEntity<>(studentService.updateStudent(studentId,studentDTO ),HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentDTO> getStudent(@PathVariable Integer id) {
+        StudentDTO student = studentService.getStudentById(id);
+        return ResponseEntity.ok(student);
     }
 
+    @GetMapping
+    public ResponseEntity<List<StudentDTO>> getAllStudents() {
+        List<StudentDTO> students = studentService.getAllStudents();
+        return ResponseEntity.ok(students);
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<StudentDTO> updateStudent(
+            @PathVariable Integer id,
+            @Valid @RequestBody StudentDTO studentDTO) {
+        StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
+        return ResponseEntity.ok(updatedStudent);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable Integer id) {
+        studentService.deleteStudent(id);
+        return ResponseEntity.noContent().build();
+    }
 }

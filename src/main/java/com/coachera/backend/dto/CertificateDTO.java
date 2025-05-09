@@ -19,11 +19,11 @@ public class CertificateDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the certificate")
     private Integer id;
 
-    @Schema(required = true, example = "Introduction to OOP", description = "Completed Course")
-    private CourseDTO course;
+    @Schema(required = true, example = "1", description = "Completed Course")
+    private Integer courseId;
 
-    @Schema(required = true, example = "John the baptist", description = "student who completed the course")
-    private StudentDTO student;
+    // @Schema(example = "2", description = "student who completed the course")
+    // private Integer studentId;
 
     @Schema(required = true, example = "2024-05-08T14:30:00", description = "Timestamp of when the certificate was issued")
     private LocalDate issuedAt;
@@ -33,8 +33,8 @@ public class CertificateDTO extends AuditableDTO {
 
     public CertificateDTO(Certificate certificate) {
         this.id = certificate.getId();
-        this.course = new CourseDTO(certificate.getCourse());
-        this.student = new StudentDTO(certificate.getStudent());
+        this.courseId = certificate.getCourse().getId();
+        // this.studentId = certificate.getStudent().getId();
         this.issuedAt = certificate.getIssuedAt();
         this.certificateUrl = certificate.getCertificateUrl();
         this.setCreatedAt(certificate.getCreatedAt());

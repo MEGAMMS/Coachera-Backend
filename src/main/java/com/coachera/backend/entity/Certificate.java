@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -29,9 +30,9 @@ public class Certificate extends Auditable {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    // @ManyToMany
+    // @JoinColumn(name = "student_id", nullable = true)
+    // private Student student;
 
     @Column(nullable = false)
     private LocalDate issuedAt;

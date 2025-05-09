@@ -16,7 +16,7 @@ import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.generator.AdminGenerator;
 import com.coachera.backend.generator.CategoryGenerator;
-import com.coachera.backend.generator.CertificateGenerator;
+// import com.coachera.backend.generator.CertificateGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
@@ -92,8 +92,8 @@ public class DatabaseSeeder {
         enrollmentRepo.saveAll(enrollments);
         
         // Seed certificates
-        List<Certificate> certificates = CertificateGenerator.forStudentsAndCourses(students, courses.subList(0, 3));
-        certificateRepo.saveAll(certificates);
+        // List<Certificate> certificates = CertificateGenerator.forStudentsAndCourses(students, courses.subList(0, 3));
+        // certificateRepo.saveAll(certificates);
 
     }
 

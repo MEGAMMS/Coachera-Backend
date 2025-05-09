@@ -2,8 +2,11 @@ package com.coachera.backend.service;
 
 import com.coachera.backend.dto.CategoryDTO;
 import com.coachera.backend.entity.Category;
+import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CategoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,66 +14,57 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
-    public CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        
+        if (categoryRepository.existsByName(categoryDTO.getName())) {
+            throw new ConflictException("Category with name '" + categoryDTO.getName() + "' already exists");
+        }
+
+        Category category = modelMapper.map(categoryDTO, Category.class);
+        Category savedCategory = categoryRepository.save(category);
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 
-    public List<CategoryDTO> getAllCategories() {
-        return categoryRepository.findAll()
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-
+    
     public CategoryDTO getCategoryById(Integer id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
-        return convertToDto(category);
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        System.out.println(categoryDTO.getName());
-        if (categoryDTO.getName() == null || categoryDTO.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be empty");
-        }
-        
-        Category category = new Category();
-        category.setName(categoryDTO.getName().trim());
-
-        Category savedCategory = categoryRepository.save(category);
-        return convertToDto(savedCategory);
+    public List<CategoryDTO> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                .collect(Collectors.toList());
     }
 
     public CategoryDTO updateCategory(Integer id, CategoryDTO categoryDTO) {
-        Category category = categoryRepository.findById(id)
+        Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
 
-        if (categoryDTO.getName() == null || categoryDTO.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be empty");
+        if (!existingCategory.getName().equals(categoryDTO.getName()) && 
+            categoryRepository.existsByName(categoryDTO.getName())) {
+            throw new ConflictException("Category with name '" + categoryDTO.getName() + "' already exists");
         }
 
-        category.setName(categoryDTO.getName().trim());
-        
-        Category updatedCategory = categoryRepository.save(category);
-        return convertToDto(updatedCategory);
+        modelMapper.map(categoryDTO, existingCategory);
+        Category updatedCategory = categoryRepository.save(existingCategory);
+        return modelMapper.map(updatedCategory, CategoryDTO.class);
     }
 
+    // حذف فئة
     public void deleteCategory(Integer id) {
         if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Category not found with id: " + id);
         }
         categoryRepository.deleteById(id);
-    }
-
-    private CategoryDTO convertToDto(Category category) {
-        CategoryDTO dto = new CategoryDTO();
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        return dto;
     }
 }
