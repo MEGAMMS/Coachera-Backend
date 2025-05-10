@@ -8,5 +8,12 @@ import com.coachera.backend.entity.Enrollment;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer> {
     List<Enrollment> findByStudentId(Integer studentId);
-    Optional<Enrollment> findByCourseIdAndStudentId(Integer courseId, Integer studentId);
+
+    List<Enrollment> findByCourseId(Integer courseId);
+    
+    Optional<Enrollment> findByStudentIdAndCourseId(Integer studentId, Integer courseId);
+    
+    boolean existsByStudentIdAndCourseId(Integer studentId, Integer courseId);
+
+    void deleteByStudentIdAndCourseId(Integer studentId,Integer courseId);
 }

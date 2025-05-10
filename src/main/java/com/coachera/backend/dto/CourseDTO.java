@@ -25,13 +25,13 @@ public class CourseDTO extends AuditableDTO {
     private String description;
 
     @Schema(description = "Associated org information")
-    private OrganizationDTO org;
+    private Integer orgId;
 
     public CourseDTO(Course course) {
         this.id = course.getId();
         this.title = course.getTitle();
         this.description = course.getDescription();
-        this.org = new OrganizationDTO(course.getOrg()); // assumes Course has getOrg()
+        this.orgId = course.getOrg().getId(); // assumes Course has getOrg()
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());
     }

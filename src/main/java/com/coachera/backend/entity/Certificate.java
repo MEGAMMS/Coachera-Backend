@@ -1,6 +1,7 @@
 package com.coachera.backend.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -30,9 +32,14 @@ public class Certificate extends Auditable {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    // @ManyToMany
-    // @JoinColumn(name = "student_id", nullable = true)
-    // private Student student;
+    @ManyToMany
+    @JoinTable(
+        name = "certificate_students",
+        joinColumns = @JoinColumn(name = "certificate_id"),
+        inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<Student> students;
+
 
     @Column(nullable = false)
     private LocalDate issuedAt;

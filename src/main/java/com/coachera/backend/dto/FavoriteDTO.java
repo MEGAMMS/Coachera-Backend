@@ -18,16 +18,16 @@ public class FavoriteDTO extends AuditableDTO {
     private Integer id;
 
     @Schema(required = true, description = "Favorited course")
-    private CourseDTO course;
+    private Integer courseId;
 
     @Schema(required = true, description = "Student who favorited the course")
-    private StudentDTO student;
+    private Integer studentId;
 
     // Constructor from entity
     public FavoriteDTO(Favorite favorite) {
         this.id = favorite.getId();
-        this.course = new CourseDTO(favorite.getCourse());
-        this.student = new StudentDTO(favorite.getStudent());
+        this.courseId = favorite.getCourse().getId();
+        this.studentId = favorite.getStudent().getId();
         this.setCreatedAt(favorite.getCreatedAt());
         this.setUpdatedAt(favorite.getUpdatedAt());
     }
