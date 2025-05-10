@@ -1,66 +1,91 @@
 package com.coachera.backend.service;
 
+import com.coachera.backend.dto.CourseDTO;
+import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.Organization;
+import com.coachera.backend.exception.ConflictException;
+import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.CourseRepository;
+import com.coachera.backend.repository.OrganizationRepository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.coachera.backend.dto.CourseDTO;
-import com.coachera.backend.entity.Course;
-import com.coachera.backend.exception.ResourceNotFoundException;
-import com.coachera.backend.repository.CourseRepository;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class CourseService {
+
     private final CourseRepository courseRepository;
+    private final OrganizationRepository organizationRepository;
+    private final ModelMapper modelMapper;
 
-    public CourseService(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
+    public CourseDTO createCourse(CourseDTO courseDTO) {
+        Organization org = organizationRepository.findById(courseDTO.getOrgId())
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + courseDTO.getOrgId()));
 
-    public List<CourseDTO> getAllCourses() {
-        return courseRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+       
+        if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), courseDTO.getOrgId())) {
+            throw new ConflictException("Course with this title already exists in the organization");
+        }
+
+        Course course = modelMapper.map(courseDTO, Course.class);
+        course.setOrg(org);
+
+        Course savedCourse = courseRepository.save(course);
+        return modelMapper.map(savedCourse, CourseDTO.class);
     }
 
     public CourseDTO getCourseById(Integer id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        return convertToDto(course);
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        return modelMapper.map(course, CourseDTO.class);
     }
 
-    public CourseDTO createCourse(CourseDTO courseDTO) {
-        Course course = new Course();
-        course.setTitle(courseDTO.getTitle());
-        course.setDescription(courseDTO.getDescription());
-        // course.setOrg(org);
-        Course savedCourse = courseRepository.save(course);
-        return convertToDto(savedCourse);
+    public List<CourseDTO> getCoursesByOrganization(Integer orgId) {
+        return courseRepository.findByOrgId(orgId).stream()
+                .map(course -> modelMapper.map(course, CourseDTO.class))
+                .toList();
     }
 
     public CourseDTO updateCourse(Integer id, CourseDTO courseDTO) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        course.setTitle(courseDTO.getTitle());
-        course.setDescription(courseDTO.getDescription());
-        Course updatedCourse = courseRepository.save(course);
-        return convertToDto(updatedCourse);
+        Course existingCourse = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+
+      
+        if (!existingCourse.getTitle().equals(courseDTO.getTitle()) && 
+            courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), courseDTO.getOrgId())) {
+            throw new ConflictException("Course title already exists in this organization");
+        }
+
+        if (courseDTO.getOrgId() != null && 
+            !courseDTO.getOrgId().equals(existingCourse.getOrg().getId())) {
+            Organization org = organizationRepository.findById(courseDTO.getOrgId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
+            existingCourse.setOrg(org);
+        }
+
+        modelMapper.map(courseDTO, existingCourse);
+        Course updatedCourse = courseRepository.save(existingCourse);
+        return modelMapper.map(updatedCourse, CourseDTO.class);
     }
 
     public void deleteCourse(Integer id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        courseRepository.delete(course);
+        if (!courseRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Course not found");
+        }
+        courseRepository.deleteById(id);
     }
 
-    private CourseDTO convertToDto(Course course) {
-        CourseDTO dto = new CourseDTO();
-        dto.setId(course.getId());
-        dto.setTitle(course.getTitle());
-        dto.setDescription(course.getDescription());
-        return dto;
+    public List<CourseDTO> getACourses()
+    {
+        return courseRepository.findAll()
+            .stream()
+            .map(org -> modelMapper.map(org, CourseDTO.class))
+            .toList();
     }
 }

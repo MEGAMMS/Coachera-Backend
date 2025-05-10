@@ -1,8 +1,11 @@
 package com.coachera.backend.dto;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.coachera.backend.entity.Certificate;
+import com.coachera.backend.entity.Student;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -19,11 +22,11 @@ public class CertificateDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the certificate")
     private Integer id;
 
-    @Schema(required = true, example = "Introduction to OOP", description = "Completed Course")
-    private CourseDTO course;
+    @Schema(required = true, example = "1", description = "Completed Course")
+    private Integer courseId;
 
-    @Schema(required = true, example = "John the baptist", description = "student who completed the course")
-    private StudentDTO student;
+    @Schema(example = "[2,3]", description = "students who completed the course")
+    private List<Integer> studentIds;
 
     @Schema(required = true, example = "2024-05-08T14:30:00", description = "Timestamp of when the certificate was issued")
     private LocalDate issuedAt;
@@ -33,8 +36,10 @@ public class CertificateDTO extends AuditableDTO {
 
     public CertificateDTO(Certificate certificate) {
         this.id = certificate.getId();
-        this.course = new CourseDTO(certificate.getCourse());
-        this.student = new StudentDTO(certificate.getStudent());
+        this.courseId = certificate.getCourse().getId();
+         this.studentIds = certificate.getStudents().stream()
+                .map(Student::getId)
+                .collect(Collectors.toList());
         this.issuedAt = certificate.getIssuedAt();
         this.certificateUrl = certificate.getCertificateUrl();
         this.setCreatedAt(certificate.getCreatedAt());

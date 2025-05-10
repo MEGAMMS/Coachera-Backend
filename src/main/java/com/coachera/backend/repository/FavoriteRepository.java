@@ -9,5 +9,10 @@ import com.coachera.backend.entity.Favorite;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     List<Favorite> findByStudentId(Integer studentId);
-    Optional<Favorite> findByCourseIdAndStudentId(Integer courseId, Integer studentId);
+    
+    Optional<Favorite> findByStudentIdAndCourseId(Integer studentId, Integer courseId);
+    
+    boolean existsByStudentIdAndCourseId(Integer studentId, Integer courseId);
+    
+    void deleteByStudentIdAndCourseId(Integer studentId, Integer courseId);
 }

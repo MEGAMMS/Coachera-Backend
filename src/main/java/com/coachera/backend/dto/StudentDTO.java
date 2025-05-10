@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import com.coachera.backend.entity.Student;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,30 +18,36 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "Student Data Transfer Object")
 public class StudentDTO extends AuditableDTO {
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the student")
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
 
-    @Schema(description = "Associated user information")
-    private UserDTO user;
+    @NotNull(message = "User ID is required")
+    @Schema(required = true, example = "1")
+    private Integer userId;
 
-    @Schema(required = true, example = "john", description = "firstname of the student")
+    @NotBlank(message = "First name is required")
+    @Schema(required = true, example = "John")
     private String firstName;
 
-    @Schema(required = true, example = "doe", description = "lastname of the student")
+    @NotBlank(message = "Last name is required")
+    @Schema(required = true, example = "Doe")
     private String lastName;
 
-    @Schema(required = true, example = "2024-05-08T14:30:00", description = "dude's birthdate")
+    @NotNull(message = "Birth date is required")
+    @Schema(required = true, example = "2000-01-01")
     private LocalDate birthDate;
 
+    @NotBlank(message = "Gender is required")
     @Schema(required = true, example = "male")
     private String gender;
 
-    @Schema(required = true, example = "Bachelor", description = "level of education")
+    @NotBlank(message = "Education is required")
+    @Schema(required = true, example = "Bachelor")
     private String education;
 
     public StudentDTO(Student student) {
         this.id = student.getId();
-        this.user = new UserDTO(student.getUser()); // Assuming UserDTO has a constructor taking User
+        this.userId = student.getUser() != null ? student.getUser().getId() : null;
         this.firstName = student.getFirstName();
         this.lastName = student.getLastName();
         this.birthDate = student.getBirthDate();
