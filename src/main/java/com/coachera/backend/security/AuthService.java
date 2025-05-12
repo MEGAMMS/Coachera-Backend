@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional; // Import for @
 
 @Service
 @RequiredArgsConstructor
+@Transactional // Ensures the operation is atomic
 public class AuthService {
 
         private final UserRepository userRepository;
@@ -36,7 +37,6 @@ public class AuthService {
          * @return The created User entity.
          * @throws IllegalArgumentException if username or email is already taken.
          */
-        @Transactional // Ensures the operation is atomic
         public User register(RegisterRequest registerRequest) {
                 if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
                         throw new IllegalArgumentException("Username is already taken!");
