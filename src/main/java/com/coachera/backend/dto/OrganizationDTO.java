@@ -3,6 +3,7 @@ package com.coachera.backend.dto;
 import com.coachera.backend.entity.Organization;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,8 +18,9 @@ public class OrganizationDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
-    @Schema(description = "Associated user information")
-    private UserDTO user;
+    @NotNull(message = "User ID is required")
+    @Schema(required = true, example = "1")
+    private Integer userId;
 
     @Schema(example = "Java Corp")
     private String orgName;
@@ -28,7 +30,7 @@ public class OrganizationDTO extends AuditableDTO {
 
     public OrganizationDTO(Organization organization) {
         this.id = organization.getId();
-        this.user = new UserDTO(organization.getUser()); // assumes UserDTO has a constructor taking User
+        this.userId = organization.getUser().getId(); 
         this.orgName = organization.getOrgName();
         this.orgDescription = organization.getOrgDescription();
         this.setCreatedAt(organization.getCreatedAt());

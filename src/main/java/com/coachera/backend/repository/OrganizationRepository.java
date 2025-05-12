@@ -8,4 +8,5 @@ import com.coachera.backend.entity.Organization;
 
 public interface OrganizationRepository extends JpaRepository<Organization,Integer> {
     Optional<Organization> findByUserId(Integer userId);
+    boolean existsByOrgName(String orgName);
 }

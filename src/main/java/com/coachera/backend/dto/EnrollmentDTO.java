@@ -18,10 +18,10 @@ public class EnrollmentDTO extends AuditableDTO {
     private Integer id;
 
     @Schema(required = true, description = "Associated course")
-    private CourseDTO course;
+    private Integer courseId;
 
     @Schema(required = true, description = "Associated student")
-    private StudentDTO student;
+    private Integer studentId;
 
     @Schema(required = true, example = "75%", description = "Student's course progress")
     private String progress;
@@ -29,8 +29,8 @@ public class EnrollmentDTO extends AuditableDTO {
     // Constructor from entity
     public EnrollmentDTO(Enrollment enrollment) {
         this.id = enrollment.getId();
-        this.course = new CourseDTO(enrollment.getCourse());
-        this.student = new StudentDTO(enrollment.getStudent());
+        this.courseId = enrollment.getCourse().getId();
+        this.studentId = enrollment.getStudent().getId();
         this.progress = enrollment.getProgress();
         this.setCreatedAt(enrollment.getCreatedAt());
         this.setUpdatedAt(enrollment.getUpdatedAt());
