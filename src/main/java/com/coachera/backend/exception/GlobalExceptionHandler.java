@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         ApiResponse<String> response = new ApiResponse<>(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
                 "Validation Error: " + errorMessage,
                 null);
 
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleAllExceptions(Exception ex) {
         ApiResponse<String> response = new ApiResponse<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 "Error: " + ex.getMessage(),
                 null);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
