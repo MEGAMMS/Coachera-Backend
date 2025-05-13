@@ -1,16 +1,14 @@
 // Project: Coachera-Backend
 // Author: Coachera Team
-// Version: 1.0
+// Version: 2.0
 
 Table users {
   id int [pk, increment]
-  password varchar [not null]
-  email varchar [not null, unique, note: 'Email of the user']
+  email varchar [not null, unique]
   username varchar [not null, unique]
+  password varchar [not null]
   is_verified bool
   profile_image string
-  created_at timestamp
-  updated_at timestamp
 }
 
 Table students {
@@ -20,78 +18,146 @@ Table students {
   last_name varchar [not null]
   birth_date date [not null]
   gender string [not null]
-  education string [not null]
-  created_at timestamp
-  updated_at timestamp
+  education string
+  wallet decimal(10,2)
 }
 
 Table admins {
   id int [pk, increment]
   user_id int [ref: > users.id, not null, unique]
   admin_name string [not null]
-  created_at timestamp
-  updated_at timestamp
 }
 
 Table organizations {
   id int [pk, increment]
   user_id int [ref: > users.id, not null, unique]
-  org_name string [not null]
-  org_description string [not null]
-  created_at timestamp
-  updated_at timestamp
+  name string [not null]
+  description string [not null]
 }
 
-Table courses {
- id int [pk, increment]
- org_id int [ref: > organizations.id, not null]
- title string [not null]
- description string [not null]
- instructor_name string [not null]
- duration_hours string [not null]
- price decimal(10,2)
- created_at timestamp
- updated_at timestamp
+Table instructors {
+  id int [pk, increment]
+  user_id int [ref: > users.id, not null, unique]
+  bio text
 }
 
 Table categories {
- id int [pk, increment]
- name string [not null]
- created_at timestamp
- updated_at timestamp
+  id int [pk, increment]
+  name string [not null]
+}
+
+Table courses {
+  id int [pk, increment]
+  org_id int [ref: > organizations.id, not null]
+  title string [not null]
+  description string [not null]
+  duration_hours string [not null]
+  rating decimal [not null]
+  price decimal(10,2)
 }
 
 Table categories_course {
- id int [pk, increment]
- course_id int [ref: > courses.id, not null]
- category_id int [ref: > categories.id, not null]
- created_at timestamp
- updated_at timestamp
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  category_id int [ref: > categories.id, not null]
 }
 
-Table favorites {
- id int [pk, increment]
- course_id int [ref: > courses.id, not null]
- student_id int [ref: > students.id, not null]
- created_at timestamp
- updated_at timestamp
+Table weeks {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  order_index int
+}
+
+Table sections {
+  id int [pk, increment]
+  week_id int [ref: > weeks.id, not null]
+  title string [not null]
+  order_index int
+}
+
+Table materials {
+  id int [pk, increment]
+  section_id int [ref: > sections.id, not null]
+  title string [not null]
+  order_index int
+}
+
+Table quizzes {
+  id int [pk, increment]
+  material_id int [ref: > materials.id, not null]
+}
+
+Table questions {
+  id int [pk, increment]
+  quiz_id int [ref: > quizzes.id, not null]
+  content text
+  answer_1 text [not null]
+  answer_2 text [not null]
+  answer_3 text
+  answer_4 text
+  answer_index_correct int [not null]
 }
 
 Table enrollments {
- id int [pk, increment]
- course_id int [ref: > courses.id, not null]
- student_id int [ref: > students.id, not null]
- progress string [not null]
- created_at timestamp
- updated_at timestamp
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  student_id int [ref: > students.id, not null]
+  progress string [not null]
 }
 
 Table certificates {
- id int [pk, increment]
- course_id int [ref: > courses.id, not null]
- student_id int [ref: > students.id, not null]
- issued_at date [not null]
- certificate_url string [not null]
- created_at timestamp
- updated_at timestamp
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  student_id int [ref: > students.id, not null]
+  issued_at date [not null]
+  certificate_url string [not null]
+}
+
+Table reviews {
+  id int [pk, increment]
+  course_id int [ref: > courses.id]
+  student_id int [ref: > students.id]
+  rating int [not null]
+  comment text
+}
+
+Table favorites {
+  id int [pk, increment]
+  course_id int [ref: > courses.id, not null]
+  student_id int [ref: > students.id, not null]
+}
+
+Table learning_paths {
+  id int [pk, increment]
+  title string [not null]
+  description text
+  image string
+}
+
+Table learning_path_courses {
+  id int [pk, increment]
+  learning_path_id int [ref: > learning_paths.id]
+  course_id int [ref: > courses.id]
+  order_index int
+}
+
+Table skills {
+  id int [pk, increment]
+  name string [not null]
+}
+
+Table student_skills {
+  id int [pk, increment]
+  student_id int [ref: > students.id]
+  skill_id int [ref: > skills.id]
+  course_id int [ref: > courses.id]
+  level int 
+}
+
+Table notifications {
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  title string
+  message text
+  is_read bool [default: false]
 }
