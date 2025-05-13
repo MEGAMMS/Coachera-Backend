@@ -1,5 +1,6 @@
 package com.coachera.backend.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -48,5 +49,8 @@ public class Student extends Auditable {
 
     @Column(nullable = false)
     private String education;
+
+    @Column(nullable = false)
+    private BigDecimal wallet;
 }
 

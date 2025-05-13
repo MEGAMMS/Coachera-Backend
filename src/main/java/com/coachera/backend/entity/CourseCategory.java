@@ -24,10 +24,10 @@ public class CourseCategory extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
+    private Integer course;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    private Integer category;
 }
 

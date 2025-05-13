@@ -27,7 +27,7 @@ public class Course extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "org_id", nullable = false)
-    private Organization org;
+    private Integer org;
 
     @Column(nullable = false)
     private String title;
@@ -35,12 +35,14 @@ public class Course extends Auditable {
     @Column(nullable = false)
     private String description;
 
-    // @Column(nullable = false)
-    // private String instructorName;
 
-    // @Column(nullable = false)
-    // private String durationHours;
+    @Column(nullable = false)
+    private String durationHours;
 
-    // private BigDecimal price;
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    @Column(nullable = false)
+    private BigDecimal rating;
 }
 
