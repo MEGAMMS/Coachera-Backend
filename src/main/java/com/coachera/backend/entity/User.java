@@ -25,7 +25,9 @@ public class User extends Auditable {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false)
     private Boolean isVerified;
 
+    @Column(nullable = false)
     private String profileImage;
 }
