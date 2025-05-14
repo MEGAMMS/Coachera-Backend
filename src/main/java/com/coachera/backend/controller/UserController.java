@@ -22,4 +22,16 @@ public class UserController {
     public String currentUser(@AuthenticationPrincipal User user) {
         return "Hello, " + user.getUsername();
     }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')") 
+    public String adminArea() {
+        return "Admin dashboard";
+    }
+
+    @GetMapping("/student")
+    @PreAuthorize("hasRole('STUDENT')")
+    public String studentArea() {
+        return "Student dashboard";
+    }
 }

@@ -12,20 +12,23 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class User extends Auditable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+	@Column(nullable = false, unique = true)
+	private String username;
 
-    private Boolean isVerified;
+	@Column(nullable = false)
+	private String role;
 
-    private String profileImage;
+	private Boolean isVerified;
+
+	private String profileImage;
 }

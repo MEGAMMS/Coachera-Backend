@@ -59,8 +59,8 @@ public class SecurityConfig {
                                                                                             // routes
                         // Add any other public routes here
                         // .anyRequest().authenticated() // All other requests need authentication
-                        .anyRequest().permitAll() // All other requests need authentication
-                )
+                        .anyRequest().permitAll())
+
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add our
                                                                                                          // custom token
