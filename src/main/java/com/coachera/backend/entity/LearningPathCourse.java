@@ -4,22 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "sections")
+@Table(name = "learning_path_courses")
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Section {
+public class LearningPathCourse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "week_id", nullable = false)
-    private Week week;
+    @JoinColumn(name = "learning_path_id")
+    private LearningPath learningPath;
 
-    @Column(nullable = false)
-    private String title;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 
-    @Column(name = "order_index", nullable = false)
+    @Column(name = "order_index")
     private Integer orderIndex;
 }
