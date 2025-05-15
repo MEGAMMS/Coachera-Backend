@@ -2,6 +2,7 @@ package com.coachera.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +29,15 @@ public class GlobalExceptionHandler {
                 null);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<String>> handleAutheriztionExceptions(AuthorizationDeniedException ex) {
+        ApiResponse<String> response = new ApiResponse<>(
+                HttpStatus.UNAUTHORIZED,
+                "Forbidden: " + ex.getMessage(),
+                null);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

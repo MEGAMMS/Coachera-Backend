@@ -25,20 +25,16 @@ public class AuthController {
             return ApiResponse.success("User registered successfully!", null);
         } catch (IllegalArgumentException e) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Registration failed: " + e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ApiResponse<?> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ApiResponse<AuthResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
             AuthResponse authResponse = authService.login(loginRequest);
             return ApiResponse.success(authResponse);
         } catch (BadCredentialsException e) {
             return ApiResponse.error(HttpStatus.UNAUTHORIZED, "Invalid username/email or password");
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, "Login failed: " + e.getMessage());
         }
     }
 

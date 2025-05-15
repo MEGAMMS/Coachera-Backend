@@ -1,6 +1,7 @@
 package com.coachera.backend.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +14,7 @@ public class RegisterRequest {
 	private String email;
 	@Schema(example = "password")
 	private String password;
+	@Schema(example = "student")
+	@NotBlank(message = "Role is required")
+	private String role;
 }
