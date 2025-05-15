@@ -5,9 +5,13 @@ import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Data
 public class ApiResponse<T> {
+    @Schema(example = "200")
     private int status;
+    @Schema(example = "hello world")
     private String message;
     private T data;
     private Instant timestamp = Instant.now();

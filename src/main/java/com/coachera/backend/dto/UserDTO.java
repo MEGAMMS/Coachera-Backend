@@ -18,7 +18,7 @@ public class UserDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the user")
     private Integer id;
 
-    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY,required = true, example = "strongP@ssword", description = "Password for user authentication")
+    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY, required = true, example = "strongP@ssword", description = "Password for user authentication")
     private String password;
 
     @Schema(required = true, example = "user@example.com", description = "User's email address")
@@ -33,11 +33,15 @@ public class UserDTO extends AuditableDTO {
     @Schema(description = "URL to the user's profile image", example = "https://example.com/images/avatar.png")
     private String profileImage;
 
-    public UserDTO(User user){
+    @Schema(example = "STUDENT")
+    private String role;
+
+    public UserDTO(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.username = user.getUsername();
         this.isVerified = user.getIsVerified();
         this.profileImage = user.getProfileImage();
+        this.role = user.getRole();
     }
 }

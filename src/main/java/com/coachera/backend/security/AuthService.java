@@ -38,6 +38,9 @@ public class AuthService {
          * @throws IllegalArgumentException if username or email is already taken.
          */
         public User register(RegisterRequest registerRequest) {
+                if (registerRequest.getRole().equalsIgnoreCase("ADMIN")) {
+                        throw new IllegalArgumentException("Admin role cannot be self-assigned");
+                }
                 if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
                         throw new IllegalArgumentException("Username is already taken!");
                 }
@@ -49,6 +52,7 @@ public class AuthService {
                                 .username(registerRequest.getUsername())
                                 .email(registerRequest.getEmail())
                                 .password(passwordEncoder.encode(registerRequest.getPassword()))
+                                .role(registerRequest.getRole().toUpperCase())
                                 .isVerified(false) // Default to false, can be changed based on verification flow
                                 .build();
                 return userRepository.save(user);
