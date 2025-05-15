@@ -31,4 +31,5 @@ public class User extends Auditable {
 	private Boolean isVerified;
 
 	private String profileImage;
+
 }
