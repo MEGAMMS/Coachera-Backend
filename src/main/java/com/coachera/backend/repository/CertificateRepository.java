@@ -15,13 +15,13 @@ public interface CertificateRepository extends JpaRepository<Certificate, Intege
     // boolean existsByCourseIdAndStudentId(Integer courseId, Integer studentId);
     List<Certificate> findByCourseId(Integer courseId);
 
-    // @Query("SELECT DISTINCT c FROM Certificate c LEFT JOIN FETCH c.students")
-    // List<Certificate> findAllWithStudents();
+    @Query("SELECT DISTINCT c FROM Certificate c LEFT JOIN FETCH c.students")
+    List<Certificate> findAllWithStudents();
 
-    // @Query("SELECT c FROM Certificate c JOIN c.students s WHERE s.id = :studentId")
-    // List<Certificate> findByStudentId(@Param("studentId") Integer studentId);
+    @Query("SELECT c FROM Certificate c JOIN c.students s WHERE s.id = :studentId")
+    List<Certificate> findByStudentId(@Param("studentId") Integer studentId);
 
-    // @Query("SELECT c FROM Certificate c LEFT JOIN FETCH c.students WHERE c.id = :id")
-    // Optional<Certificate> findByIdWithStudents(@Param("id") Integer id);
+    @Query("SELECT c FROM Certificate c LEFT JOIN FETCH c.students WHERE c.id = :id")
+    Optional<Certificate> findByIdWithStudents(@Param("id") Integer id);
 
 }

@@ -41,6 +41,7 @@ public class StudentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<?> getAllStudents() {
         try {
             List<StudentDTO> students = studentService.getAllStudents();
