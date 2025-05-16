@@ -1,4 +1,4 @@
-package com.coachera.backend.config;
+package com.coachera.backend.seeder;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
