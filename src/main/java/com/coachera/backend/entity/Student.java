@@ -32,8 +32,8 @@ public class Student extends Auditable {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @ManyToMany(mappedBy = "students")
-    private List<Certificate> certificates;
+    // @ManyToMany(mappedBy = "students")
+    // private List<Certificate> certificates;
 
     @Column(nullable = false)
     private String firstName;

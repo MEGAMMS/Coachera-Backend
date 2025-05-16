@@ -12,5 +12,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByCourseId(Integer courseId);
     List<Review> findByStudentId(Integer studentId);
     boolean existsByCourseIdAndStudentId(Integer courseId, Integer studentId);
-    Double calculateAverageRatingByCourseId(Integer courseId);
+    // Double calculateAverageRatingByCourseId(Integer courseId);
 }

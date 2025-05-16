@@ -1,25 +1,14 @@
 package com.coachera.backend.controller;
 
-import java.util.List;
-
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.StudentDTO;
 import com.coachera.backend.service.StudentService;
-
-import org.springframework.web.bind.annotation.RequestBody;
-
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
@@ -32,34 +21,55 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentDTO> createStudent( @RequestBody @Valid StudentDTO studentDTO) {
-        StudentDTO createdStudent = studentService.createStudent(studentDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
+    public ApiResponse<?> createStudent(@RequestBody @Valid StudentDTO studentDTO) {
+        try {
+            StudentDTO createdStudent = studentService.createStudent(studentDTO);
+            return ApiResponse.created("Student was created successfully", createdStudent);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentDTO> getStudent(@PathVariable Integer id) {
-        StudentDTO student = studentService.getStudentById(id);
-        return ResponseEntity.ok(student);
+    public ApiResponse<?> getStudent(@PathVariable Integer id) {
+        try {
+            StudentDTO student = studentService.getStudentById(id);
+            return ApiResponse.success(student);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentDTO>> getAllStudents() {
-        List<StudentDTO> students = studentService.getAllStudents();
-        return ResponseEntity.ok(students);
+    public ApiResponse<?> getAllStudents() {
+        try {
+            List<StudentDTO> students = studentService.getAllStudents();
+            return ApiResponse.success(students);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StudentDTO> updateStudent(
+    @PreAuthorize("hasRole('STUDENT')")
+    public ApiResponse<?> updateStudent(
             @PathVariable Integer id,
             @Valid @RequestBody StudentDTO studentDTO) {
-        StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
-        return ResponseEntity.ok(updatedStudent);
+        try {
+            StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
+            return ApiResponse.success("Student was updated successfully", updatedStudent);
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Integer id) {
-        studentService.deleteStudent(id);
-        return ResponseEntity.noContent().build();
+    public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
+        try {
+            studentService.deleteStudent(id);
+            return ApiResponse.noContent();
+        } catch (Exception e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

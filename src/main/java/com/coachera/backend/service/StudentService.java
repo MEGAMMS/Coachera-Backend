@@ -49,6 +49,7 @@ public class StudentService {
         student.setBirthDate(studentDTO.getBirthDate());
         student.setGender(studentDTO.getGender());
         student.setEducation(studentDTO.getEducation());
+        student.setWallet(studentDTO.getWallet());
     
         
         Student savedStudent = studentRepository.save(student);
