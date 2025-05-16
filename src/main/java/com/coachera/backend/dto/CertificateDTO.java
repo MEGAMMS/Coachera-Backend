@@ -37,9 +37,9 @@ public class CertificateDTO extends AuditableDTO {
     public CertificateDTO(Certificate certificate) {
         this.id = certificate.getId();
         this.courseId = certificate.getCourse().getId();
-         this.studentIds = certificate.getStudents().stream()
-                .map(Student::getId)
-                .collect(Collectors.toList());
+        //  this.studentIds = certificate.getStudents().stream()
+        //         .map(Student::getId)
+        //         .collect(Collectors.toList());
         this.issuedAt = certificate.getIssuedAt();
         this.certificateUrl = certificate.getCertificateUrl();
         this.setCreatedAt(certificate.getCreatedAt());

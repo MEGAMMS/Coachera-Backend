@@ -33,7 +33,7 @@ public class Certificate extends Auditable {
     private Course course;
 
     @ManyToOne
-     @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id", nullable = false)
     private List<Student> students;
 
 
