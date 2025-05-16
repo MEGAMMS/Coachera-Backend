@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/certificates")
@@ -27,8 +28,7 @@ public class CertificateController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CertificateDTO>> getAllCertificates()
-    {
+    public ResponseEntity<List<CertificateDTO>> getAllCertificates() {
         return ResponseEntity.ok(certificateService.findAll());
     }
 
@@ -65,7 +65,7 @@ public class CertificateController {
     @PostMapping("/{certificateId}/students")
     public ResponseEntity<CertificateDTO> addStudentsToCertificate(
             @PathVariable Integer certificateId,
-            @RequestBody List<Integer> studentIds) {
+            @RequestBody Set<Integer> studentIds) {
         return ResponseEntity.ok(
                 certificateService.addStudents(certificateId, studentIds));
     }
@@ -92,4 +92,12 @@ public class CertificateController {
         return ResponseEntity.ok(
                 certificateService.updateIssuedDate(id, newDate));
     }
+
+    // @GetMapping("/student/{studentId}/course/{courseId}")
+    // public ResponseEntity<CertificateDTO> getCertificateByStudentAndCourse(
+    //         @PathVariable Integer studentId,
+    //         @PathVariable Integer courseId) {
+    //     return ResponseEntity.ok(
+    //             certificateService.getCertificateByStudentAndCourse(studentId, courseId));
+    // }
 }
