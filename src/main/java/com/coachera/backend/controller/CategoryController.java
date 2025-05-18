@@ -22,59 +22,41 @@ public class CategoryController {
 
     @PostMapping
     public ApiResponse<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        try {
-            CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
-            return ApiResponse.created("Category was created", createdCategory);
 
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
+        return ApiResponse.created("Category was created", createdCategory);
 
-        }
     }
 
     @GetMapping("/{id}")
     public ApiResponse<?> getCategoryById(@PathVariable Integer id) {
-        try {
-            CategoryDTO category = categoryService.getCategoryById(id);
-            return ApiResponse.success(category);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
 
-        }
+        CategoryDTO category = categoryService.getCategoryById(id);
+        return ApiResponse.success(category);
+
     }
 
     @GetMapping
     public ApiResponse<?> getAllCategories() {
-        try {
-            List<CategoryDTO> categories = categoryService.getAllCategories();
-            return ApiResponse.success(categories);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
 
-        }
+        List<CategoryDTO> categories = categoryService.getAllCategories();
+        return ApiResponse.success(categories);
+
     }
 
     @PutMapping("/{id}")
     public ApiResponse<?> updateCategory(
             @PathVariable Integer id,
             @Valid @RequestBody CategoryDTO categoryDTO) {
-        try {
-            CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
-            return ApiResponse.success("category was updated", updatedCategory);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
+        return ApiResponse.success("category was updated", updatedCategory);
 
-        }
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<?> deleteCategory(@PathVariable Integer id) {
-        try {
-            categoryService.deleteCategory(id);
-            return ApiResponse.noContent();
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        categoryService.deleteCategory(id);
+        return ApiResponse.noContent();
 
-        }
     }
 }
