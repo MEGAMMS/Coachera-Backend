@@ -1,5 +1,7 @@
 package com.coachera.backend.entity;
 
+import java.util.Objects;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,5 +31,26 @@ public class CourseCategory extends Auditable {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    // Composite key constructor
+    public CourseCategory(Course course, Category category) {
+        this.course = course;
+        this.category = category;
+    }
+
+    // Override equals and hashCode based on course and category
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CourseCategory)) return false;
+        CourseCategory that = (CourseCategory) o;
+        return Objects.equals(course.getId(), that.course.getId()) &&
+               Objects.equals(category.getId(), that.category.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(course.getId(), category.getId());
+    }
 }
 

@@ -70,6 +70,15 @@ public class DatabaseSeeder {
         // Seed users
         List<User> users = UserGenerator.generate(10);
         userRepo.saveAll(users);
+
+        // Assign roles based on intended use
+        users.subList(0, 4).forEach(user -> user.setRole("STUDENT"));  // First 4 users will be students
+        users.subList(4, 5).forEach(user -> user.setRole("ADMIN"));    // Next 1 user will be admin
+        users.subList(5, 10).forEach(user -> user.setRole("ORGANIZATION")); // Last 5 users will be organizations
+
+        // Save all users with their roles
+        userRepo.saveAll(users);
+        
         // Seed students
         List<Student> students = StudentGenerator.fromUsers(users.subList(0, 4));
         studentRepo.saveAll(students);

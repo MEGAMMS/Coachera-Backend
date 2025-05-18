@@ -12,6 +12,7 @@ public class UserGenerator {
         return Instancio.ofList(User.class).size(count)
                 .ignore(Select.field(User::getId)) // ← prevent random ID generation
                 .supply(Select.field(User::getPassword), () -> "password123")
+                .set(Select.field(User::getRole),"ADMIN")
                 .supply(Select.field(User::getIsVerified), () -> true)
                 .create();
     }
