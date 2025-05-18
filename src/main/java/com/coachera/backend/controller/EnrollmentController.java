@@ -24,23 +24,19 @@ public class EnrollmentController {
     @GetMapping("/student/{studentId}")
     @Operation(summary = "Get all enrollments for a student")
     public ApiResponse<?> getEnrollmentsByStudentId(@PathVariable Integer studentId) {
-        try {
-            List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudentId(studentId);
-            return ApiResponse.success(enrollments);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudentId(studentId);
+        return ApiResponse.success(enrollments);
+
     }
 
     @GetMapping("/course/{courseId}")
     @Operation(summary = "Get all enrollments for a course")
     public ApiResponse<?> getEnrollmentsByCourseId(@PathVariable Integer courseId) {
-        try {
-            List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByCourseId(courseId);
-            return ApiResponse.success(enrollments);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByCourseId(courseId);
+        return ApiResponse.success(enrollments);
+
     }
 
     @PostMapping("/{courseId}/{studentId}")
@@ -49,12 +45,10 @@ public class EnrollmentController {
             @PathVariable Integer studentId,
             @PathVariable Integer courseId,
             @RequestParam(defaultValue = "0%") String progress) {
-        try {
-            EnrollmentDTO enrollmentDTO = enrollmentService.enrollStudent(studentId, courseId, progress);
-            return ApiResponse.created("Student was enrolled", enrollmentDTO);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        EnrollmentDTO enrollmentDTO = enrollmentService.enrollStudent(studentId, courseId, progress);
+        return ApiResponse.created("Student was enrolled", enrollmentDTO);
+
     }
 
     @DeleteMapping("/delete/{courseId}/{studentId}")
@@ -62,11 +56,9 @@ public class EnrollmentController {
     public ApiResponse<?> unenrollStudent(
             @PathVariable Integer studentId,
             @PathVariable Integer courseId) {
-        try {
-            enrollmentService.unenrollStudent(studentId, courseId);
-            return ApiResponse.noContent();
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        enrollmentService.unenrollStudent(studentId, courseId);
+        return ApiResponse.noContent();
+
     }
 }
