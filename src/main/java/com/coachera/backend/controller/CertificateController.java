@@ -33,64 +33,61 @@ public class CertificateController {
   
 
     @GetMapping("/{id}")
-    public ResponseEntity<CertificateDTO> getCertificate(@PathVariable Integer id) {
-        return ResponseEntity.ok(certificateService.getCertificateById(id));
+    public ApiResponse<?> getCertificate(@PathVariable Integer id) {
+        return ApiResponse.success(certificateService.getCertificateById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CertificateDTO> updateCertificate(
+    public ApiResponse<?> updateCertificate(
             @PathVariable Integer id,
             @Valid @RequestBody CertificateDTO certificateDTO) {
-        return ResponseEntity.ok(certificateService.updateCertificate(id, certificateDTO));
+        return ApiResponse.success(certificateService.updateCertificate(id, certificateDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCertificate(@PathVariable Integer id) {
+    public ApiResponse<?> deleteCertificate(@PathVariable Integer id) {
         certificateService.deleteCertificate(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContent();
     }
 
     @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<CertificateDTO>> getCertificatesByStudent(
+    public ApiResponse<?> getCertificatesByStudent(
             @PathVariable Integer studentId) {
-        return ResponseEntity.ok(certificateService.getCertificatesByStudent(studentId));
+        return ApiResponse.success(certificateService.getCertificatesByStudent(studentId));
     }
 
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<CertificateDTO>> getCertificatesByCourse(
+    public ApiResponse<?> getCertificatesByCourse(
             @PathVariable Integer courseId) {
-        return ResponseEntity.ok(certificateService.getCertificatesByCourse(courseId));
+        return ApiResponse.success(certificateService.getCertificatesByCourse(courseId));
     }
 
     @PostMapping("/{certificateId}/students")
-    public ResponseEntity<CertificateDTO> addStudentsToCertificate(
+    public ApiResponse<?> addStudentsToCertificate(
             @PathVariable Integer certificateId,
             @RequestBody Set<Integer> studentIds) {
-        return ResponseEntity.ok(
-                certificateService.addStudents(certificateId, studentIds));
-    }
+        return ApiResponse.success(certificateService.addStudents(certificateId, studentIds));
+            }
 
     @DeleteMapping("/{certificateId}/students/{studentId}")
-    public ResponseEntity<Void> removeStudentFromCertificate(
+    public ApiResponse<?> removeStudentFromCertificate(
             @PathVariable Integer certificateId,
             @PathVariable Integer studentId) {
         certificateService.removeStudentFromCertificate(certificateId, studentId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContent();
     }
 
     @GetMapping("/{certificateId}/students")
-    public ResponseEntity<List<StudentDTO>> getCertificateStudents(
+    public ApiResponse<?> getCertificateStudents(
             @PathVariable Integer certificateId) {
-        return ResponseEntity.ok(
-                certificateService.getStudentsByCertificateId(certificateId));
+        return ApiResponse.success(certificateService.getStudentsByCertificateId(certificateId));
     }
 
     @PatchMapping("/{id}/issued-date")
-    public ResponseEntity<CertificateDTO> updateIssuedDate(
+    public ApiResponse<?> updateIssuedDate(
             @PathVariable Integer id,
             @RequestParam LocalDate newDate) {
-        return ResponseEntity.ok(
-                certificateService.updateIssuedDate(id, newDate));
+        return ApiResponse.success(certificateService.updateIssuedDate(id, newDate));
     }
 
     // @GetMapping("/student/{studentId}/course/{courseId}")
