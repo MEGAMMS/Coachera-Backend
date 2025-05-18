@@ -24,12 +24,10 @@ public class FavoriteController {
     @GetMapping("/student/{studentId}")
     @Operation(summary = "Get all favorites for a student")
     public ApiResponse<?> getFavoritesByStudentId(@PathVariable Integer studentId) {
-        try {
-            List<FavoriteDTO> favorites = favoriteService.getFavoritesByStudentId(studentId);
-            return ApiResponse.success(favorites);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        List<FavoriteDTO> favorites = favoriteService.getFavoritesByStudentId(studentId);
+        return ApiResponse.success(favorites);
+
     }
 
     @PostMapping("{courseId}/student/{studentId}")
@@ -37,12 +35,10 @@ public class FavoriteController {
     public ApiResponse<?> addFavorite(
             @PathVariable Integer studentId,
             @PathVariable Integer courseId) {
-        try {
-            FavoriteDTO favoriteDTO = favoriteService.addFavorite(studentId, courseId);
-            return ApiResponse.created("Student added course to favorite list", favoriteDTO);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        FavoriteDTO favoriteDTO = favoriteService.addFavorite(studentId, courseId);
+        return ApiResponse.created("Student added course to favorite list", favoriteDTO);
+
     }
 
     @DeleteMapping("delete/{courseId}/{studentId}")
@@ -50,12 +46,10 @@ public class FavoriteController {
     public ApiResponse<?> removeFavorite(
             @PathVariable Integer studentId,
             @PathVariable Integer courseId) {
-        try {
-            favoriteService.removeFavorite(studentId, courseId);
-            return ApiResponse.noContent();
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        favoriteService.removeFavorite(studentId, courseId);
+        return ApiResponse.noContent();
+
     }
 
     @GetMapping("/check/{studentId}/{courseId}")
@@ -63,11 +57,9 @@ public class FavoriteController {
     public ApiResponse<?> isCourseFavorited(
             @PathVariable Integer studentId,
             @PathVariable Integer courseId) {
-        try {
-            boolean isFavorited = favoriteService.isCourseFavoritedByStudent(studentId, courseId);
-            return ApiResponse.success(isFavorited);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        boolean isFavorited = favoriteService.isCourseFavoritedByStudent(studentId, courseId);
+        return ApiResponse.success(isFavorited);
+
     }
 }
