@@ -1,5 +1,6 @@
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CertificateDTO;
 import com.coachera.backend.dto.StudentDTO;
 import com.coachera.backend.service.CertificateService;
@@ -23,16 +24,13 @@ public class CertificateController {
     private final CertificateService certificateService;
 
     @PostMapping
-    public ResponseEntity<CertificateDTO> createCertificate(
+    public ApiResponse<?> createCertificate(
             @Valid @RequestBody CertificateDTO certificateDTO) {
         CertificateDTO createdCert = certificateService.createCertificate(certificateDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCert);
+        return ApiResponse.created("Certificate was created", createdCert);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CertificateDTO>> getAllCertificates() {
-        return ResponseEntity.ok(certificateService.findAll());
-    }
+  
 
     @GetMapping("/{id}")
     public ResponseEntity<CertificateDTO> getCertificate(@PathVariable Integer id) {

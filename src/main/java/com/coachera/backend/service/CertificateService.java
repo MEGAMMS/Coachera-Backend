@@ -192,15 +192,4 @@ public class CertificateService {
         return modelMapper.map(certificateRepository.save(certificate), CertificateDTO.class);
     }
 
-    public List<CertificateDTO> findAll() {
-        return certificateRepository.findAllWithStudents().stream()
-                .map(cert -> {
-                    CertificateDTO dto = modelMapper.map(cert, CertificateDTO.class);
-                    dto.setStudentIds(cert.getStudentCertificates().stream()
-                            .map(sc -> sc.getStudent().getId())
-                            .collect(Collectors.toSet()));
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
 }
