@@ -22,33 +22,27 @@ public class StudentController {
 
     @PostMapping
     public ApiResponse<?> createStudent(@RequestBody @Valid StudentDTO studentDTO) {
-        try {
-            StudentDTO createdStudent = studentService.createStudent(studentDTO);
-            return ApiResponse.created("Student was created successfully", createdStudent);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        StudentDTO createdStudent = studentService.createStudent(studentDTO);
+        return ApiResponse.created("Student was created successfully", createdStudent);
+
     }
 
     @GetMapping("/{id}")
     public ApiResponse<?> getStudent(@PathVariable Integer id) {
-        try {
-            StudentDTO student = studentService.getStudentById(id);
-            return ApiResponse.success(student);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        StudentDTO student = studentService.getStudentById(id);
+        return ApiResponse.success(student);
+
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<?> getAllStudents() {
-        try {
-            List<StudentDTO> students = studentService.getAllStudents();
-            return ApiResponse.success(students);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        List<StudentDTO> students = studentService.getAllStudents();
+        return ApiResponse.success(students);
+
     }
 
     @PutMapping("/{id}")
@@ -56,21 +50,17 @@ public class StudentController {
     public ApiResponse<?> updateStudent(
             @PathVariable Integer id,
             @Valid @RequestBody StudentDTO studentDTO) {
-        try {
-            StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
-            return ApiResponse.success("Student was updated successfully", updatedStudent);
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
+        return ApiResponse.success("Student was updated successfully", updatedStudent);
+
     }
 
     @DeleteMapping("/{id}")
     public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
-        try {
-            studentService.deleteStudent(id);
-            return ApiResponse.noContent();
-        } catch (Exception e) {
-            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        studentService.deleteStudent(id);
+        return ApiResponse.noContent();
+
     }
 }
