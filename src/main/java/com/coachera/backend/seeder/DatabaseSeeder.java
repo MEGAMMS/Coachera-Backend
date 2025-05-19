@@ -1,6 +1,7 @@
 package com.coachera.backend.seeder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -64,30 +65,49 @@ public class DatabaseSeeder {
     }
 
     @Transactional
-    public void run()
-    {
-
-        // Seed users
+    public void run() {
+        // Generate and assign roles before saving
         List<User> users = UserGenerator.generate(10);
-        userRepo.saveAll(users);
 
-        // Assign roles based on intended use
-        users.subList(0, 4).forEach(user -> user.setRole("STUDENT"));  // First 4 users will be students
-        users.subList(4, 5).forEach(user -> user.setRole("ADMIN"));    // Next 1 user will be admin
-        users.subList(5, 10).forEach(user -> user.setRole("ORGANIZATION")); // Last 5 users will be organizations
+        // Assign roles
+        for (int i = 0; i < users.size(); i++) {
+            if (i < 4) {
+                users.get(i).setRole("STUDENT");
+            } else if (i == 4) {
+                users.get(i).setRole("ADMIN");
+            } else {
+                users.get(i).setRole("ORGANIZATION");
+            }
+        }
 
-        // Save all users with their roles
         userRepo.saveAll(users);
-        
+        userRepo.flush();
+
+        // Filter users by role
+        List<User> studentUsers = users.stream()
+            .filter(user -> "STUDENT".equalsIgnoreCase(user.getRole()))
+            .collect(Collectors.toList());
+
+        List<User> adminUsers = users.stream()
+            .filter(user -> "ADMIN".equalsIgnoreCase(user.getRole()))
+            .collect(Collectors.toList());
+
+        List<User> orgUsers = users.stream()
+            .filter(user -> "ORGANIZATION".equalsIgnoreCase(user.getRole()))
+            .collect(Collectors.toList());
+
         // Seed students
-        List<Student> students = StudentGenerator.fromUsers(users.subList(0, 4));
+        List<Student> students = StudentGenerator.fromUsers(studentUsers);
         studentRepo.saveAll(students);
+
         // Seed admin
-        List<Admin> admin = AdminGenerator.fromUsers(users.subList(4, 5));
-        adminRepo.saveAll(admin);
-        // Seed orgs
-        List<Organization> orgs = OrganizationGenerator.fromUsers(users.subList(5, 10));
+        List<Admin> admins = AdminGenerator.fromUsers(adminUsers);
+        adminRepo.saveAll(admins);
+
+        // Seed organizations
+        List<Organization> orgs = OrganizationGenerator.fromUsers(orgUsers);
         orgRepo.saveAll(orgs);
+
         // Seed courses per org
         List<Course> courses = CourseGenerator.forOrgs(orgs, 3);
         courseRepo.saveAll(courses);
@@ -96,19 +116,17 @@ public class DatabaseSeeder {
         List<Category> categories = CategoryGenerator.fromNames(List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
 
-        // Seed enrollments
+        // Seed enrollments for first few courses
         List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
         enrollmentRepo.saveAll(enrollments);
-        
-        // Seed certificates
+
+        // Seed certificates (optional)
         // List<Certificate> certificates = CertificateGenerator.forStudentsAndCourses(students, courses.subList(0, 3));
         // certificateRepo.saveAll(certificates);
-
     }
 
     @Transactional
     public void clean() {
-        // Delete in the correct order to avoid FK constraint violations
         certificateRepo.deleteAll();
         enrollmentRepo.deleteAll();
         courseRepo.deleteAll();
@@ -118,6 +136,4 @@ public class DatabaseSeeder {
         studentRepo.deleteAll();
         userRepo.deleteAll();
     }
-
-    
 }
