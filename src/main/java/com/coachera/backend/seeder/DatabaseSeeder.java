@@ -112,9 +112,9 @@ public class DatabaseSeeder {
         List<Course> courses = CourseGenerator.fromOrg(orgs);
         courseRepo.saveAll(courses);
 
-        // // Seed categories
-        // List<Category> categories = CategoryGenerator.fromNames(List.of("AI", "Web", "Business", "Data"));
-        // categoryRepo.saveAll(categories);
+        // Seed categories
+        List<Category> categories = CategoryGenerator.fromCourses(courses,List.of("AI", "Web", "Business", "Data"));
+        categoryRepo.saveAll(categories);
 
         // // Seed enrollments for first few courses
         // List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
