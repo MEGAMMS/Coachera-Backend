@@ -52,6 +52,11 @@ public class Course extends Auditable {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CourseCategory> categories = new HashSet<>();
 
+    // In Course.java add:
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<LearningPathCourse> learningPaths = new HashSet<>();
+
     // Helper methods for managing categories
     public void addCategory(Category category) {
         CourseCategory courseCategory = new CourseCategory(this, category);
