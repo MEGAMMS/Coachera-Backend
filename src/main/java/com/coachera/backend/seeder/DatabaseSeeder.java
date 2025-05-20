@@ -3,7 +3,6 @@ package com.coachera.backend.seeder;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,7 @@ import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.generator.AdminGenerator;
 import com.coachera.backend.generator.CategoryGenerator;
-// import com.coachera.backend.generator.CertificateGenerator;
+import com.coachera.backend.generator.CertificateGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
@@ -116,13 +115,13 @@ public class DatabaseSeeder {
         List<Category> categories = CategoryGenerator.fromCourses(courses,List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
 
-        // // Seed enrollments for first few courses
-        // List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
-        // enrollmentRepo.saveAll(enrollments);
+        // Seed enrollments for first few courses
+        List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
+        enrollmentRepo.saveAll(enrollments);
 
         // Seed certificates (optional)
-        // List<Certificate> certificates = CertificateGenerator.forStudentsAndCourses(students, courses.subList(0, 3));
-        // certificateRepo.saveAll(certificates);
+        List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
+        certificateRepo.saveAll(certificates);
     }
 
     @Transactional
