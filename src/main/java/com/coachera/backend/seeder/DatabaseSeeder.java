@@ -11,6 +11,7 @@ import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Certificate;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Enrollment;
+import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
@@ -19,6 +20,7 @@ import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CertificateGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.EnrollmentGenerator;
+import com.coachera.backend.generator.InstructorGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
@@ -27,6 +29,7 @@ import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.EnrollmentRepository;
+import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
@@ -36,7 +39,7 @@ public class DatabaseSeeder {
 
     private final UserRepository userRepo;
     private final StudentRepository studentRepo;
-    private final AdminRepository adminRepo;
+    private final InstructorRepository instructorRepo;
     private final OrganizationRepository orgRepo;
     private final CourseRepository courseRepo;
     private final CategoryRepository categoryRepo;
@@ -46,7 +49,7 @@ public class DatabaseSeeder {
     public DatabaseSeeder(
         UserRepository userRepo,
         StudentRepository studentRepo,
-        AdminRepository adminRepo,
+        InstructorRepository instructorRepo,
         OrganizationRepository orgRepo,
         CourseRepository courseRepo,
         CategoryRepository categoryRepo,
@@ -55,7 +58,7 @@ public class DatabaseSeeder {
     ) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
-        this.adminRepo = adminRepo;
+        this.instructorRepo = instructorRepo;
         this.orgRepo = orgRepo;
         this.courseRepo = courseRepo;
         this.categoryRepo = categoryRepo;
@@ -66,12 +69,14 @@ public class DatabaseSeeder {
     @Transactional
     public void run() {
         // Generate and assign roles before saving
-        List<User> users = UserGenerator.generate(10);
+        List<User> users = UserGenerator.generate(15);
 
         // Assign roles
         for (int i = 0; i < users.size(); i++) {
             if (i < 4) {
                 users.get(i).setRole("STUDENT");
+            } else if (i < 8) {
+                users.get(i).setRole("INSTRUCTOR");
             } else {
                 users.get(i).setRole("ORGANIZATION");
             }
@@ -85,6 +90,9 @@ public class DatabaseSeeder {
             .filter(user -> "STUDENT".equalsIgnoreCase(user.getRole()))
             .collect(Collectors.toList());
 
+        List<User> instructorUsers = users.stream()
+            .filter(user -> "INSTRUCTOR".equalsIgnoreCase(user.getRole()))
+            .collect(Collectors.toList());
 
         List<User> orgUsers = users.stream()
             .filter(user -> "ORGANIZATION".equalsIgnoreCase(user.getRole()))
@@ -94,6 +102,9 @@ public class DatabaseSeeder {
         List<Student> students = StudentGenerator.fromUsers(studentUsers);
         studentRepo.saveAll(students);
 
+        // Seed admin
+        List<Instructor> admins = InstructorGenerator.fromUsers(instructorUsers);
+        instructorRepo.saveAll(admins);
 
         // Seed organizations
         List<Organization> orgs = OrganizationGenerator.fromUsers(orgUsers);
@@ -123,7 +134,7 @@ public class DatabaseSeeder {
         courseRepo.deleteAll();
         categoryRepo.deleteAll();
         orgRepo.deleteAll();
-        adminRepo.deleteAll();
+        instructorRepo.deleteAll();
         studentRepo.deleteAll();
         userRepo.deleteAll();
     }
