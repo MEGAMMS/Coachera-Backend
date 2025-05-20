@@ -108,9 +108,9 @@ public class DatabaseSeeder {
         List<Organization> orgs = OrganizationGenerator.fromUsers(orgUsers);
         orgRepo.saveAll(orgs);
 
-        // // Seed courses per org
-        // List<Course> courses = CourseGenerator.forOrgs(orgs, 3);
-        // courseRepo.saveAll(courses);
+        // Seed courses per org
+        List<Course> courses = CourseGenerator.fromOrg(orgs);
+        courseRepo.saveAll(courses);
 
         // // Seed categories
         // List<Category> categories = CategoryGenerator.fromNames(List.of("AI", "Web", "Business", "Data"));
