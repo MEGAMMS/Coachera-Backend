@@ -72,8 +72,6 @@ public class DatabaseSeeder {
         for (int i = 0; i < users.size(); i++) {
             if (i < 4) {
                 users.get(i).setRole("STUDENT");
-            } else if (i == 4) {
-                users.get(i).setRole("ADMIN");
             } else {
                 users.get(i).setRole("ORGANIZATION");
             }
@@ -87,9 +85,6 @@ public class DatabaseSeeder {
             .filter(user -> "STUDENT".equalsIgnoreCase(user.getRole()))
             .collect(Collectors.toList());
 
-        List<User> adminUsers = users.stream()
-            .filter(user -> "ADMIN".equalsIgnoreCase(user.getRole()))
-            .collect(Collectors.toList());
 
         List<User> orgUsers = users.stream()
             .filter(user -> "ORGANIZATION".equalsIgnoreCase(user.getRole()))
@@ -99,9 +94,6 @@ public class DatabaseSeeder {
         List<Student> students = StudentGenerator.fromUsers(studentUsers);
         studentRepo.saveAll(students);
 
-        // Seed admin
-        List<Admin> admins = AdminGenerator.fromUsers(adminUsers);
-        adminRepo.saveAll(admins);
 
         // Seed organizations
         List<Organization> orgs = OrganizationGenerator.fromUsers(orgUsers);
