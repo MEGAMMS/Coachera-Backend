@@ -47,11 +47,11 @@ public class OrganizationService {
         return modelMapper.map(organization, OrganizationDTO.class);
     }
 
-    public List<OrganizationDTO> getOrganizationsByUser(Integer userId) {
-        return organizationRepository.findByUserId(userId).stream()
-                .map(org -> modelMapper.map(org, OrganizationDTO.class))
-                .toList();
-    }
+    // public List<OrganizationDTO> getOrganizationsByUser(Integer userId) {
+    //     return organizationRepository.findByUserId(userId).stream()
+    //             .map(org -> modelMapper.map(org, OrganizationDTO.class))
+    //             .toList();
+    // }
 
     public OrganizationDTO updateOrganization(Integer id, OrganizationDTO organizationDTO) {
         Organization existingOrg = organizationRepository.findById(id)

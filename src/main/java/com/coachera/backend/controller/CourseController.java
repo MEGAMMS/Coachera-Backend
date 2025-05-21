@@ -2,11 +2,14 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CourseDTO;
+import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +32,8 @@ public class CourseController {
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZATION')")
-    public ApiResponse<?> createCourse(@Valid @RequestBody CourseDTO courseDTO) {
-
-        CourseDTO createdCourse = courseService.createCourse(courseDTO);
+    public ApiResponse<?> createCourse(@Valid @RequestBody CourseDTO courseDTO, @AuthenticationPrincipal User user) {
+        CourseDTO createdCourse = courseService.createCourse(courseDTO,user);
         return ApiResponse.created("Course was created", createdCourse);
 
     }
