@@ -15,6 +15,7 @@ import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
+import com.coachera.backend.entity.Review;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
@@ -29,6 +30,7 @@ import com.coachera.backend.generator.MaterialGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.QuestionGenerator;
 import com.coachera.backend.generator.QuizGenerator;
+import com.coachera.backend.generator.ReviewGenerator;
 import com.coachera.backend.generator.SectionGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
@@ -43,6 +45,7 @@ import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.QuestionRepository;
 import com.coachera.backend.repository.QuizRepository;
+import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.SectionRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
@@ -64,6 +67,7 @@ public class DatabaseSeeder {
     private final MaterialRepository materialRepo;
     private final QuizRepository quizRepo;
     private final QuestionRepository questionRepo;
+    private final ReviewRepository reviewRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -78,7 +82,8 @@ public class DatabaseSeeder {
             SectionRepository sectionRepo,
             MaterialRepository materialRepo,
             QuizRepository quizRepo,
-            QuestionRepository questionRepo) {
+            QuestionRepository questionRepo,
+            ReviewRepository reviewRepo) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -92,6 +97,7 @@ public class DatabaseSeeder {
         this.materialRepo = materialRepo;
         this.quizRepo = quizRepo;
         this.questionRepo = questionRepo;
+        this.reviewRepo = reviewRepo;
     }
 
     @Transactional
@@ -173,10 +179,15 @@ public class DatabaseSeeder {
         // Seed questions
         List<Question> questions =QuestionGenerator.fromQuizzes(quizzes);
         questionRepo.saveAll(questions);
+
+        // Seed Reviews
+        List<Review> reviews=ReviewGenerator.generateReviews(courses, students);
+        reviewRepo.saveAll(reviews);
     }
 
     @Transactional
     public void clean() {
+        reviewRepo.deleteAll();
         questionRepo.deleteAll();
         quizRepo.deleteAll();
         materialRepo.deleteAll();
