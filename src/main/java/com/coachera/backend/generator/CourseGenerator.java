@@ -18,7 +18,7 @@ public class CourseGenerator {
                     Course course = Instancio.of(Course.class)
                         .ignore(Select.field(Course::getId))
                         .supply(Select.field(Course::getOrg), () -> org)
-                        .supply(Select.field(Course::getTitle), () -> org.getOrgName())
+                        .supply(Select.field(Course::getTitle), () -> "Course " + BigDecimal.valueOf(Math.random() * 50))
                         .supply(Select.field(Course::getDescription),() -> "Description...")
                         .supply(Select.field(Course::getDurationHours), () -> getRandomDuration())
                         .supply(Select.field(Course::getPrice), () -> (BigDecimal.valueOf(Math.random() * 50)))
