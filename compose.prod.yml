@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: coachera-app
+    stdin_open: true   # Keep STDIN open
+    tty: true          # Allocate a pseudo-TTY
     ports:
       - "8080:8080"
     environment:
