@@ -56,9 +56,10 @@ public class StudentService {
         return convertToDto(savedStudent);
     }
 
-    public StudentDTO getStudentById(Integer id) {
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+    public StudentDTO getStudentByUser(User user) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
         return modelMapper.map(student, StudentDTO.class);
     }
 
@@ -68,9 +69,10 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
-    public StudentDTO updateStudent(Integer id, StudentDTO studentDTO) {
-        Student existingStudent = studentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+    public StudentDTO updateStudent(User userA , StudentDTO studentDTO) {
+        Integer studentId = studentRepository.findByUserId(userA.getId()).getId();
+        Student existingStudent = studentRepository.findById(studentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
 
         modelMapper.map(studentDTO, existingStudent);
         

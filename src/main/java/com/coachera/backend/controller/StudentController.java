@@ -2,10 +2,11 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.StudentService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,10 +29,10 @@ public class StudentController {
 
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<?> getStudent(@PathVariable Integer id) {
+    @GetMapping("/user")
+    public ApiResponse<?> getStudent(@AuthenticationPrincipal User user) {
 
-        StudentDTO student = studentService.getStudentById(id);
+        StudentDTO student = studentService.getStudentByUser(user);
         return ApiResponse.success(student);
 
     }
@@ -45,13 +46,13 @@ public class StudentController {
 
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @PreAuthorize("hasRole('STUDENT')")
     public ApiResponse<?> updateStudent(
-            @PathVariable Integer id,
+            @AuthenticationPrincipal User user,
             @Valid @RequestBody StudentDTO studentDTO) {
 
-        StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
+        StudentDTO updatedStudent = studentService.updateStudent(user, studentDTO);
         return ApiResponse.success("Student was updated successfully", updatedStudent);
 
     }
