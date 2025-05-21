@@ -15,6 +15,7 @@ import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.Week;
 import com.coachera.backend.generator.AdminGenerator;
 import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CertificateGenerator;
@@ -24,6 +25,7 @@ import com.coachera.backend.generator.InstructorGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
+import com.coachera.backend.generator.WeekGenerator;
 import com.coachera.backend.repository.AdminRepository;
 import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
@@ -33,6 +35,7 @@ import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
+import com.coachera.backend.repository.WeekRepository;
 
 @Component
 public class DatabaseSeeder {
@@ -45,17 +48,18 @@ public class DatabaseSeeder {
     private final CategoryRepository categoryRepo;
     private final EnrollmentRepository enrollmentRepo;
     private final CertificateRepository certificateRepo;
+    private final WeekRepository weekRepo;
 
     public DatabaseSeeder(
-        UserRepository userRepo,
-        StudentRepository studentRepo,
-        InstructorRepository instructorRepo,
-        OrganizationRepository orgRepo,
-        CourseRepository courseRepo,
-        CategoryRepository categoryRepo,
-        EnrollmentRepository enrollmentRepo,
-        CertificateRepository certificateRepo
-    ) {
+            UserRepository userRepo,
+            StudentRepository studentRepo,
+            InstructorRepository instructorRepo,
+            OrganizationRepository orgRepo,
+            CourseRepository courseRepo,
+            CategoryRepository categoryRepo,
+            EnrollmentRepository enrollmentRepo,
+            CertificateRepository certificateRepo,
+            WeekRepository weekRepo) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -64,6 +68,7 @@ public class DatabaseSeeder {
         this.categoryRepo = categoryRepo;
         this.enrollmentRepo = enrollmentRepo;
         this.certificateRepo = certificateRepo;
+        this.weekRepo = weekRepo;
     }
 
     @Transactional
@@ -87,16 +92,16 @@ public class DatabaseSeeder {
 
         // Filter users by role
         List<User> studentUsers = users.stream()
-            .filter(user -> "STUDENT".equalsIgnoreCase(user.getRole()))
-            .collect(Collectors.toList());
+                .filter(user -> "STUDENT".equalsIgnoreCase(user.getRole()))
+                .collect(Collectors.toList());
 
         List<User> instructorUsers = users.stream()
-            .filter(user -> "INSTRUCTOR".equalsIgnoreCase(user.getRole()))
-            .collect(Collectors.toList());
+                .filter(user -> "INSTRUCTOR".equalsIgnoreCase(user.getRole()))
+                .collect(Collectors.toList());
 
         List<User> orgUsers = users.stream()
-            .filter(user -> "ORGANIZATION".equalsIgnoreCase(user.getRole()))
-            .collect(Collectors.toList());
+                .filter(user -> "ORGANIZATION".equalsIgnoreCase(user.getRole()))
+                .collect(Collectors.toList());
 
         // Seed students
         List<Student> students = StudentGenerator.fromUsers(studentUsers);
@@ -115,7 +120,7 @@ public class DatabaseSeeder {
         courseRepo.saveAll(courses);
 
         // Seed categories
-        List<Category> categories = CategoryGenerator.fromCourses(courses,List.of("AI", "Web", "Business", "Data"));
+        List<Category> categories = CategoryGenerator.fromCourses(courses, List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
 
         // Seed enrollments for first few courses
@@ -125,10 +130,15 @@ public class DatabaseSeeder {
         // Seed certificates (optional)
         List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
         certificateRepo.saveAll(certificates);
+
+        // Seed Weeks
+        List<Week> weeks = WeekGenerator.fromCourses(courses);
+        weekRepo.saveAll(weeks);
     }
 
     @Transactional
     public void clean() {
+        weekRepo.deleteAll();
         certificateRepo.deleteAll();
         enrollmentRepo.deleteAll();
         courseRepo.deleteAll();

@@ -24,6 +24,7 @@ public class CourseGenerator {
                         .supply(Select.field(Course::getPrice), () -> (BigDecimal.valueOf(Math.random() * 50)))
                         .supply(Select.field(Course::getRating), () -> (BigDecimal.valueOf(Math.random())))
                         .ignore(Select.field(Course::getCategories))
+                        .ignore(Select.field(Course::getLearningPaths))
                         .create();
                     
                     if (course == null) {
