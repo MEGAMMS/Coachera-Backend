@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.coachera.backend.entity.Admin;
 import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Certificate;
 import com.coachera.backend.entity.Course;
@@ -14,11 +13,12 @@ import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.Quiz;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.Week;
-import com.coachera.backend.generator.AdminGenerator;
+
 import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CertificateGenerator;
 import com.coachera.backend.generator.CourseGenerator;
@@ -26,11 +26,12 @@ import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.InstructorGenerator;
 import com.coachera.backend.generator.MaterialGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
+import com.coachera.backend.generator.QuizGenerator;
 import com.coachera.backend.generator.SectionGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
 import com.coachera.backend.generator.WeekGenerator;
-import com.coachera.backend.repository.AdminRepository;
+
 import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
 import com.coachera.backend.repository.CourseRepository;
@@ -38,6 +39,7 @@ import com.coachera.backend.repository.EnrollmentRepository;
 import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.OrganizationRepository;
+import com.coachera.backend.repository.QuizRepository;
 import com.coachera.backend.repository.SectionRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
@@ -57,6 +59,7 @@ public class DatabaseSeeder {
     private final WeekRepository weekRepo;
     private final SectionRepository sectionRepo;
     private final MaterialRepository materialRepo;
+    private final QuizRepository quizRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -69,7 +72,8 @@ public class DatabaseSeeder {
             CertificateRepository certificateRepo,
             WeekRepository weekRepo,
             SectionRepository sectionRepo,
-            MaterialRepository materialRepo) {
+            MaterialRepository materialRepo,
+            QuizRepository quizRepo) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -81,6 +85,7 @@ public class DatabaseSeeder {
         this.weekRepo = weekRepo;
         this.sectionRepo = sectionRepo;
         this.materialRepo = materialRepo;
+        this.quizRepo = quizRepo;
     }
 
     @Transactional
@@ -154,10 +159,15 @@ public class DatabaseSeeder {
         // Seed Materials
         List<Material> materials = MaterialGenerator.fromSections(sections);
         materialRepo.saveAll(materials);
+
+        // Seed Quizes
+        List<Quiz> quizes = QuizGenerator.fromMaterials(materials);
+        quizRepo.saveAll(quizes);
     }
 
     @Transactional
     public void clean() {
+        quizRepo.deleteAll();
         materialRepo.deleteAll();
         sectionRepo.deleteAll();
         weekRepo.deleteAll();
