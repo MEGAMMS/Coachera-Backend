@@ -2,6 +2,9 @@
 target/
 **/target/
 
+# Images
+uploads
+
 # shell files
 coachera.log
 
