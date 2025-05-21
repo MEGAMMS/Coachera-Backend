@@ -71,7 +71,8 @@ public class CourseService {
 
         modelMapper.map(courseDTO, existingCourse);
         Course updatedCourse = courseRepository.save(existingCourse);
-        return modelMapper.map(updatedCourse, CourseDTO.class);
+        CourseDTO courseDTO2=new CourseDTO(updatedCourse);
+        return courseDTO2;
     }
 
     public void deleteCourse(Integer id) {
