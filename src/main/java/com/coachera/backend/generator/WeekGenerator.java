@@ -15,11 +15,11 @@ import com.coachera.backend.entity.Week;
 public class WeekGenerator {
 
     public static List<Week> fromCourses(List<Course> courses) {
-        AtomicInteger orderCounter = new AtomicInteger(0);
         Random random = new Random();
-
+        
         return courses.stream()
-                .flatMap(course -> {
+        .flatMap(course -> {
+                    AtomicInteger orderCounter = new AtomicInteger(0);
                     int weeksCount = random.nextInt(10) + 1; // Random number between 1-10
                     List<Week> weeks = new ArrayList<>();
 
