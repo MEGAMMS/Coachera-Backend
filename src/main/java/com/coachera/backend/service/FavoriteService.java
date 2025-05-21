@@ -4,6 +4,7 @@ import com.coachera.backend.dto.FavoriteDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Favorite;
 import com.coachera.backend.entity.Student;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.FavoriteRepository;
@@ -23,7 +24,8 @@ public class FavoriteService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
 
-    public List<FavoriteDTO> getFavoritesByStudentId(Integer studentId) {
+    public List<FavoriteDTO> getFavoritesByStudentId(User user) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId(); 
         return favoriteRepository.findByStudentId(studentId)
                 .stream()
                 .map(FavoriteDTO::new)
@@ -31,8 +33,9 @@ public class FavoriteService {
     }
 
     @Transactional
-    public FavoriteDTO addFavorite(Integer studentId, Integer courseId) {
+    public FavoriteDTO addFavorite(User user, Integer courseId) {
         // Check if already favorited
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId(); 
         if (favoriteRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
             throw new IllegalStateException("Course is already favorited by this student");
         }
@@ -52,14 +55,16 @@ public class FavoriteService {
     }
 
     @Transactional
-    public void removeFavorite(Integer studentId, Integer courseId) {
+    public void removeFavorite(User user, Integer courseId) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId(); 
         if (!favoriteRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
             throw new ResourceNotFoundException("Favorite not found for studentId: " + studentId + " and courseId: " + courseId);
         }
         favoriteRepository.deleteByStudentIdAndCourseId(studentId, courseId);
     }
 
-    public boolean isCourseFavoritedByStudent(Integer studentId, Integer courseId) {
+    public boolean isCourseFavoritedByStudent(User user, Integer courseId) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId(); 
         return favoriteRepository.existsByStudentIdAndCourseId(studentId, courseId);
     }
 }
