@@ -12,6 +12,7 @@ import com.coachera.backend.entity.Certificate;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Instructor;
+import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.Student;
@@ -23,6 +24,7 @@ import com.coachera.backend.generator.CertificateGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.InstructorGenerator;
+import com.coachera.backend.generator.MaterialGenerator;
 import com.coachera.backend.generator.OrganizationGenerator;
 import com.coachera.backend.generator.SectionGenerator;
 import com.coachera.backend.generator.StudentGenerator;
@@ -34,6 +36,7 @@ import com.coachera.backend.repository.CertificateRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.EnrollmentRepository;
 import com.coachera.backend.repository.InstructorRepository;
+import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.SectionRepository;
 import com.coachera.backend.repository.StudentRepository;
@@ -53,6 +56,7 @@ public class DatabaseSeeder {
     private final CertificateRepository certificateRepo;
     private final WeekRepository weekRepo;
     private final SectionRepository sectionRepo;
+    private final MaterialRepository materialRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -64,7 +68,8 @@ public class DatabaseSeeder {
             EnrollmentRepository enrollmentRepo,
             CertificateRepository certificateRepo,
             WeekRepository weekRepo,
-            SectionRepository sectionRepo) {
+            SectionRepository sectionRepo,
+            MaterialRepository materialRepo) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -74,7 +79,8 @@ public class DatabaseSeeder {
         this.enrollmentRepo = enrollmentRepo;
         this.certificateRepo = certificateRepo;
         this.weekRepo = weekRepo;
-        this.sectionRepo =sectionRepo;
+        this.sectionRepo = sectionRepo;
+        this.materialRepo = materialRepo;
     }
 
     @Transactional
@@ -142,12 +148,17 @@ public class DatabaseSeeder {
         weekRepo.saveAll(weeks);
 
         // Seed Sections
-        List<Section> sections =SectionGenerator.fromWeeks(weeks);
+        List<Section> sections = SectionGenerator.fromWeeks(weeks);
         sectionRepo.saveAll(sections);
+
+        // Seed Materials
+        List<Material> materials = MaterialGenerator.fromSections(sections);
+        materialRepo.saveAll(materials);
     }
 
     @Transactional
     public void clean() {
+        materialRepo.deleteAll();
         sectionRepo.deleteAll();
         weekRepo.deleteAll();
         certificateRepo.deleteAll();
