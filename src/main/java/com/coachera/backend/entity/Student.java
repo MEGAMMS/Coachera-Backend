@@ -27,9 +27,13 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "students")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Student extends Auditable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -40,6 +44,9 @@ public class Student extends Auditable {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudentCertificate> studentCertificates = new HashSet<>();
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StudentSkill> studentSkills = new HashSet<>();
 
     @Column(nullable = false)
     private String firstName;
@@ -62,7 +69,7 @@ public class Student extends Auditable {
     // // Additional student fields
     // @Column
     // private String phoneNumber;
-    
+
     // @Column
     // private String address;
 
@@ -85,5 +92,28 @@ public class Student extends Auditable {
                 .map(StudentCertificate::getCertificate)
                 .collect(Collectors.toSet());
     }
-}
 
+    public void addSkill(Skill skill, Course course, Integer level) {
+        StudentSkill studentSkill = new StudentSkill();
+        studentSkill.setStudent(this);
+        studentSkill.setSkill(skill);
+        studentSkill.setCourse(course);
+        studentSkill.setLevel(level);
+        studentSkills.add(studentSkill);
+        skill.getStudentSkills().add(studentSkill);
+    }
+
+    public void removeSkill(Skill skill) {
+        StudentSkill studentSkill = new StudentSkill();
+        studentSkill.setStudent(this);
+        studentSkill.setSkill(skill);
+        skill.getStudentSkills().remove(studentSkill);
+        studentSkills.remove(studentSkill);
+    }
+
+    public Set<Skill> getSkills() {
+        return studentSkills.stream()
+                .map(StudentSkill::getSkill)
+                .collect(Collectors.toSet());
+    }
+}

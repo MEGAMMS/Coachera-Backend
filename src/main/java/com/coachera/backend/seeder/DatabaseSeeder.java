@@ -18,6 +18,7 @@ import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
 import com.coachera.backend.entity.Review;
 import com.coachera.backend.entity.Section;
+import com.coachera.backend.entity.Skill;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.Week;
@@ -34,6 +35,7 @@ import com.coachera.backend.generator.QuestionGenerator;
 import com.coachera.backend.generator.QuizGenerator;
 import com.coachera.backend.generator.ReviewGenerator;
 import com.coachera.backend.generator.SectionGenerator;
+import com.coachera.backend.generator.SkillGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
 import com.coachera.backend.generator.WeekGenerator;
@@ -50,6 +52,7 @@ import com.coachera.backend.repository.QuestionRepository;
 import com.coachera.backend.repository.QuizRepository;
 import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.SectionRepository;
+import com.coachera.backend.repository.SkillRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 import com.coachera.backend.repository.WeekRepository;
@@ -72,6 +75,7 @@ public class DatabaseSeeder {
     private final QuestionRepository questionRepo;
     private final ReviewRepository reviewRepo;
     private final LearningPathRepository learningPathRepo;
+    private final SkillRepository skillRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -88,7 +92,8 @@ public class DatabaseSeeder {
             QuizRepository quizRepo,
             QuestionRepository questionRepo,
             ReviewRepository reviewRepo,
-            LearningPathRepository learningPathRepo) {
+            LearningPathRepository learningPathRepo,
+            SkillRepository skillRepo) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -104,6 +109,7 @@ public class DatabaseSeeder {
         this.questionRepo = questionRepo;
         this.reviewRepo = reviewRepo;
         this.learningPathRepo = learningPathRepo;
+        this.skillRepo = skillRepo;
     }
 
     @Transactional
@@ -183,20 +189,39 @@ public class DatabaseSeeder {
         quizRepo.saveAll(quizzes);
 
         // Seed questions
-        List<Question> questions =QuestionGenerator.fromQuizzes(quizzes);
+        List<Question> questions = QuestionGenerator.fromQuizzes(quizzes);
         questionRepo.saveAll(questions);
 
         // Seed Reviews
-        List<Review> reviews=ReviewGenerator.generateReviews(courses, students);
+        List<Review> reviews = ReviewGenerator.generateReviews(courses, students);
         reviewRepo.saveAll(reviews);
 
         // Seed LearningPaths
-        List<LearningPath> learningPaths= LearningPathGenerator.generateLearningPaths(orgs, courses);
+        List<LearningPath> learningPaths = LearningPathGenerator.generateLearningPaths(orgs, courses);
         learningPathRepo.saveAll(learningPaths);
+
+        // Seed Skills
+
+        List<String> defaultSkillNames = List.of(
+            "Java Programming",
+            "Python Programming",
+            "Web Development",
+            "Data Analysis",
+            "Machine Learning",
+            "Database Design",
+            "Software Architecture",
+            "DevOps",
+            "Cloud Computing",
+            "Mobile Development"
+        );
+
+        List<Skill> skills = SkillGenerator.generateSkills(defaultSkillNames);
+        skillRepo.saveAll(skills);
     }
 
     @Transactional
     public void clean() {
+        skillRepo.deleteAll();
         learningPathRepo.deleteAll();
         reviewRepo.deleteAll();
         questionRepo.deleteAll();

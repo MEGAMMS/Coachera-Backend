@@ -27,6 +27,7 @@ public class StudentGenerator {
                         .supply(Select.field(Student::getEducation), () -> "Bachelor")
                         .supply(Select.field(Student::getWallet), () -> BigDecimal.ZERO)
                         .ignore(Select.field(Student::getStudentCertificates))
+                        .ignore(Select.field(Student::getStudentSkills))
                         .create();
                     
                     if (student == null) {
