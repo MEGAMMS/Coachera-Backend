@@ -85,7 +85,7 @@ public class CourseService {
     {
         return courseRepository.findAll()
             .stream()
-            .map(org -> modelMapper.map(org, CourseDTO.class))
+            .map(org -> new CourseDTO(org))
             .toList();
     }
 }

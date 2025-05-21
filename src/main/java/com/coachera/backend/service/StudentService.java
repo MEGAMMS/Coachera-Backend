@@ -48,19 +48,19 @@ public class StudentService {
     
         
         Student savedStudent = studentRepository.save(student);
-        return convertToDto(savedStudent);
+        return new StudentDTO(savedStudent);
     }
 
     public StudentDTO getStudentByUser(User user) {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
-        return modelMapper.map(student, StudentDTO.class);
+        return new StudentDTO(student);
     }
 
     public List<StudentDTO> getAllStudents() {
         return studentRepository.findAll().stream()
-                .map(student -> modelMapper.map(student, StudentDTO.class))
+                .map(student -> new StudentDTO(student))
                 .collect(Collectors.toList());
     }
 
@@ -80,7 +80,7 @@ public class StudentService {
         }
 
         Student updatedStudent = studentRepository.save(existingStudent);
-        return modelMapper.map(updatedStudent, StudentDTO.class);
+        return new StudentDTO(updatedStudent);
     }
 
     public void deleteStudent(Integer id) {
@@ -89,17 +89,5 @@ public class StudentService {
         }
         studentRepository.deleteById(id);
     }
-    private StudentDTO convertToDto(Student student) {
-        StudentDTO dto = new StudentDTO();
-        dto.setId(student.getId());
-        dto.setUserId(student.getUser().getId());
-        dto.setFirstName(student.getFirstName());
-        dto.setLastName(student.getLastName());
-        dto.setBirthDate(student.getBirthDate());
-        dto.setGender(student.getGender());
-        dto.setEducation(student.getEducation());
-        dto.setCreatedAt(student.getCreatedAt());
-        dto.setUpdatedAt(student.getUpdatedAt());
-        return dto;
-    }
+    
 }

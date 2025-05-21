@@ -38,13 +38,13 @@ public class OrganizationService {
         organization.setUser(user);
 
         Organization savedOrganization = organizationRepository.save(organization);
-        return modelMapper.map(savedOrganization, OrganizationDTO.class);
+        return new OrganizationDTO(savedOrganization);
     }
 
     public OrganizationDTO getOrganizationById(Integer id) {
         Organization organization = organizationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + id));
-        return modelMapper.map(organization, OrganizationDTO.class);
+        return new OrganizationDTO(organization);
     }
 
     public OrganizationDTO getOrganizationsByUser(User user) {
@@ -73,7 +73,7 @@ public class OrganizationService {
         }
 
         Organization updatedOrg = organizationRepository.save(existingOrg);
-        return modelMapper.map(updatedOrg, OrganizationDTO.class);
+        return new OrganizationDTO(updatedOrg);
     }
 
     public void deleteOrganization(Integer id) {
