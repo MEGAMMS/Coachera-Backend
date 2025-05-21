@@ -36,12 +36,15 @@ public class UserDTO extends AuditableDTO {
     @Schema(example = "STUDENT")
     private String role;
 
+    @Schema(example = "http://localhost:8080/images/383980c4-a679-4d8a-a23c-f00ffbf25d76.png")
+    private String profileImageUrl;
+
     public UserDTO(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.username = user.getUsername();
         this.isVerified = user.getIsVerified();
-        this.profileImage = user.getProfileImage();
+        this.profileImage = user.getProfileImage().getUrl();
         this.role = user.getRole();
     }
 }
