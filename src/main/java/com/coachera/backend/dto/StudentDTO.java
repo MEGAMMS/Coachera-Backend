@@ -1,5 +1,6 @@
 package com.coachera.backend.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.coachera.backend.entity.Student;
@@ -21,8 +22,8 @@ public class StudentDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
 
-    @NotNull(message = "User ID is required")
-    @Schema(required = true, example = "1")
+
+    @Schema(required = true, example = "1" ,accessMode = Schema.AccessMode.READ_ONLY)
     private Integer userId;
 
     @NotBlank(message = "First name is required")
@@ -44,6 +45,9 @@ public class StudentDTO extends AuditableDTO {
     @NotBlank(message = "Education is required")
     @Schema(required = true, example = "Bachelor")
     private String education;
+
+    @Schema(required = true, example = "100.32",defaultValue = "0.0")
+    private BigDecimal wallet;
 
     public StudentDTO(Student student) {
         this.id = student.getId();

@@ -30,19 +30,19 @@ public class CategoryService {
 
         Category category = modelMapper.map(categoryDTO, Category.class);
         Category savedCategory = categoryRepository.save(category);
-        return modelMapper.map(savedCategory, CategoryDTO.class);
+        return new CategoryDTO(savedCategory);
     }
 
     
     public CategoryDTO getCategoryById(Integer id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
-        return modelMapper.map(category, CategoryDTO.class);
+        return new CategoryDTO(category);
     }
 
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAll().stream()
-                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                .map(category -> new CategoryDTO(category))
                 .collect(Collectors.toList());
     }
 
@@ -57,7 +57,7 @@ public class CategoryService {
 
         modelMapper.map(categoryDTO, existingCategory);
         Category updatedCategory = categoryRepository.save(existingCategory);
-        return modelMapper.map(updatedCategory, CategoryDTO.class);
+        return new CategoryDTO(updatedCategory);
     }
 
     // حذف فئة

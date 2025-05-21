@@ -1,11 +1,13 @@
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.OrganizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,40 +19,58 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<OrganizationDTO> createOrganization(
+    public ApiResponse<?> createOrganization(
             @Valid @RequestBody OrganizationDTO organizationDTO) {
-        OrganizationDTO createdOrg = organizationService.createOrganization(organizationDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrg);
+        
+            OrganizationDTO createdOrg = organizationService.createOrganization(organizationDTO);
+            return ApiResponse.created("Organization was created", createdOrg);
+       
     }
-    
+
     @GetMapping
-    public ResponseEntity<List<OrganizationDTO>> getAllOrganizations()
-    {
-        return ResponseEntity.ok(organizationService.getAllOrganizations());
+    public ApiResponse<?> getAllOrganizations() {
+     
+            List<OrganizationDTO> allOrg = organizationService.getAllOrganizations();
+            return ApiResponse.success(allOrg);
+      
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrganizationDTO> getOrganization(@PathVariable Integer id) {
-        return ResponseEntity.ok(organizationService.getOrganizationById(id));
+    public ApiResponse<?> getOrganization(@PathVariable Integer id) {
+       
+            OrganizationDTO org = organizationService.getOrganizationById(id);
+            return ApiResponse.success(org);
+        
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrganizationDTO>> getOrganizationsByUser(
-            @PathVariable Integer userId) {
-        return ResponseEntity.ok(organizationService.getOrganizationsByUser(userId));
+    @GetMapping("/user")
+    public ApiResponse<?> getOrganizationsByUser(
+            @AuthenticationPrincipal User user) {
+       
+            OrganizationDTO organization = organizationService.getOrganizationsByUser(user);
+            return ApiResponse.success(organization);
+      
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<OrganizationDTO> updateOrganization(
+    public ApiResponse<?> updateOrganization(
             @PathVariable Integer id,
             @Valid @RequestBody OrganizationDTO organizationDTO) {
-        return ResponseEntity.ok(organizationService.updateOrganization(id, organizationDTO));
+        
+            OrganizationDTO updateOrganization = organizationService.updateOrganization(id, organizationDTO);
+            return ApiResponse.success("Organization was updated", updateOrganization);
+      
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrganization(@PathVariable Integer id) {
-        organizationService.deleteOrganization(id);
-        return ResponseEntity.noContent().build();
+    public ApiResponse<?> deleteOrganization(@PathVariable Integer id) {
+        
+            organizationService.deleteOrganization(id);
+            return ApiResponse.noContent();
+       
     }
 }
