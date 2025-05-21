@@ -6,6 +6,7 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.coachera.backend.dto.ApiResponse;
 
@@ -36,6 +37,15 @@ public class GlobalExceptionHandler {
         ApiResponse<String> response = new ApiResponse<>(
                 HttpStatus.UNAUTHORIZED,
                 "Forbidden: " + ex.getMessage(),
+                null);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleAutheriztionExceptions(NoResourceFoundException ex) {
+        ApiResponse<String> response = new ApiResponse<>(
+                HttpStatus.NOT_FOUND,
+                "Not Found: " + ex.getMessage(),
                 null);
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
