@@ -20,11 +20,12 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-
+    
+    @PreAuthorize("hasRole('STUDENT')")
     @PostMapping
-    public ApiResponse<?> createStudent(@RequestBody @Valid StudentDTO studentDTO) {
+    public ApiResponse<?> createStudent(@RequestBody @Valid StudentDTO studentDTO ,@AuthenticationPrincipal User user) {
 
-        StudentDTO createdStudent = studentService.createStudent(studentDTO);
+        StudentDTO createdStudent = studentService.createStudent(studentDTO ,user);
         return ApiResponse.created("Student was created successfully", createdStudent);
 
     }

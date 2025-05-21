@@ -31,12 +31,7 @@ public class StudentService {
         this.modelMapper = modelMapper;
     }
 
-    public StudentDTO createStudent(StudentDTO studentDTO) {
-        
-        User user = userRepository.findById(studentDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + studentDTO.getUserId()));
-    
-
+    public StudentDTO createStudent(StudentDTO studentDTO,User user) {
         if (studentRepository.existsByUserId(studentDTO.getUserId())) {
             throw new ConflictException("User already has a student profile");
         }

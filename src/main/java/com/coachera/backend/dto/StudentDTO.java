@@ -22,8 +22,8 @@ public class StudentDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id;
 
-    @NotNull(message = "User ID is required")
-    @Schema(required = true, example = "1")
+
+    @Schema(required = true, example = "1" ,accessMode = Schema.AccessMode.READ_ONLY)
     private Integer userId;
 
     @NotBlank(message = "First name is required")
