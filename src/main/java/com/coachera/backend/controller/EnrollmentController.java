@@ -44,13 +44,13 @@ public class EnrollmentController {
     }
 
 
-    @DeleteMapping("/delete/{courseId}/{studentId}")
+    @DeleteMapping("/delete/{courseId}/student")
     @Operation(summary = "Unenroll a student from a course")
     public ApiResponse<?> unenrollStudent(
-            @PathVariable Integer studentId,
+            @AuthenticationPrincipal User user,
             @PathVariable Integer courseId) {
 
-        enrollmentService.unenrollStudent(studentId, courseId);
+        enrollmentService.unenrollStudent(user, courseId);
         return ApiResponse.noContent();
 
     }

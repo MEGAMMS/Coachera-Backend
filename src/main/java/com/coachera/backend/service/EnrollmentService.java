@@ -42,7 +42,7 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentDTO enrollStudent(User user, Integer courseId, String progress) {
        Integer studentId  = studentRepository.findByUserId(user.getId()).getId();
-       
+
         if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
@@ -73,7 +73,8 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void unenrollStudent(Integer studentId, Integer courseId) {
+    public void unenrollStudent(User user, Integer courseId) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         if (!enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
             throw new ResourceNotFoundException("Enrollment not found for studentId: " + studentId + " and courseId: " + courseId);
         }
