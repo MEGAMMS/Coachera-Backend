@@ -2,11 +2,12 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.OrganizationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,11 +45,11 @@ public class OrganizationController {
         
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     public ApiResponse<?> getOrganizationsByUser(
-            @PathVariable Integer userId) {
+            @AuthenticationPrincipal User user) {
        
-            List<OrganizationDTO> organization = organizationService.getOrganizationsByUser(userId);
+            OrganizationDTO organization = organizationService.getOrganizationsByUser(user);
             return ApiResponse.success(organization);
       
     }
