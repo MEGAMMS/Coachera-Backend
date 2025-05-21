@@ -80,7 +80,8 @@ public class CertificateService {
         return dto;
     }
 
-    public List<CertificateDTO> getCertificatesByStudent(Integer studentId) {
+    public List<CertificateDTO> getCertificatesByStudent(User user) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         return studentCertificateRepository.findByStudentId(studentId).stream()
                 .map(StudentCertificate::getCertificate)
                 .map(cert -> modelMapper.map(cert, CertificateDTO.class))

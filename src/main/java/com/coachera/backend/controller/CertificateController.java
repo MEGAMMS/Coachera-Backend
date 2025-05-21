@@ -2,22 +2,18 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CertificateDTO;
-import com.coachera.backend.dto.StudentDTO;
 import com.coachera.backend.service.CertificateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/api/certificates")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAnyRole('ADMIN', 'ORGANIZATION')")
 @RequiredArgsConstructor
 public class CertificateController {
 
@@ -50,11 +46,7 @@ public class CertificateController {
         return ApiResponse.noContent();
     }
 
-    @GetMapping("/student/{studentId}")
-    public ApiResponse<?> getCertificatesByStudent(
-            @PathVariable Integer studentId) {
-        return ApiResponse.success(certificateService.getCertificatesByStudent(studentId));
-    }
+  
 
     @GetMapping("/course/{courseId}")
     public ApiResponse<?> getCertificatesByCourse(
@@ -62,12 +54,7 @@ public class CertificateController {
         return ApiResponse.success(certificateService.getCertificatesByCourse(courseId));
     }
 
-    @PostMapping("/{certificateId}/students")
-    public ApiResponse<?> addStudentsToCertificate(
-            @PathVariable Integer certificateId,
-            @RequestBody Set<Integer> studentIds) {
-        return ApiResponse.success(certificateService.addStudents(certificateId, studentIds));
-            }
+   
 
     @DeleteMapping("/{certificateId}/students/{studentId}")
     public ApiResponse<?> removeStudentFromCertificate(
@@ -82,6 +69,13 @@ public class CertificateController {
             @PathVariable Integer certificateId) {
         return ApiResponse.success(certificateService.getStudentsByCertificateId(certificateId));
     }
+
+     @PostMapping("/{certificateId}/students")
+    public ApiResponse<?> addStudentsToCertificate(
+            @PathVariable Integer certificateId,
+            @RequestBody Set<Integer> studentIds) {
+        return ApiResponse.success(certificateService.addStudents(certificateId, studentIds));
+            }
 
     @PatchMapping("/{id}/issued-date")
     public ApiResponse<?> updateIssuedDate(
