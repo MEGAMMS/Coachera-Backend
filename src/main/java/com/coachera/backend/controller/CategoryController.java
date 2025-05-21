@@ -1,51 +1,62 @@
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CategoryDTO;
 import com.coachera.backend.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+    public ApiResponse<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+
         CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
+        return ApiResponse.created("Category was created", createdCategory);
+
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer id) {
+    public ApiResponse<?> getCategoryById(@PathVariable Integer id) {
+
         CategoryDTO category = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(category);
+        return ApiResponse.success(category);
+
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+    public ApiResponse<?> getAllCategories() {
+
         List<CategoryDTO> categories = categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+        return ApiResponse.success(categories);
+
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(
+    public ApiResponse<?> updateCategory(
             @PathVariable Integer id,
             @Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
-        return ResponseEntity.ok(updatedCategory);
+        return ApiResponse.success("category was updated", updatedCategory);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+    public ApiResponse<?> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContent();
+
     }
 }

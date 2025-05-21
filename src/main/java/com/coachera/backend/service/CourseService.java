@@ -1,9 +1,9 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.CourseDTO;
-import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CourseRepository;
@@ -24,12 +24,9 @@ public class CourseService {
     private final OrganizationRepository organizationRepository;
     private final ModelMapper modelMapper;
 
-    public CourseDTO createCourse(CourseDTO courseDTO) {
-        Organization org = organizationRepository.findById(courseDTO.getOrgId())
-                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + courseDTO.getOrgId()));
-
-       
-        if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), courseDTO.getOrgId())) {
+    public CourseDTO createCourse(CourseDTO courseDTO ,User user) {   
+        Organization org =organizationRepository.findByUserId(user.getId());
+        if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(),org.getId())) {
             throw new ConflictException("Course with this title already exists in the organization");
         }
 
@@ -37,18 +34,20 @@ public class CourseService {
         course.setOrg(org);
 
         Course savedCourse = courseRepository.save(course);
-        return modelMapper.map(savedCourse, CourseDTO.class);
+        CourseDTO courseDTO2=new CourseDTO(savedCourse);
+        return courseDTO2;
     }
 
     public CourseDTO getCourseById(Integer id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
-        return modelMapper.map(course, CourseDTO.class);
+        CourseDTO courseDTO=new CourseDTO(course);
+        return courseDTO;
     }
 
     public List<CourseDTO> getCoursesByOrganization(Integer orgId) {
         return courseRepository.findByOrgId(orgId).stream()
-                .map(course -> modelMapper.map(course, CourseDTO.class))
+                .map(course -> new CourseDTO(course))
                 .toList();
     }
 
@@ -71,7 +70,8 @@ public class CourseService {
 
         modelMapper.map(courseDTO, existingCourse);
         Course updatedCourse = courseRepository.save(existingCourse);
-        return modelMapper.map(updatedCourse, CourseDTO.class);
+        CourseDTO courseDTO2=new CourseDTO(updatedCourse);
+        return courseDTO2;
     }
 
     public void deleteCourse(Integer id) {
@@ -85,7 +85,7 @@ public class CourseService {
     {
         return courseRepository.findAll()
             .stream()
-            .map(org -> modelMapper.map(org, CourseDTO.class))
+            .map(org -> new CourseDTO(org))
             .toList();
     }
 }

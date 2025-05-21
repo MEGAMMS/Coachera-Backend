@@ -1,25 +1,15 @@
 package com.coachera.backend.controller;
 
-import java.util.List;
-
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.StudentService;
-
-import org.springframework.web.bind.annotation.RequestBody;
-
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
@@ -30,36 +20,49 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-
+    
+    @PreAuthorize("hasRole('STUDENT')")
     @PostMapping
-    public ResponseEntity<StudentDTO> createStudent( @RequestBody @Valid StudentDTO studentDTO) {
-        StudentDTO createdStudent = studentService.createStudent(studentDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
+    public ApiResponse<?> createStudent(@RequestBody @Valid StudentDTO studentDTO ,@AuthenticationPrincipal User user) {
+
+        StudentDTO createdStudent = studentService.createStudent(studentDTO ,user);
+        return ApiResponse.created("Student was created successfully", createdStudent);
+
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<StudentDTO> getStudent(@PathVariable Integer id) {
-        StudentDTO student = studentService.getStudentById(id);
-        return ResponseEntity.ok(student);
+    @GetMapping("/user")
+    public ApiResponse<?> getStudent(@AuthenticationPrincipal User user) {
+
+        StudentDTO student = studentService.getStudentByUser(user);
+        return ApiResponse.success(student);
+
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentDTO>> getAllStudents() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<?> getAllStudents() {
+
         List<StudentDTO> students = studentService.getAllStudents();
-        return ResponseEntity.ok(students);
+        return ApiResponse.success(students);
+
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<StudentDTO> updateStudent(
-            @PathVariable Integer id,
+    @PutMapping
+    @PreAuthorize("hasRole('STUDENT')")
+    public ApiResponse<?> updateStudent(
+            @AuthenticationPrincipal User user,
             @Valid @RequestBody StudentDTO studentDTO) {
-        StudentDTO updatedStudent = studentService.updateStudent(id, studentDTO);
-        return ResponseEntity.ok(updatedStudent);
+
+        StudentDTO updatedStudent = studentService.updateStudent(user, studentDTO);
+        return ApiResponse.success("Student was updated successfully", updatedStudent);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Integer id) {
+    public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
+
         studentService.deleteStudent(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContent();
+
     }
 }
