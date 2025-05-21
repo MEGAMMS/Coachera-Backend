@@ -47,8 +47,8 @@ public class CertificateService {
             
             students.forEach(student -> savedCertificate.addStudent(student));
         }
-
-        return modelMapper.map(certificateRepository.save(savedCertificate), CertificateDTO.class);
+        Certificate saved = certificateRepository.save(savedCertificate);
+        return new CertificateDTO(saved);
     }
 
     public CertificateDTO addStudents(Integer certificateId, Set<Integer> studentIds) {
@@ -64,15 +64,15 @@ public class CertificateService {
                 certificate.addStudent(student);
             }
         });
-
-        return modelMapper.map(certificateRepository.save(certificate), CertificateDTO.class);
+        Certificate savedCertificate =certificateRepository.save(certificate);
+        return new CertificateDTO(savedCertificate);
     }
 
     public CertificateDTO getCertificateById(Integer id) {
         Certificate certificate = certificateRepository.findByIdWithStudents(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Certificate not found"));
         
-        CertificateDTO dto = modelMapper.map(certificate, CertificateDTO.class);
+        CertificateDTO dto = new CertificateDTO(certificate);
         dto.setStudentIds(certificate.getStudentCertificates().stream()
                 .map(sc -> sc.getStudent().getId())
                 .collect(Collectors.toSet()));
@@ -84,7 +84,7 @@ public class CertificateService {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         return studentCertificateRepository.findByStudentId(studentId).stream()
                 .map(StudentCertificate::getCertificate)
-                .map(cert -> modelMapper.map(cert, CertificateDTO.class))
+                .map(cert -> new CertificateDTO(cert))
                 .collect(Collectors.toList());
     }
 
@@ -160,8 +160,8 @@ public class CertificateService {
             existingCertificate.getStudentCertificates().removeIf(sc -> 
                 removedStudentIds.contains(sc.getStudent().getId()));
         }
-
-        return modelMapper.map(certificateRepository.save(existingCertificate), CertificateDTO.class);
+        Certificate savedCertificate = certificateRepository.save(existingCertificate);
+        return new CertificateDTO(savedCertificate);
     }
 
     public void removeStudentFromCertificate(Integer certificateId, Integer studentId) {
@@ -181,7 +181,7 @@ public class CertificateService {
         
         return certificate.getStudentCertificates().stream()
                 .map(StudentCertificate::getStudent)
-                .map(student -> modelMapper.map(student, StudentDTO.class))
+                .map(student -> new StudentDTO(student))
                 .collect(Collectors.toList());
     }
 
@@ -190,7 +190,8 @@ public class CertificateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Certificate not found"));
         
         certificate.setIssuedAt(newDate);
-        return modelMapper.map(certificateRepository.save(certificate), CertificateDTO.class);
+        Certificate savedCertificate = certificateRepository.save(certificate);
+        return new CertificateDTO(savedCertificate);
     }
 
 }
