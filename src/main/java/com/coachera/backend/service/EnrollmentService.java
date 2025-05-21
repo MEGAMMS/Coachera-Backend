@@ -4,6 +4,7 @@ import com.coachera.backend.dto.EnrollmentDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Student;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.EnrollmentRepository;
@@ -23,7 +24,8 @@ public class EnrollmentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
 
-    public List<EnrollmentDTO> getEnrollmentsByStudentId(Integer studentId) {
+    public List<EnrollmentDTO> getEnrollmentsByStudent(User user) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         return enrollmentRepository.findByStudentId(studentId)
                 .stream()
                 .map(EnrollmentDTO::new)

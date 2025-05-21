@@ -2,12 +2,13 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.EnrollmentDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +22,11 @@ public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
 
-    @GetMapping("/student/{studentId}")
+    @GetMapping("/student")
     @Operation(summary = "Get all enrollments for a student")
-    public ApiResponse<?> getEnrollmentsByStudentId(@PathVariable Integer studentId) {
+    public ApiResponse<?> getEnrollmentsByStudent(@AuthenticationPrincipal User user) {
 
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudentId(studentId);
+        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudent(user);
         return ApiResponse.success(enrollments);
 
     }

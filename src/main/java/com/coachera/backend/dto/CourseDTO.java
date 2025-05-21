@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import com.coachera.backend.entity.Course;
 
-import io.micrometer.common.lang.Nullable;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;

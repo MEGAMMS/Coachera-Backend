@@ -1,7 +1,6 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.CourseDTO;
-import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
