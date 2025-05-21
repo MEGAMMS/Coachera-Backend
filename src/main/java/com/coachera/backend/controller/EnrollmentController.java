@@ -31,26 +31,18 @@ public class EnrollmentController {
 
     }
 
-    @GetMapping("/course/{courseId}")
-    @Operation(summary = "Get all enrollments for a course")
-    public ApiResponse<?> getEnrollmentsByCourseId(@PathVariable Integer courseId) {
-
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByCourseId(courseId);
-        return ApiResponse.success(enrollments);
-
-    }
-
-    @PostMapping("/{courseId}/{studentId}")
+    @PostMapping("student/{courseId}")
     @Operation(summary = "Enroll a student in a course")
     public ApiResponse<?> enrollStudent(
-            @PathVariable Integer studentId,
+            @AuthenticationPrincipal User user,
             @PathVariable Integer courseId,
             @RequestParam(defaultValue = "0%") String progress) {
 
-        EnrollmentDTO enrollmentDTO = enrollmentService.enrollStudent(studentId, courseId, progress);
+        EnrollmentDTO enrollmentDTO = enrollmentService.enrollStudent(user, courseId, progress);
         return ApiResponse.created("Student was enrolled", enrollmentDTO);
 
     }
+
 
     @DeleteMapping("/delete/{courseId}/{studentId}")
     @Operation(summary = "Unenroll a student from a course")

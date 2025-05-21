@@ -40,8 +40,9 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public EnrollmentDTO enrollStudent(Integer studentId, Integer courseId, String progress) {
-        // Check if already enrolled
+    public EnrollmentDTO enrollStudent(User user, Integer courseId, String progress) {
+       Integer studentId  = studentRepository.findByUserId(user.getId()).getId();
+       
         if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
         }
