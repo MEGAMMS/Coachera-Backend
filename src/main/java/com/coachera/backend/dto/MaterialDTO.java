@@ -1,6 +1,6 @@
 package com.coachera.backend.dto;
 
-import com.coachera.backend.entity.Section;
+import com.coachera.backend.entity.Material;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -12,24 +12,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Schema(description = "Section Data Transfer Object")
-public class SectionDTO {
+@Schema(description = "Material Data Transfer Object")
+public class MaterialDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
-    @Schema(required = true, example = "1st Section")
+    @Schema(required = true, example = "1st Materiak")
     private String title;
 
     @Schema(required = true, example = "1", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer weekId;
+    private Integer sectionId;
 
     @Schema(required = true, example = "1")
     private Integer orderIndex;
 
-    public SectionDTO(Section section) {
-        this.id = section.getId();
-        this.title = section.getTitle();
-        this.weekId = section.getWeek().getId();
-        this.orderIndex = section.getOrderIndex();
+    public MaterialDTO(Material material) {
+        this.id = material.getId();
+        this.title = material.getTitle();
+        this.sectionId = material.getSection().getId();
+        this.orderIndex = material.getOrderIndex();
     }
 }
