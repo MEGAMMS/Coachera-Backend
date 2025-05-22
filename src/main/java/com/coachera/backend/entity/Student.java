@@ -41,9 +41,11 @@ public class Student extends Auditable {
     private User user;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<StudentCertificate> studentCertificates = new HashSet<>();
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<StudentSkill> studentSkills = new HashSet<>();
 
     @Column(nullable = false)
@@ -64,12 +66,12 @@ public class Student extends Auditable {
     @Column(nullable = false)
     private BigDecimal wallet;
 
-    // // Additional student fields
-    // @Column
-    // private String phoneNumber;
+    // Additional student fields
+    @Column
+    private String phoneNumber;
 
-    // @Column
-    // private String address;
+    @Column
+    private String address;
 
     // Helper methods
     public void addCertificate(Certificate certificate) {

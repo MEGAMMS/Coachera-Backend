@@ -1,62 +1,78 @@
 package com.coachera.backend.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import com.coachera.backend.entity.Student;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Data
-@EqualsAndHashCode(callSuper = false)
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @Schema(description = "Student Data Transfer Object")
 public class StudentDTO extends AuditableDTO {
-    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "1")
     private Integer id;
 
-
-    @Schema(required = true, example = "1" ,accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(example = "1", description = "Associated user ID", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer userId;
 
-    @NotBlank(message = "First name is required")
-    @Schema(required = true, example = "John")
+    @Schema(example = "John", description = "First name", required = true)
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Schema(required = true, example = "Doe")
+    @Schema(example = "Doe", description = "Last name", required = true)
     private String lastName;
 
-    @NotNull(message = "Birth date is required")
-    @Schema(required = true, example = "2000-01-01")
+    @Schema(example = "1990-01-15", description = "Date of birth (YYYY-MM-DD)", required = true)
     private LocalDate birthDate;
 
-    @NotBlank(message = "Gender is required")
-    @Schema(required = true, example = "male")
+    @Schema(example = "MALE", description = "Gender", allowableValues = {"MALE", "FEMALE", "OTHER"}, required = true)
     private String gender;
 
-    @NotBlank(message = "Education is required")
-    @Schema(required = true, example = "Bachelor")
+    @Schema(example = "Bachelor's Degree", description = "Education level", required = true)
     private String education;
 
-    @Schema(required = true, example = "100.32",defaultValue = "0.0")
+    @Schema(example = "100.50", description = "Wallet balance", accessMode = Schema.AccessMode.READ_ONLY)
     private BigDecimal wallet;
+
+    @Schema(example = "+1234567890", description = "Phone number")
+    private String phoneNumber;
+
+    @Schema(example = "123 Main St, City", description = "Physical address")
+    private String address;
+
+    @Schema(description = "Certificate IDs associated with the student", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<Integer> certificateIds;
+
+    @Schema(description = "Skills possessed by the student", accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<StudentSkillDTO> skills;
 
     public StudentDTO(Student student) {
         this.id = student.getId();
-        this.userId = student.getUser() != null ? student.getUser().getId() : null;
+        this.userId = student.getUser().getId();
         this.firstName = student.getFirstName();
         this.lastName = student.getLastName();
         this.birthDate = student.getBirthDate();
         this.gender = student.getGender();
         this.education = student.getEducation();
+        this.wallet = student.getWallet();
+        this.phoneNumber = student.getPhoneNumber();
+        this.address = student.getAddress();
+        this.certificateIds = student.getStudentCertificates().stream()
+                .map(sc -> sc.getCertificate().getId())
+                .collect(Collectors.toSet());
+        this.skills = student.getStudentSkills().stream()
+                .map(StudentSkillDTO::new)
+                .collect(Collectors.toSet());
         this.setCreatedAt(student.getCreatedAt());
         this.setUpdatedAt(student.getUpdatedAt());
     }
