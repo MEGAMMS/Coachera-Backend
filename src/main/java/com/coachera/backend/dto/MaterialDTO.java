@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Material Data Transfer Object")
-public class MaterialDTO {
+public class MaterialDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
@@ -31,5 +31,7 @@ public class MaterialDTO {
         this.title = material.getTitle();
         this.sectionId = material.getSection().getId();
         this.orderIndex = material.getOrderIndex();
+        this.setCreatedAt(material.getCreatedAt());
+        this.setUpdatedAt(material.getUpdatedAt());
     }
 }

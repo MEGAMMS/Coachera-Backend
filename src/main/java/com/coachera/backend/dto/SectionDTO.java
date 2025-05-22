@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Section Data Transfer Object")
-public class SectionDTO {
+public class SectionDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
@@ -31,5 +31,7 @@ public class SectionDTO {
         this.title = section.getTitle();
         this.weekId = section.getWeek().getId();
         this.orderIndex = section.getOrderIndex();
+        this.setCreatedAt(section.getCreatedAt());
+        this.setUpdatedAt(section.getUpdatedAt());
     }
 }

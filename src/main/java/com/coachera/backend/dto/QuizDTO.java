@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Quiz Data Transfer Object")
-public class QuizDTO {
+public class QuizDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
@@ -24,5 +24,7 @@ public class QuizDTO {
     {
         this.id = quiz.getId();
         this.materialId = quiz.getMaterial().getId();
+        this.setCreatedAt(quiz.getCreatedAt());
+        this.setUpdatedAt(quiz.getUpdatedAt());
     }
 }
