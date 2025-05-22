@@ -59,7 +59,7 @@ public class CertificateService {
                 .stream().collect(Collectors.toSet());
 
         newStudents.forEach(student -> {
-            if (!certificate.getStudentCertificates().stream()
+            if (!certificate.getStudents().stream()
                     .anyMatch(sc -> sc.getStudent().getId().equals(student.getId()))) {
                 certificate.addStudent(student);
             }
@@ -73,7 +73,7 @@ public class CertificateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Certificate not found"));
         
         CertificateDTO dto = new CertificateDTO(certificate);
-        dto.setStudentIds(certificate.getStudentCertificates().stream()
+        dto.setStudentIds(certificate.getStudents().stream()
                 .map(sc -> sc.getStudent().getId())
                 .collect(Collectors.toSet()));
         
@@ -92,7 +92,7 @@ public class CertificateService {
         return certificateRepository.findByCourseId(courseId).stream()
                 .map(cert -> {
                     CertificateDTO dto = modelMapper.map(cert, CertificateDTO.class);
-                    dto.setStudentIds(cert.getStudentCertificates().stream()
+                    dto.setStudentIds(cert.getStudents().stream()
                             .map(sc -> sc.getStudent().getId())
                             .collect(Collectors.toSet()));
                     return dto;
@@ -105,7 +105,7 @@ public class CertificateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Certificate not found"));
         
         // Remove all student associations first
-        new HashSet<>(certificate.getStudentCertificates()).forEach(sc -> 
+        new HashSet<>(certificate.getStudents()).forEach(sc -> 
             certificate.removeStudent(sc.getStudent()));
         
         certificateRepository.delete(certificate);
@@ -140,7 +140,7 @@ public class CertificateService {
         // Handle student updates
         if (certificateDTO.getStudentIds() != null) {
             // Get current students
-            Set<Integer> currentStudentIds = existingCertificate.getStudentCertificates().stream()
+            Set<Integer> currentStudentIds = existingCertificate.getStudents().stream()
                     .map(sc -> sc.getStudent().getId())
                     .collect(Collectors.toSet());
 
@@ -157,7 +157,7 @@ public class CertificateService {
                 existingCertificate.addStudent(student));
 
             // Remove students
-            existingCertificate.getStudentCertificates().removeIf(sc -> 
+            existingCertificate.getStudents().removeIf(sc -> 
                 removedStudentIds.contains(sc.getStudent().getId()));
         }
         Certificate savedCertificate = certificateRepository.save(existingCertificate);
@@ -179,7 +179,7 @@ public class CertificateService {
         Certificate certificate = certificateRepository.findByIdWithStudents(certificateId)
                 .orElseThrow(() -> new ResourceNotFoundException("Certificate not found"));
         
-        return certificate.getStudentCertificates().stream()
+        return certificate.getStudents().stream()
                 .map(StudentCertificate::getStudent)
                 .map(student -> new StudentDTO(student))
                 .collect(Collectors.toList());
