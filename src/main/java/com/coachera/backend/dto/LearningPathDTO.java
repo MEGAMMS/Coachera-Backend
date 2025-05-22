@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.coachera.backend.entity.LearningPath;
-import com.coachera.backend.entity.LearningPathCourse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
