@@ -4,8 +4,12 @@ import com.coachera.backend.dto.AuthResponse;
 import com.coachera.backend.dto.LoginRequest;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.UserDTO;
+import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.repository.ImageRepository;
 import com.coachera.backend.repository.UserRepository;
+import com.coachera.backend.service.ImageService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,6 +29,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         private final AuthenticationManager authenticationManager;
         private final TokenService tokenService;
+        private final ImageService imageService;
         // CustomUserDetailsService is not directly needed here for login if
         // AuthenticationManager is used correctly.
         // It is used by DaoAuthenticationProvider which is configured in
@@ -47,7 +52,6 @@ public class AuthService {
                 if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
                         throw new IllegalArgumentException("Email is already in use!");
                 }
-
                 User user = User.builder()
                                 .username(registerRequest.getUsername())
                                 .email(registerRequest.getEmail())
@@ -55,6 +59,10 @@ public class AuthService {
                                 .role(registerRequest.getRole().toUpperCase())
                                 .isVerified(false) // Default to false, can be changed based on verification flow
                                 .build();
+                if (registerRequest.getProfileImageUrl() != null) {
+                        Image image = imageService.getImageFromUrl(registerRequest.getProfileImageUrl());
+                        user.setProfileImage(image);
+                }
                 return userRepository.save(user);
         }
 
