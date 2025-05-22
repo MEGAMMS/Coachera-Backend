@@ -10,7 +10,7 @@ import java.util.Set;
 @Table(name = "skills")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class Skill {
+public class Skill extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
