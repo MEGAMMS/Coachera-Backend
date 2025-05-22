@@ -50,6 +50,7 @@ public class Course extends Auditable {
 
     // Add bidirectional relationship
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<CourseCategory> categories = new HashSet<>();
 
     // In Course.java add:
