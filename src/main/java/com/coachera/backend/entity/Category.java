@@ -31,11 +31,15 @@ public class Category extends Auditable {
 
     // Add bidirectional relationship
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<CourseCategory> courses = new HashSet<>();
 
     // Helper methods for managing courses
     public void addCourse(Course course) {
         CourseCategory courseCategory = new CourseCategory(course, this);
+        if (courses == null) {
+            courses = new HashSet<>();
+        }
         courses.add(courseCategory);
         course.getCategories().add(courseCategory);
     }
