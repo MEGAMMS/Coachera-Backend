@@ -28,8 +28,9 @@ public class User extends Auditable {
 	@Column(nullable = false)
 	private String role;
 
+	@OneToOne
+	@JoinColumn
+	private Image profileImage;
+
 	private Boolean isVerified;
-
-	private String profileImage;
-
 }
