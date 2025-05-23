@@ -26,7 +26,9 @@ public class LearningPath extends Auditable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String image;
+    @OneToOne
+    @JoinColumn
+    private Image image;
 
     @OneToMany(mappedBy = "learningPath", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")

@@ -41,7 +41,7 @@ public class LearningPathDTO extends AuditableDTO {
         this.orgId = learningPath.getOrganization().getId();
         this.title = learningPath.getTitle();
         this.description = learningPath.getDescription();
-        this.image = learningPath.getImage();
+        this.image = learningPath.getImage().getUuidName();
         this.courses = learningPath.getCourses().stream()
                 .map(LearningPathCourseDTO::new)
                 .collect(Collectors.toSet());

@@ -47,7 +47,7 @@ public class CourseDTO extends AuditableDTO {
     private Set<Integer> learningPathIds;
 
     @Schema(description = "Profile image details")
-    private String profileImage;
+    private String image;
 
     public CourseDTO(Course course) {
         this.id = course.getId();
@@ -61,8 +61,8 @@ public class CourseDTO extends AuditableDTO {
                 .collect(Collectors.toSet());
         this.learningPathIds = course.getLearningPaths().stream().map(lp -> lp.getLearningPath().getId())
                 .collect(Collectors.toSet());
-        if (course.getProfileImage() != null) {
-            this.profileImage = course.getProfileImage().getUuidName();
+        if (course.getImage() != null) {
+            this.image = course.getImage().getUuidName();
         }
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());

@@ -55,7 +55,7 @@ public class Course extends Auditable {
 
     @OneToOne
     @JoinColumn
-    private Image profileImage;
+    private Image image;
 
     // Add bidirectional relationship
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
