@@ -27,7 +27,7 @@ public class UserDTO extends AuditableDTO {
     private String role;
 
     @Schema(description = "Profile image details")
-    private ImageDTO profileImage;
+    private String profileImage;
 
     @Schema(example = "true", description = "Whether the user is verified")
     private Boolean isVerified;
@@ -39,7 +39,7 @@ public class UserDTO extends AuditableDTO {
         this.role = user.getRole();
         this.isVerified = user.getIsVerified();
         if (user.getProfileImage() != null) {
-            this.profileImage = new ImageDTO(user.getProfileImage());
+            this.profileImage = user.getProfileImage().getUuidName();
         }
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdatedAt(user.getUpdatedAt());
@@ -52,7 +52,7 @@ public class UserDTO extends AuditableDTO {
         dto.setUsername(user.getUsername());
         dto.setRole(user.getRole());
         if (user.getProfileImage() != null) {
-            dto.setProfileImage(new ImageDTO(user.getProfileImage()));
+            dto.setProfileImage(user.getProfileImage().getUuidName());
         }
         dto.setCreatedAt(user.getCreatedAt());
         dto.setUpdatedAt(user.getUpdatedAt());
