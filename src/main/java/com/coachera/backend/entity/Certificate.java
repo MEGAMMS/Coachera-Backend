@@ -23,12 +23,13 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "certificates")
-@Getter @Setter 
-@NoArgsConstructor 
-@AllArgsConstructor 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Certificate extends Auditable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -38,7 +39,8 @@ public class Certificate extends Auditable {
     private Course course;
 
     @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<StudentCertificate> studentCertificates = new HashSet<>();
+    @Builder.Default
+    private Set<StudentCertificate> students = new HashSet<>();
 
     @Column(nullable = false)
     private LocalDate issuedAt;
@@ -49,21 +51,23 @@ public class Certificate extends Auditable {
     // Additional certificate fields
     @Column
     private String certificateNumber;
-    
+
     @Column
     private Integer validityYears;
 
     // Helper methods
     public void addStudent(Student student) {
         StudentCertificate studentCertificate = new StudentCertificate(student, this);
-        studentCertificates.add(studentCertificate);
+        if(students==null){
+            students = new HashSet<>();
+        }
+        students.add(studentCertificate);
         student.getStudentCertificates().add(studentCertificate);
     }
 
     public void removeStudent(Student student) {
         StudentCertificate studentCertificate = new StudentCertificate(student, this);
         student.getStudentCertificates().remove(studentCertificate);
-        studentCertificates.remove(studentCertificate);
+        students.remove(studentCertificate);
     }
 }
-

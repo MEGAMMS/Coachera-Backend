@@ -3,7 +3,6 @@ package com.coachera.backend.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -43,9 +41,11 @@ public class Student extends Auditable {
     private User user;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<StudentCertificate> studentCertificates = new HashSet<>();
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<StudentSkill> studentSkills = new HashSet<>();
 
     @Column(nullable = false)
@@ -66,23 +66,23 @@ public class Student extends Auditable {
     @Column(nullable = false)
     private BigDecimal wallet;
 
-    // // Additional student fields
-    // @Column
-    // private String phoneNumber;
+    // Additional student fields
+    @Column
+    private String phoneNumber;
 
-    // @Column
-    // private String address;
+    @Column
+    private String address;
 
     // Helper methods
     public void addCertificate(Certificate certificate) {
         StudentCertificate studentCertificate = new StudentCertificate(this, certificate);
         studentCertificates.add(studentCertificate);
-        certificate.getStudentCertificates().add(studentCertificate);
+        certificate.getStudents().add(studentCertificate);
     }
 
     public void removeCertificate(Certificate certificate) {
         StudentCertificate studentCertificate = new StudentCertificate(this, certificate);
-        certificate.getStudentCertificates().remove(studentCertificate);
+        certificate.getStudents().remove(studentCertificate);
         studentCertificates.remove(studentCertificate);
     }
 

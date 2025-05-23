@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.coachera.backend.entity.Certificate;
-import com.coachera.backend.entity.StudentCertificate;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -43,8 +42,8 @@ public class CertificateDTO extends AuditableDTO {
     public CertificateDTO(Certificate certificate) {
         this.id = certificate.getId();
         this.courseId = certificate.getCourse().getId();
-        this.studentIds = certificate.getStudentCertificates().stream()
-                .map(sc -> sc.getStudent().getId())
+        this.studentIds = certificate.getStudents().stream()
+                .map(s -> s.getStudent().getId())
                 .collect(Collectors.toSet());
         this.certificateNumber = certificate.getCertificateNumber();
         this.validityYears = certificate.getValidityYears();

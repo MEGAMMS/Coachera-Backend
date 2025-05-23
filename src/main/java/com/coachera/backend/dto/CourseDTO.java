@@ -1,6 +1,8 @@
 package com.coachera.backend.dto;
 
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.coachera.backend.entity.Course;
 
@@ -35,19 +37,27 @@ public class CourseDTO extends AuditableDTO {
     @Schema(example = "3.2")
     private BigDecimal rating;
 
-    @Schema(description = "Associated org information" , accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Associated org information", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer orgId;
 
+    @Schema(example = "[2,3]", description = "Course's categories")
+    private Set<Integer> categoryIds;
 
+    @Schema(example = "[2,3]", description = "Learning paths associated with this course")
+    private Set<Integer> learningPathIds;
 
     public CourseDTO(Course course) {
         this.id = course.getId();
         this.title = course.getTitle();
         this.description = course.getDescription();
-        this.orgId = course.getOrg().getId(); // assumes Course has getOrg()
-        this.durationHours=course.getDurationHours();
-        this.price =course.getPrice();
-        this.rating=course.getRating();
+        this.orgId = course.getOrg().getId();
+        this.durationHours = course.getDurationHours();
+        this.price = course.getPrice();
+        this.rating = course.getRating();
+        this.categoryIds = course.getCategories().stream().map(c -> c.getCategory().getId())
+                .collect(Collectors.toSet());
+        this.learningPathIds = course.getLearningPaths().stream().map(lp -> lp.getLearningPath().getId())
+                .collect(Collectors.toSet());
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());
     }

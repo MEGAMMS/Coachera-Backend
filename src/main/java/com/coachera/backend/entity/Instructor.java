@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Instructor {
+public class Instructor extends Auditable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

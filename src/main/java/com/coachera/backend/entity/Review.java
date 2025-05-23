@@ -8,7 +8,7 @@ import lombok.*;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Review {
+public class Review extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

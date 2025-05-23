@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor @NoArgsConstructor
-public class LearningPath {
+public class LearningPath extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

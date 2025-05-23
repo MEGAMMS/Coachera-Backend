@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Image {
+public class Image extends Auditable{
 	@Id
 	@GeneratedValue
 	private Long id;

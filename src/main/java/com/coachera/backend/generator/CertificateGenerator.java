@@ -46,7 +46,7 @@ public class CertificateGenerator {
                         .supply(Select.field(Certificate::getCertificateNumber), () -> 
                             certNumberPrefix + course.getId() + "-" + (int)(Math.random() * 10000))
                         .supply(Select.field(Certificate::getValidityYears), () -> defaultValidityYears)
-                        .ignore(Select.field(Certificate::getStudentCertificates))
+                        .ignore(Select.field(Certificate::getStudents))
                         .create();
                     
                     if (certificate == null) {

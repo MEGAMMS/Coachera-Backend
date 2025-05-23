@@ -3,6 +3,7 @@ package com.coachera.backend.generator;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.instancio.Instancio;
@@ -26,6 +27,8 @@ public class StudentGenerator {
                         .supply(Select.field(Student::getGender), () -> "male")
                         .supply(Select.field(Student::getEducation), () -> "Bachelor")
                         .supply(Select.field(Student::getWallet), () -> BigDecimal.ZERO)
+                        .supply(Select.field(Student::getPhoneNumber), () -> generateInternationalPhoneNumber())
+                        .supply(Select.field(Student::getAddress), () -> "Damascus")
                         .ignore(Select.field(Student::getStudentCertificates))
                         .ignore(Select.field(Student::getStudentSkills))
                         .create();
@@ -40,4 +43,14 @@ public class StudentGenerator {
             })
             .collect(Collectors.toList());
     }
+
+    public static String generateInternationalPhoneNumber() {
+    Random random = new Random();
+    // Format: +[country code][subscriber number]
+    return String.format("+1%03d%03d%04d", // US/Canada as example
+        random.nextInt(1000),  // area code
+        random.nextInt(1000),  // central office code
+        random.nextInt(10000)  // line number
+    );
+}
 }
