@@ -46,7 +46,7 @@ public class CourseDTO extends AuditableDTO {
     @Schema(example = "[2,3]", description = "Learning paths associated with this course")
     private Set<Integer> learningPathIds;
 
-    @Schema(description = "Profile image details")
+    @Schema(description = "Supporting image")
     private String image;
 
     public CourseDTO(Course course) {
