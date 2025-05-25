@@ -6,8 +6,11 @@ import com.coachera.backend.dto.AuthResponse;
 import com.coachera.backend.dto.LoginRequest;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.security.AuthService;
+import com.coachera.backend.service.OtpService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final OtpService otpService;
 
     @PostMapping("/register")
     public ApiResponse<?> registerUser(@RequestBody RegisterRequest registerRequest) {
@@ -26,6 +30,16 @@ public class AuthController {
         } catch (IllegalArgumentException e) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
+    }
+
+     @PostMapping("/verify")
+    public ResponseEntity<?> verifyOtp(@RequestBody String email, 
+                                      @RequestBody String code) {
+        if (otpService.verifyOtp(email, code)) {
+            authService.verifyOtp(email, code);
+            return ResponseEntity.ok("Account verified");
+        }
+        return ResponseEntity.badRequest().body("Invalid/expired OTP");
     }
 
     @PostMapping("/login")

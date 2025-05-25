@@ -6,7 +6,11 @@ import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.repository.UserRepository;
+import com.coachera.backend.service.OtpService;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +29,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         private final AuthenticationManager authenticationManager;
         private final TokenService tokenService;
+        private final OtpService otpService;
         // CustomUserDetailsService is not directly needed here for login if
         // AuthenticationManager is used correctly.
         // It is used by DaoAuthenticationProvider which is configured in
@@ -55,7 +60,10 @@ public class AuthService {
                                 .role(registerRequest.getRole().toUpperCase())
                                 .isVerified(false) // Default to false, can be changed based on verification flow
                                 .build();
-                return userRepository.save(user);
+                User userSaved = userRepository.save(user);
+                otpService.generateAndSendOtp(registerRequest.getEmail());
+                return userSaved;
+
         }
 
         /**
@@ -88,6 +96,17 @@ public class AuthService {
                 return new AuthResponse(token, userDTO);
         }
 
+        public void verifyOtp(String email, String code) {
+                if (otpService.verifyOtp(email, code)) {
+                        User user = userRepository.findByEmail(email)
+                                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        user.setIsVerified(true);
+                        userRepository.save(user);
+                        return;
+                }
+
+        }
+
         /**
          * Invalidates the user's current access token.
          * 
@@ -106,4 +125,5 @@ public class AuthService {
                 }
                 return false;
         }
+
 }

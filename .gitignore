@@ -11,3 +11,4 @@ coachera.log
 .factorypath
 .settings/
 **/.settings/
+.env

@@ -50,22 +50,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF as we are using token-based auth
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No
-                                                                                                              // sessions
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Auth routes (login, register)
-                        .requestMatchers(HttpMethod.GET, "/api/public-data/**").permitAll() // Example of public GET
-                                                                                            // routes
-                        // Add any other public routes here
-                        // .anyRequest().authenticated() // All other requests need authentication
-                        .anyRequest().permitAll())
-
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add our
-                                                                                                         // custom token
-                                                                                                         // filter
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/test-email",
+                                "/api/auth/verify-otp")
+                        .permitAll() // Explicitly allow registration
+                        .anyRequest().authenticated())
+                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

@@ -1,0 +1,220 @@
+@startuml
+
+class User {
+    - id: int
+    - name: String
+    - email: String
+    - password: String
+    - profileimage: String
+    - is_verified: bool
+
+    + login(): void
+    + logout(): void
+    + register() : void
+}
+class Student {
+    - id: int
+    - first_name varchar [not null]
+    - last_name varchar [not null]
+    - birth_date date [not null]
+    - gender string [not null]
+    - education string
+    - wallet decimal
+
+    + index()
+    + update()
+    + delete()
+}
+
+class admins {
+  - id int [pk, increment]
+  - admin_name string [not null]
+
+  + indexUsers()
+  + delete()
+  }
+
+  class organizations {
+  - id int [pk, increment]
+  - user_id int [ref: > users.id, not null, unique]
+  - name string [not null]
+  - description string [not null]
+
+  + create()
+  + index()
+  + ban()
+}
+class instructors {
+  - id int [pk, increment]
+  - bio text
+
+  + create()
+  + index() 
+}
+
+class categories {
+  - id int [pk, increment]
+  - name string [not null]
+}
+
+class courses {
+  - id int [pk, increment]
+  - title string [not null]
+  - description string [not null]
+  - duration_hours string [not null]
+  - rating decimal [not null]
+  - price decimal
+
+  + index()
+  + create()
+  + getCourseByOrgid()
+  + delete()
+  + update() 
+
+}
+
+class weeks {
+  - id int [pk, increment]
+  - order_index int
+ 
+  + index()
+  + create()
+  + getweeksBycourseId()
+}
+
+class sections {
+  - id int [pk, increment]
+  - title string [not null]
+  - order_index int
+
+  + index()
+  + create()
+  + getsectionByCourseId()
+}
+
+class materials {
+  - id int [pk, increment]
+  - title string [not null]
+  - order_index int
+
+  + create()
+  + index()
+  + getqustionsBymatId()
+}
+class quizzes {
+  - id int [pk, increment]
+  
+  + index()
+  + getquizzesByMatId()
+}
+
+class subscriptions
+{
+  - id int [pk, increment]
+
+  + subscriptions()
+  + unsubscriptions()
+  + index ()
+
+}
+
+class questions {
+  - id int [pk, increment]
+  - content text
+  - answer_1 text [not null]
+  - answer_2 text [not null]
+  - answer_3 text
+  - answer_4 text
+  - answer_index_correct int [not null]
+
+  + create()
+  + index()
+  + getqustionsBymatId()
+}
+class enrollments {
+  - id int [pk, increment]
+  - progress string [not null]
+
+  +enrolStudent()
+  +getEnrolBycourseId()
+  +getEnrolBycourse_student_Id()
+  + withdraw()
+}
+
+class certificates {
+  - id int [pk, increment]
+  - issued_at date [not null]
+  - certificate_url string [not null]
+
+  +create()
+  +getCertBycourseId()
+  +getCertBystudentId()
+  +index()
+  
+}
+class reviews {
+  - id int [pk, increment]
+  - rating int [not null]
+  - comment text
+
+  +create()
+  +index()
+  +getReviewbycourseId()
+  
+}
+
+class favorites {
+  - id int [pk, increment]
+
+  + create()
+  + index()
+  
+}
+
+class learning_paths {
+  - id int [pk, increment]
+  - title string [not null]
+  - description text
+  - image string
+
+
+  +index()
+  +getLearningBycourseId()
+  +getLearningByOrgId()
+}
+
+class skills {
+  - id int [pk, increment]
+  - name string [not null]
+  - level int 
+
+  +index()
+}
+
+User "1" --> "*" Student : places
+User "1" --> "*" admins : places
+User "1" --> "*" organizations : places
+User "1" --> "*" instructors : places
+organizations "1" --> "*" courses : places
+courses "2" --> "*" categories : places
+courses "1" --> "*" weeks : places
+weeks "1" --> "*" sections : places
+sections "1" --> "*" materials : places
+materials "1" --> "*" quizzes : places
+quizzes "1" --> "*" questions : places
+Student "1" --> "*" enrollments : places
+courses "1" --> "*" enrollments : places
+Student "1" --> "*" certificates : places
+courses "1" --> "*" certificates : places
+Student "1" --> "*" reviews : places
+courses "1" --> "*" reviews : places
+Student "1" --> "*" favorites : places
+courses "1" --> "*" favorites : places
+organizations "1" --> "*" learning_paths : places
+learning_paths "1" --> "*" courses : places
+courses "1" --> "*" skills : places
+Student "1" --> "*" skills : places
+learning_paths "1" --> "*" subscriptions : places
+Student "1" --> "*" subscriptions : places
+
+@enduml
