@@ -4,6 +4,8 @@ target/
 
 # Images
 uploads
+resources/static/
+**/static/
 
 # shell files
 coachera.log

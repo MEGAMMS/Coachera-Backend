@@ -23,7 +23,7 @@ public class UserGenerator {
                 .supply(Select.field(User::getPassword), () -> "password123!")
                 .set(Select.field(User::getRole), "ADMIN")
                 .supply(Select.field(User::getIsVerified), () -> true)
-                .supply(Select.field(User::getProfileImage), () -> ImageGenerator.createImage())
+                .ignore(Select.field(User::getProfileImage))
                 .create();
     }
 }
