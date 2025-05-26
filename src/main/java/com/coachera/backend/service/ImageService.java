@@ -9,9 +9,7 @@ import java.nio.file.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.stereotype.Service;
 
 import com.coachera.backend.entity.Image;

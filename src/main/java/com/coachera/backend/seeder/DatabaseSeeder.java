@@ -124,12 +124,12 @@ public class DatabaseSeeder {
         List<User> users = UserGenerator.generate(15);
 
         // Generate images
-        List<Image> images = ImageGenerator.generate(15);
+        List<Image> images = ImageGenerator.generate(24);
         imageRepo.saveAll(images);
 
         // Assign roles
         for (int i = 0; i < users.size(); i++) {
-            users.get(i).setProfileImage(images.get(i));
+            // users.get(i).setProfileImage(images.get(i));
             if (i < 4) {
                 users.get(i).setRole("STUDENT");
             } else if (i < 8) {
@@ -169,47 +169,55 @@ public class DatabaseSeeder {
 
         // Seed courses per org
         List<Course> courses = CourseGenerator.fromOrg(orgs);
+        // courseRepo.saveAll(courses);
+
+        for(int i=0;i<24;i++)
+        {
+            courses.get(i).setImage(images.get(i));
+        }
         courseRepo.saveAll(courses);
+        courseRepo.flush();
 
         // Seed categories
         List<Category> categories = CategoryGenerator.fromCourses(courses, List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
 
-        // Seed enrollments for first few courses
-        List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
-        enrollmentRepo.saveAll(enrollments);
 
-        // Seed certificates (optional)
-        List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
-        certificateRepo.saveAll(certificates);
+        // // Seed enrollments for first few courses
+        // List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
+        // enrollmentRepo.saveAll(enrollments);
 
-        // Seed Weeks
-        List<Week> weeks = WeekGenerator.fromCourses(courses);
-        weekRepo.saveAll(weeks);
+        // // Seed certificates (optional)
+        // List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
+        // certificateRepo.saveAll(certificates);
 
-        // Seed Sections
-        List<Section> sections = SectionGenerator.fromWeeks(weeks);
-        sectionRepo.saveAll(sections);
+        // // Seed Weeks
+        // List<Week> weeks = WeekGenerator.fromCourses(courses);
+        // weekRepo.saveAll(weeks);
 
-        // Seed Materials
-        List<Material> materials = MaterialGenerator.fromSections(sections);
-        materialRepo.saveAll(materials);
+        // // Seed Sections
+        // List<Section> sections = SectionGenerator.fromWeeks(weeks);
+        // sectionRepo.saveAll(sections);
 
-        // Seed Quizzes
-        List<Quiz> quizzes = QuizGenerator.fromMaterials(materials);
-        quizRepo.saveAll(quizzes);
+        // // Seed Materials
+        // List<Material> materials = MaterialGenerator.fromSections(sections);
+        // materialRepo.saveAll(materials);
 
-        // Seed questions
-        List<Question> questions = QuestionGenerator.fromQuizzes(quizzes);
-        questionRepo.saveAll(questions);
+        // // Seed Quizzes
+        // List<Quiz> quizzes = QuizGenerator.fromMaterials(materials);
+        // quizRepo.saveAll(quizzes);
 
-        // Seed Reviews
-        List<Review> reviews = ReviewGenerator.generateReviews(courses, students);
-        reviewRepo.saveAll(reviews);
+        // // Seed questions
+        // List<Question> questions = QuestionGenerator.fromQuizzes(quizzes);
+        // questionRepo.saveAll(questions);
 
-        // Seed LearningPaths
-        List<LearningPath> learningPaths = LearningPathGenerator.generateLearningPaths(orgs, courses);
-        learningPathRepo.saveAll(learningPaths);
+        // // Seed Reviews
+        // List<Review> reviews = ReviewGenerator.generateReviews(courses, students);
+        // reviewRepo.saveAll(reviews);
+
+        // // Seed LearningPaths
+        // List<LearningPath> learningPaths = LearningPathGenerator.generateLearningPaths(orgs, courses);
+        // learningPathRepo.saveAll(learningPaths);
 
         // Seed Skills
 
