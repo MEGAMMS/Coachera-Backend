@@ -62,7 +62,7 @@ public class CourseDTO extends AuditableDTO {
         this.learningPathIds = course.getLearningPaths().stream().map(lp -> lp.getLearningPath().getId())
                 .collect(Collectors.toSet());
         if (course.getImage() != null) {
-            this.image = course.getImage().getUuidName();
+            this.image = course.getImage().getUrl();
         }
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());
