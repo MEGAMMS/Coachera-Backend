@@ -3,7 +3,7 @@ package com.coachera.backend.dto;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.coachera.backend.entity.Week;
+import com.coachera.backend.entity.Module;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Schema(description = "Week Data Transfer Object")
-public class WeekDTO extends AuditableDTO {
+@Schema(description = "Module Data Transfer Object")
+public class ModuleDTO extends AuditableDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
@@ -29,14 +29,14 @@ public class WeekDTO extends AuditableDTO {
     @Schema(required = true, example = "1")
     private Integer orderIndex;
 
-    @Schema(description = "Sections belonging to this week")
+    @Schema(description = "Sections belonging to this module")
     private Set<SectionDTO> sections;
 
-    public WeekDTO(Week week) {
-        this.id = week.getId();
-        this.courseId = week.getCourse().getId();
-        this.orderIndex = week.getOrderIndex();
-        this.sections = week.getSections().stream()
+    public ModuleDTO(Module module) {
+        this.id = module.getId();
+        this.courseId = module.getCourse().getId();
+        this.orderIndex = module.getOrderIndex();
+        this.sections = module.getSections().stream()
                 .map(SectionDTO::new)
                 .collect(Collectors.toSet());
     }

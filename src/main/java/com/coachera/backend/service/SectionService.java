@@ -2,11 +2,11 @@ package com.coachera.backend.service;
 
 import com.coachera.backend.dto.SectionDTO;
 import com.coachera.backend.entity.Section;
-import com.coachera.backend.entity.Week;
+import com.coachera.backend.entity.Module;
 import com.coachera.backend.exception.DuplicateOrderIndexException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.SectionRepository;
-import com.coachera.backend.repository.WeekRepository;
+import com.coachera.backend.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,22 +18,22 @@ import java.util.stream.Collectors;
 public class SectionService {
 
     private final SectionRepository sectionRepository;
-    private final WeekRepository weekRepository;
+    private final ModuleRepository moduleRepository;
 
-    public SectionService(SectionRepository sectionRepository, WeekRepository weekRepository) {
+    public SectionService(SectionRepository sectionRepository, ModuleRepository moduleRepository) {
         this.sectionRepository = sectionRepository;
-        this.weekRepository = weekRepository;
+        this.moduleRepository = moduleRepository;
     }
 
     
-    public SectionDTO createSection(Integer weekId, SectionDTO sectionDTO) {
-        Week week = weekRepository.findById(weekId)
-                .orElseThrow(() -> new ResourceNotFoundException("Week not found with id: " + weekId));
+    public SectionDTO createSection(Integer moduleId, SectionDTO sectionDTO) {
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Module not found with id: " + moduleId));
 
-        validateSectionOrderIndexUniqueness(weekId, sectionDTO.getOrderIndex(), null);
+        validateSectionOrderIndexUniqueness(moduleId, sectionDTO.getOrderIndex(), null);
 
         Section section = new Section();
-        section.setWeek(week);
+        section.setModule(module);
         section.setTitle(sectionDTO.getTitle());
         section.setOrderIndex(sectionDTO.getOrderIndex());
 
@@ -45,7 +45,7 @@ public class SectionService {
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Section not found with id: " + sectionId));
 
-        validateSectionOrderIndexUniqueness(section.getWeek().getId(), sectionDTO.getOrderIndex(), sectionId);
+        validateSectionOrderIndexUniqueness(section.getModule().getId(), sectionDTO.getOrderIndex(), sectionId);
 
         section.setTitle(sectionDTO.getTitle());
         section.setOrderIndex(sectionDTO.getOrderIndex());
@@ -62,12 +62,12 @@ public class SectionService {
     }
 
     @Transactional(readOnly = true)
-    public List<SectionDTO> getAllSectionsByWeekId(Integer weekId) {
-        if (!weekRepository.existsById(weekId)) {
-            throw new ResourceNotFoundException("Week not found with id: " + weekId);
+    public List<SectionDTO> getAllSectionsByModuleId(Integer moduleId) {
+        if (!moduleRepository.existsById(moduleId)) {
+            throw new ResourceNotFoundException("Module not found with id: " + moduleId);
         }
 
-        return sectionRepository.findByWeekIdOrderByOrderIndexAsc(weekId).stream()
+        return sectionRepository.findByModuleIdOrderByOrderIndexAsc(moduleId).stream()
                 .map(SectionDTO::new)
                 .collect(Collectors.toList());
     }
@@ -78,14 +78,14 @@ public class SectionService {
         sectionRepository.delete(section);
     }
 
-    private void validateSectionOrderIndexUniqueness(Integer weekId, Integer orderIndex, Integer excludeSectionId) {
+    private void validateSectionOrderIndexUniqueness(Integer moduleId, Integer orderIndex, Integer excludeSectionId) {
         boolean orderIndexExists = excludeSectionId == null
-                ? sectionRepository.existsByWeekIdAndOrderIndex(weekId, orderIndex)
-                : sectionRepository.existsByWeekIdAndOrderIndexAndIdNot(weekId, orderIndex, excludeSectionId);
+                ? sectionRepository.existsByModuleIdAndOrderIndex(moduleId, orderIndex)
+                : sectionRepository.existsByModuleIdAndOrderIndexAndIdNot(moduleId, orderIndex, excludeSectionId);
 
         if (orderIndexExists) {
             throw new DuplicateOrderIndexException(
-                    "Order index " + orderIndex + " already exists in this week");
+                    "Order index " + orderIndex + " already exists in this module");
         }
     }
 }

@@ -21,7 +21,7 @@ public class SectionDTO extends AuditableDTO {
     private String title;
 
     @Schema(required = true, example = "1", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer weekId;
+    private Integer moduleId;
 
     @Schema(required = true, example = "1")
     private Integer orderIndex;
@@ -29,7 +29,7 @@ public class SectionDTO extends AuditableDTO {
     public SectionDTO(Section section) {
         this.id = section.getId();
         this.title = section.getTitle();
-        this.weekId = section.getWeek().getId();
+        this.moduleId = section.getModule().getId();
         this.orderIndex = section.getOrderIndex();
         this.setCreatedAt(section.getCreatedAt());
         this.setUpdatedAt(section.getUpdatedAt());

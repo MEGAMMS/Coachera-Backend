@@ -14,8 +14,8 @@ public class Section extends Auditable{
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "week_id", nullable = false)
-    private Week week;
+    @JoinColumn(name = "module_id", nullable = false)
+    private Module module;
 
     @Column(nullable = false)
     private String title;

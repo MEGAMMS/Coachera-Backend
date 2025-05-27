@@ -67,10 +67,10 @@ public class Course extends Auditable {
     @Builder.Default
     private Set<LearningPathCourse> learningPaths = new HashSet<>();
 
-    // bidirectional relationship with weeks
+    // bidirectional relationship with modules
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<Week> weeks = new HashSet<>();
+    private Set<Module> modules = new HashSet<>();
 
     // Helper methods for managing categories
     public void addCategory(Category category) {
@@ -85,17 +85,17 @@ public class Course extends Auditable {
         categories.remove(courseCategory);
     }
 
-    public void addWeek(Week week) {
-        if(weeks ==null){
-            weeks =new HashSet<>();
+    public void addModule(Module module) {
+        if(modules ==null){
+            modules =new HashSet<>();
         }
-        weeks.add(week);
-        week.setCourse(this);
+        modules.add(module);
+        module.setCourse(this);
     }
 
-    public void removeWeek(Week week) {
-        weeks.remove(week);
-        week.setCourse(null);
+    public void removeModule(Module module) {
+        modules.remove(module);
+        module.setCourse(null);
     }
 
 }

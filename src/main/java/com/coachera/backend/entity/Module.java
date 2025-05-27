@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "weeks")
+@Table(name = "modules")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Week {
+public class Module {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,17 +32,17 @@ public class Week {
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
 
-    @OneToMany(mappedBy = "week", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Section> sections = new HashSet<>();
 
     // helper methods
     public void addSection(Section section) {
         sections.add(section);
-        section.setWeek(this);
+        section.setModule(this);
     }
 
     public void removeSection(Section section) {
         sections.remove(section);
-        section.setWeek(null);
+        section.setModule(null);
     }
 }

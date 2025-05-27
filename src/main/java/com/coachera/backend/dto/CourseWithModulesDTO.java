@@ -15,23 +15,23 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "Course DTO including full week details")
-public class CourseWithWeeksDTO extends CourseDTO {
+@Schema(description = "Course DTO including full module details")
+public class CourseWithModulesDTO extends CourseDTO {
 
-    @Schema(description = "List of weeks in this course")
-    private List<WeekDTO> weeks;
+    @Schema(description = "List of modules in this course")
+    private List<ModuleDTO> modules;
     
     @Override
     @JsonIgnore
-    public Set<Integer> getWeekIds() {
-        return super.getWeekIds();
+    public Set<Integer> getModuleIds() {
+        return super.getModuleIds();
     }
 
 
-    public CourseWithWeeksDTO(Course course) {
+    public CourseWithModulesDTO(Course course) {
         super(course);
-        this.weeks = course.getWeeks().stream()
-                .map(WeekDTO::new)
+        this.modules = course.getModules().stream()
+                .map(ModuleDTO::new)
                 .collect(Collectors.toList());
     }
 }

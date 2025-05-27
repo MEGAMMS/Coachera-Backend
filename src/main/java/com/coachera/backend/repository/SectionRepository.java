@@ -10,8 +10,8 @@ import com.coachera.backend.entity.Section;
 
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Integer> {
-    List<Section> findByWeekIdOrderByOrderIndexAsc(Integer weekId);
-    Optional<Section> findByWeekIdAndOrderIndex(Integer weekId, Integer orderIndex);
-    boolean existsByWeekIdAndOrderIndexAndIdNot(Integer weekId, Integer orderIndex, Integer excludeSectionId);
-    boolean existsByWeekIdAndOrderIndex(Integer weekId, Integer orderIndex);
+    List<Section> findByModuleIdOrderByOrderIndexAsc(Integer moduleId);
+    Optional<Section> findByModuleIdAndOrderIndex(Integer moduleId, Integer orderIndex);
+    boolean existsByModuleIdAndOrderIndexAndIdNot(Integer moduleId, Integer orderIndex, Integer excludeSectionId);
+    boolean existsByModuleIdAndOrderIndex(Integer moduleId, Integer orderIndex);
 }

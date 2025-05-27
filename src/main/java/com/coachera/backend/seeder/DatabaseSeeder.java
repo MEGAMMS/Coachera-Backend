@@ -22,7 +22,7 @@ import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.Skill;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
-import com.coachera.backend.entity.Week;
+import com.coachera.backend.entity.Module;
 
 import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CertificateGenerator;
@@ -40,7 +40,7 @@ import com.coachera.backend.generator.SectionGenerator;
 import com.coachera.backend.generator.SkillGenerator;
 import com.coachera.backend.generator.StudentGenerator;
 import com.coachera.backend.generator.UserGenerator;
-import com.coachera.backend.generator.WeekGenerator;
+import com.coachera.backend.generator.ModuleGenerator;
 
 import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
@@ -58,7 +58,7 @@ import com.coachera.backend.repository.SectionRepository;
 import com.coachera.backend.repository.SkillRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
-import com.coachera.backend.repository.WeekRepository;
+import com.coachera.backend.repository.ModuleRepository;
 
 @Component
 public class DatabaseSeeder {
@@ -71,7 +71,7 @@ public class DatabaseSeeder {
     private final CategoryRepository categoryRepo;
     private final EnrollmentRepository enrollmentRepo;
     private final CertificateRepository certificateRepo;
-    private final WeekRepository weekRepo;
+    private final ModuleRepository moduleRepo;
     private final SectionRepository sectionRepo;
     private final MaterialRepository materialRepo;
     private final QuizRepository quizRepo;
@@ -90,7 +90,7 @@ public class DatabaseSeeder {
             CategoryRepository categoryRepo,
             EnrollmentRepository enrollmentRepo,
             CertificateRepository certificateRepo,
-            WeekRepository weekRepo,
+            ModuleRepository moduleRepo,
             SectionRepository sectionRepo,
             MaterialRepository materialRepo,
             QuizRepository quizRepo,
@@ -107,7 +107,7 @@ public class DatabaseSeeder {
         this.categoryRepo = categoryRepo;
         this.enrollmentRepo = enrollmentRepo;
         this.certificateRepo = certificateRepo;
-        this.weekRepo = weekRepo;
+        this.moduleRepo = moduleRepo;
         this.sectionRepo = sectionRepo;
         this.materialRepo = materialRepo;
         this.quizRepo = quizRepo;
@@ -191,12 +191,12 @@ public class DatabaseSeeder {
         List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
         certificateRepo.saveAll(certificates);
 
-        // Seed Weeks
-        List<Week> weeks = WeekGenerator.fromCourses(courses);
-        weekRepo.saveAll(weeks);
+        // Seed Modules
+        List<Module> modules = ModuleGenerator.fromCourses(courses);
+        moduleRepo.saveAll(modules);
 
         // Seed Sections
-        List<Section> sections = SectionGenerator.fromWeeks(weeks);
+        List<Section> sections = SectionGenerator.fromModules(modules);
         sectionRepo.saveAll(sections);
 
         // Seed Materials
@@ -246,7 +246,7 @@ public class DatabaseSeeder {
         quizRepo.deleteAll();
         materialRepo.deleteAll();
         sectionRepo.deleteAll();
-        weekRepo.deleteAll();
+        moduleRepo.deleteAll();
         certificateRepo.deleteAll();
         enrollmentRepo.deleteAll();
         courseRepo.deleteAll();
