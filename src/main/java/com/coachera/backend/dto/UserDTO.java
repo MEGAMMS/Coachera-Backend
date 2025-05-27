@@ -39,7 +39,7 @@ public class UserDTO extends AuditableDTO {
         this.role = user.getRole();
         this.isVerified = user.getIsVerified();
         if (user.getProfileImage() != null) {
-            this.profileImage = user.getProfileImage().getUuidName();
+            this.profileImage = user.getProfileImage().getUrl();
         }
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdatedAt(user.getUpdatedAt());

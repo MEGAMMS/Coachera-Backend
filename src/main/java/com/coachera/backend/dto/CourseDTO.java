@@ -46,6 +46,9 @@ public class CourseDTO extends AuditableDTO {
     @Schema(example = "[2,3]", description = "Learning paths associated with this course")
     private Set<Integer> learningPathIds;
 
+    @Schema(description = "Supporting image")
+    private String image;
+
     public CourseDTO(Course course) {
         this.id = course.getId();
         this.title = course.getTitle();
@@ -58,6 +61,9 @@ public class CourseDTO extends AuditableDTO {
                 .collect(Collectors.toSet());
         this.learningPathIds = course.getLearningPaths().stream().map(lp -> lp.getLearningPath().getId())
                 .collect(Collectors.toSet());
+        if (course.getImage() != null) {
+            this.image = course.getImage().getUrl();
+        }
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());
     }

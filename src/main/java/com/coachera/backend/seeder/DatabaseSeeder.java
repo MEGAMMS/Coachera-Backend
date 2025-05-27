@@ -124,12 +124,12 @@ public class DatabaseSeeder {
         List<User> users = UserGenerator.generate(15);
 
         // Generate images
-        List<Image> images = ImageGenerator.generate(15);
+        List<Image> images = ImageGenerator.generate(24);
         imageRepo.saveAll(images);
 
         // Assign roles
         for (int i = 0; i < users.size(); i++) {
-            users.get(i).setProfileImage(images.get(i));
+            // users.get(i).setProfileImage(images.get(i));
             if (i < 4) {
                 users.get(i).setRole("STUDENT");
             } else if (i < 8) {
@@ -171,9 +171,17 @@ public class DatabaseSeeder {
         List<Course> courses = CourseGenerator.fromOrg(orgs);
         courseRepo.saveAll(courses);
 
+        // for(int i=0;i<24;i++)
+        // {
+        //     courses.get(i).setImage(images.get(i));
+        // }
+        // courseRepo.saveAll(courses);
+        // courseRepo.flush();
+
         // Seed categories
         List<Category> categories = CategoryGenerator.fromCourses(courses, List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
+
 
         // Seed enrollments for first few courses
         List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));

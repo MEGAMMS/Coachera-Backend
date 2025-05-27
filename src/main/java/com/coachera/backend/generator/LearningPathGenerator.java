@@ -42,6 +42,7 @@ public class LearningPathGenerator {
                     .supply(Select.field(LearningPath::getDescription), () -> generatePathDescription())
                     .ignore(Select.field(LearningPath::getImage))
                     .ignore(Select.field(LearningPath::getCourses))
+                    .ignore(Select.field(LearningPath::getImage))
                     .create();
 
                 // Add 3-8 courses to the learning path
