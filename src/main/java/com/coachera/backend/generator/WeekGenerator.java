@@ -28,7 +28,9 @@ public class WeekGenerator {
                             Week week = Instancio.of(Week.class)
                                     .ignore(Select.field(Week::getId))
                                     .supply(Select.field(Week::getCourse), () -> course)
+                                    .supply(Select.field(Week::getTitle),()->course.getTitle()+orderCounter)
                                     .supply(Select.field(Week::getOrderIndex), orderCounter::getAndIncrement)
+                                    .ignore(Select.field(Week::getSections))
                                     .create();
 
                             if (week == null) {
