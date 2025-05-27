@@ -6,59 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.coachera.backend.entity.Category;
-import com.coachera.backend.entity.Certificate;
-import com.coachera.backend.entity.Course;
-import com.coachera.backend.entity.Enrollment;
-import com.coachera.backend.entity.Image;
-import com.coachera.backend.entity.Instructor;
-import com.coachera.backend.entity.LearningPath;
-import com.coachera.backend.entity.Material;
-import com.coachera.backend.entity.Organization;
-import com.coachera.backend.entity.Question;
-import com.coachera.backend.entity.Quiz;
-import com.coachera.backend.entity.Review;
-import com.coachera.backend.entity.Section;
-import com.coachera.backend.entity.Skill;
-import com.coachera.backend.entity.Student;
-import com.coachera.backend.entity.User;
-import com.coachera.backend.entity.Week;
-
-import com.coachera.backend.generator.CategoryGenerator;
-import com.coachera.backend.generator.CertificateGenerator;
-import com.coachera.backend.generator.CourseGenerator;
-import com.coachera.backend.generator.EnrollmentGenerator;
-import com.coachera.backend.generator.ImageGenerator;
-import com.coachera.backend.generator.InstructorGenerator;
-import com.coachera.backend.generator.LearningPathGenerator;
-import com.coachera.backend.generator.MaterialGenerator;
-import com.coachera.backend.generator.OrganizationGenerator;
-import com.coachera.backend.generator.QuestionGenerator;
-import com.coachera.backend.generator.QuizGenerator;
-import com.coachera.backend.generator.ReviewGenerator;
-import com.coachera.backend.generator.SectionGenerator;
-import com.coachera.backend.generator.SkillGenerator;
-import com.coachera.backend.generator.StudentGenerator;
-import com.coachera.backend.generator.UserGenerator;
-import com.coachera.backend.generator.WeekGenerator;
-
-import com.coachera.backend.repository.CategoryRepository;
-import com.coachera.backend.repository.CertificateRepository;
-import com.coachera.backend.repository.CourseRepository;
-import com.coachera.backend.repository.EnrollmentRepository;
-import com.coachera.backend.repository.ImageRepository;
-import com.coachera.backend.repository.InstructorRepository;
-import com.coachera.backend.repository.LearningPathRepository;
-import com.coachera.backend.repository.MaterialRepository;
-import com.coachera.backend.repository.OrganizationRepository;
-import com.coachera.backend.repository.QuestionRepository;
-import com.coachera.backend.repository.QuizRepository;
-import com.coachera.backend.repository.ReviewRepository;
-import com.coachera.backend.repository.SectionRepository;
-import com.coachera.backend.repository.SkillRepository;
-import com.coachera.backend.repository.StudentRepository;
-import com.coachera.backend.repository.UserRepository;
-import com.coachera.backend.repository.WeekRepository;
+import com.coachera.backend.entity.*;
+import com.coachera.backend.generator.*;
+import com.coachera.backend.repository.*;
 
 @Component
 public class DatabaseSeeder {
@@ -123,10 +73,6 @@ public class DatabaseSeeder {
         // Generate and assign roles before saving
         List<User> users = UserGenerator.generate(15);
 
-        // Generate images
-        List<Image> images = ImageGenerator.generate(24);
-        imageRepo.saveAll(images);
-
         // Assign roles
         for (int i = 0; i < users.size(); i++) {
             // users.get(i).setProfileImage(images.get(i));
@@ -173,7 +119,7 @@ public class DatabaseSeeder {
 
         // for(int i=0;i<24;i++)
         // {
-        //     courses.get(i).setImage(images.get(i));
+        // courses.get(i).setImage(images.get(i));
         // }
         // courseRepo.saveAll(courses);
         // courseRepo.flush();
@@ -181,7 +127,6 @@ public class DatabaseSeeder {
         // Seed categories
         List<Category> categories = CategoryGenerator.fromCourses(courses, List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
-
 
         // Seed enrollments for first few courses
         List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
