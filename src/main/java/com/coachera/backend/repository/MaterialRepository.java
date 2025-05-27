@@ -12,5 +12,6 @@ import com.coachera.backend.entity.Material;
 public interface MaterialRepository extends JpaRepository<Material, Integer> {
     List<Material> findBySectionIdOrderByOrderIndexAsc(Integer sectionId);
     Optional<Material> findBySectionIdAndOrderIndex(Integer sectionId, Integer orderIndex);
+    boolean existsBySectionIdAndOrderIndexAndIdNot(Integer sectionId, Integer orderIndex, Integer excludeMaterialId);
     boolean existsBySectionIdAndOrderIndex(Integer sectionId, Integer orderIndex);
 }

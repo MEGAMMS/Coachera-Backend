@@ -20,6 +20,7 @@ public interface WeekRepository extends JpaRepository<Week, Integer> {
 
     // Check if a week exists for a specific course and order index
     boolean existsByCourseIdAndOrderIndex(Integer courseId, Integer orderIndex);
+    
 
     // Find the maximum order index for a course
     @Query("SELECT MAX(w.orderIndex) FROM Week w WHERE w.course.id = :courseId")
