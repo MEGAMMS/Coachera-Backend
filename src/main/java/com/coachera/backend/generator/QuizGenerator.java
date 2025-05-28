@@ -26,6 +26,7 @@ public class QuizGenerator {
                     Quiz quiz = Instancio.of(Quiz.class)
                         .ignore(Select.field(Quiz::getId))
                         .supply(Select.field(Quiz::getMaterial), () -> material)
+                        .ignore(Select.field(Quiz::getQuestions))
                         .create();
 
                     if (quiz.getMaterial() == null) {
