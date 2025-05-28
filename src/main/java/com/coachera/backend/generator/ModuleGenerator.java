@@ -16,9 +16,9 @@ public class ModuleGenerator {
 
     public static List<Module> fromCourses(List<Course> courses) {
         Random random = new Random();
-        
+
         return courses.stream()
-        .flatMap(course -> {
+                .flatMap(course -> {
                     AtomicInteger orderCounter = new AtomicInteger(0);
                     int modulesCount = random.nextInt(10) + 1; // Random number between 1-10
                     List<Module> modules = new ArrayList<>();
@@ -28,7 +28,7 @@ public class ModuleGenerator {
                             Module module = Instancio.of(Module.class)
                                     .ignore(Select.field(Module::getId))
                                     .supply(Select.field(Module::getCourse), () -> course)
-                                    .supply(Select.field(Module::getTitle),()->course.getTitle()+orderCounter)
+                                    .supply(Select.field(Module::getTitle), () -> course.getTitle() + orderCounter)
                                     .supply(Select.field(Module::getOrderIndex), orderCounter::getAndIncrement)
                                     .ignore(Select.field(Module::getSections))
                                     .create();

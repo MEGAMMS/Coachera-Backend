@@ -1,5 +1,8 @@
 package com.coachera.backend.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,4 +25,18 @@ public class Section extends Auditable{
 
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
+
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Material> materials = new HashSet<>();
+
+    // helper methods
+    public void addMaterial(Material material) {
+        materials.add(material);
+        material.setSection(this);
+    }
+
+    public void removeMaterial(Material material) {
+        materials.remove(material);
+        material.setSection(null);
+    }
 }

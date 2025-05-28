@@ -38,6 +38,7 @@ public class SectionGenerator {
                             .supply(Select.field(Section::getModule), () -> module)
                             .supply(Select.field(Section::getTitle), () -> "Section "+sectionOrderCounter)
                             .supply(Select.field(Section::getOrderIndex), sectionOrderCounter::getAndIncrement)
+                            .ignore(Select.field(Section::getMaterials))
                             .create();
 
                         if (section.getModule() == null) {
