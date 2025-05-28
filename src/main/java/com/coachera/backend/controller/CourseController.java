@@ -68,7 +68,7 @@ public class CourseController {
     public ApiResponse<?> deleteCourse(@PathVariable Integer id) {
 
         courseService.deleteCourse(id);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
 
     }
 }

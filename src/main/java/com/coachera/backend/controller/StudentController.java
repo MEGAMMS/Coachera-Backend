@@ -62,7 +62,7 @@ public class StudentController {
     public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
 
         studentService.deleteStudent(id);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
 
     }
 }
