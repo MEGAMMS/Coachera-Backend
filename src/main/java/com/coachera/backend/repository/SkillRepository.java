@@ -11,5 +11,6 @@ import com.coachera.backend.entity.Skill;
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, Integer> {
     Optional<Skill> findByName(String name);
+    Boolean existsByName(String name);
     List<Skill> findByNameContainingIgnoreCase(String keyword);
 }
