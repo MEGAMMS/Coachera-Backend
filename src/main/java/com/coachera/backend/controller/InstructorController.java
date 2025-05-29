@@ -62,6 +62,6 @@ public class InstructorController {
     @DeleteMapping("/{id}")
     public ApiResponse<?> deleteInstructor(@PathVariable Integer id) {
         instructorService.deleteInstructor(id);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
     }
 }

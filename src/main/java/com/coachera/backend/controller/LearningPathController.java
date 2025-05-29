@@ -70,7 +70,7 @@ public class LearningPathController {
             @AuthenticationPrincipal User user) {
         Organization organization = user.getOrganization();
         learningPathService.deleteLearningPath(id, organization);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
     }
 
     @PostMapping("/{learningPathId}/courses/{courseId}")
