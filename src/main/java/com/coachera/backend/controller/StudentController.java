@@ -38,13 +38,13 @@ public class StudentController {
 
     }
 
-    // @GetMapping("/id")
-    // public ApiResponse<?> getStudentById(@PathVariable Integer id) {
+    @GetMapping("/id")
+    public ApiResponse<?> getStudentById(@PathVariable Integer id) {
 
-    //     StudentDTO student = studentService.getStudentById(id);
-    //     return ApiResponse.success(student);
+        StudentDTO student = studentService.getStudentById(id);
+        return ApiResponse.success(student);
 
-    // }
+    }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
