@@ -49,7 +49,7 @@ public class FavoriteController {
             @PathVariable Integer courseId) {
 
         favoriteService.removeFavorite(user, courseId);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
 
     }
 

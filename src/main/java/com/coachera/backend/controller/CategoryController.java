@@ -55,7 +55,7 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ApiResponse<?> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
 
     }
 }

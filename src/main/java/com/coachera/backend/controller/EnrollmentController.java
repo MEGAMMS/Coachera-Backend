@@ -51,7 +51,7 @@ public class EnrollmentController {
             @PathVariable Integer courseId) {
 
         enrollmentService.unenrollStudent(user, courseId);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
 
     }
 }

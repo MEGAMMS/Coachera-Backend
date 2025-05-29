@@ -43,7 +43,7 @@ public class CertificateController {
     @DeleteMapping("/{id}")
     public ApiResponse<?> deleteCertificate(@PathVariable Integer id) {
         certificateService.deleteCertificate(id);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
     }
 
   
@@ -61,7 +61,7 @@ public class CertificateController {
             @PathVariable Integer certificateId,
             @PathVariable Integer studentId) {
         certificateService.removeStudentFromCertificate(certificateId, studentId);
-        return ApiResponse.noContent();
+        return ApiResponse.noContentResponse();
     }
 
     @GetMapping("/{certificateId}/students")

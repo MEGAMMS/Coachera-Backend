@@ -70,7 +70,7 @@ public class OrganizationController {
     public ApiResponse<?> deleteOrganization(@PathVariable Integer id) {
         
             organizationService.deleteOrganization(id);
-            return ApiResponse.noContent();
+            return ApiResponse.noContentResponse();
        
     }
 }
