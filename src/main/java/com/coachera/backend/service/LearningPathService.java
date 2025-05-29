@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +38,11 @@ public class LearningPathService {
         this.modelMapper = modelMapper;
     }
 
-    public LearningPathDTO createLearningPath(LearningPathDTO learningPathDTO) {
-        Organization organization = organizationRepository.findById(learningPathDTO.getOrgId())
-                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + learningPathDTO.getOrgId()));
+    public LearningPathDTO createLearningPath(LearningPathDTO learningPathDTO, Organization organization) {
+        // Verify the organization exists (though we're passing it directly, we can still validate)
+        if (organization == null) {
+            throw new ResourceNotFoundException("Organization not provided");
+        }
 
         LearningPath learningPath = new LearningPath();
         learningPath.setOrganization(organization);
@@ -74,17 +77,22 @@ public class LearningPathService {
                 .collect(Collectors.toList());
     }
 
-    public LearningPathDTO updateLearningPath(Integer id, LearningPathDTO learningPathDTO) {
+    public LearningPathDTO updateLearningPath(Integer id, LearningPathDTO learningPathDTO, Organization organization) {
         LearningPath existingLearningPath = learningPathRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("LearningPath not found with id: " + id));
+
+        // Verify the requesting organization owns the learning path
+        if (!organization.getId().equals(existingLearningPath.getOrganization().getId())) {
+            throw new AccessDeniedException("Your organization doesn't own this learning path");
+        }
 
         modelMapper.map(learningPathDTO, existingLearningPath);
 
         if (learningPathDTO.getOrgId() != null && 
             !learningPathDTO.getOrgId().equals(existingLearningPath.getOrganization().getId())) {
-            Organization organization = organizationRepository.findById(learningPathDTO.getOrgId())
+            Organization newOrganization = organizationRepository.findById(learningPathDTO.getOrgId())
                     .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + learningPathDTO.getOrgId()));
-            existingLearningPath.setOrganization(organization);
+            existingLearningPath.setOrganization(newOrganization);
         }
 
         if (learningPathDTO.getImageUrl() != null && 
@@ -99,17 +107,27 @@ public class LearningPathService {
         return new LearningPathDTO(updatedLearningPath);
     }
 
-    public void deleteLearningPath(Integer id) {
-        if (!learningPathRepository.existsById(id)) {
-            throw new ResourceNotFoundException("LearningPath not found with id: " + id);
+    public void deleteLearningPath(Integer id, Organization organization) {
+        LearningPath learningPath = learningPathRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("LearningPath not found with id: " + id));
+
+        // Verify the requesting organization owns the learning path
+        if (!organization.getId().equals(learningPath.getOrganization().getId())) {
+            throw new AccessDeniedException("Your organization doesn't own this learning path");
         }
-        learningPathRepository.deleteById(id);
+
+        learningPathRepository.delete(learningPath);
     }
 
-    public LearningPathDTO addCourseToLearningPath(Integer learningPathId, Integer courseId, Integer orderIndex) {
+    public LearningPathDTO addCourseToLearningPath(Integer learningPathId, Integer courseId, Integer orderIndex, Organization organization) {
         LearningPath learningPath = learningPathRepository.findById(learningPathId)
                 .orElseThrow(() -> new ResourceNotFoundException("LearningPath not found with id: " + learningPathId));
         
+        // Verify the requesting organization owns the learning path
+        if (!organization.getId().equals(learningPath.getOrganization().getId())) {
+            throw new AccessDeniedException("Your organization doesn't own this learning path");
+        }
+
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 
@@ -118,10 +136,15 @@ public class LearningPathService {
         return new LearningPathDTO(updatedLearningPath);
     }
 
-    public LearningPathDTO removeCourseFromLearningPath(Integer learningPathId, Integer courseId) {
+    public LearningPathDTO removeCourseFromLearningPath(Integer learningPathId, Integer courseId, Organization organization) {
         LearningPath learningPath = learningPathRepository.findById(learningPathId)
                 .orElseThrow(() -> new ResourceNotFoundException("LearningPath not found with id: " + learningPathId));
         
+        // Verify the requesting organization owns the learning path
+        if (!organization.getId().equals(learningPath.getOrganization().getId())) {
+            throw new AccessDeniedException("Your organization doesn't own this learning path");
+        }
+
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 

@@ -24,6 +24,9 @@ public class UserGenerator {
                 .set(Select.field(User::getRole), "ADMIN")
                 .supply(Select.field(User::getIsVerified), () -> true)
                 .ignore(Select.field(User::getProfileImage))
+                .ignore(Select.field(User::getOrganization))
+                .ignore(Select.field(User::getInstructor))
+                .ignore(Select.field(User::getStudent))
                 .create();
     }
 }

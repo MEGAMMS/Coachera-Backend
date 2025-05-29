@@ -2,9 +2,12 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.LearningPathDTO;
+import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.LearningPathService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +24,11 @@ public class LearningPathController {
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZATION')")
-    public ApiResponse<?> createLearningPath(@RequestBody @Valid LearningPathDTO learningPathDTO) {
-        LearningPathDTO createdLearningPath = learningPathService.createLearningPath(learningPathDTO);
+    public ApiResponse<?> createLearningPath(
+            @RequestBody @Valid LearningPathDTO learningPathDTO,
+            @AuthenticationPrincipal User user) {
+        Organization organization = user.getOrganization();
+        LearningPathDTO createdLearningPath = learningPathService.createLearningPath(learningPathDTO, organization);
         return ApiResponse.created("Learning path created successfully", createdLearningPath);
     }
 
@@ -38,9 +44,11 @@ public class LearningPathController {
         return ApiResponse.success(learningPaths);
     }
 
-    @GetMapping("/organization/{orgId}")
-    public ApiResponse<?> getLearningPathsByOrganization(@PathVariable Integer orgId) {
-        List<LearningPathDTO> learningPaths = learningPathService.getLearningPathsByOrganization(orgId);
+    @GetMapping("/organization")
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public ApiResponse<?> getOrganizationLearningPaths(@AuthenticationPrincipal User user) {
+        Organization organization = user.getOrganization();
+        List<LearningPathDTO> learningPaths = learningPathService.getLearningPathsByOrganization(organization.getId());
         return ApiResponse.success(learningPaths);
     }
 
@@ -48,15 +56,20 @@ public class LearningPathController {
     @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> updateLearningPath(
             @PathVariable Integer id,
-            @RequestBody @Valid LearningPathDTO learningPathDTO) {
-        LearningPathDTO updatedLearningPath = learningPathService.updateLearningPath(id, learningPathDTO);
+            @RequestBody @Valid LearningPathDTO learningPathDTO,
+            @AuthenticationPrincipal User user) {
+        Organization organization = user.getOrganization();
+        LearningPathDTO updatedLearningPath = learningPathService.updateLearningPath(id, learningPathDTO, organization);
         return ApiResponse.success("Learning path updated successfully", updatedLearningPath);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ORGANIZATION')")
-    public ApiResponse<?> deleteLearningPath(@PathVariable Integer id) {
-        learningPathService.deleteLearningPath(id);
+    public ApiResponse<?> deleteLearningPath(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal User user) {
+        Organization organization = user.getOrganization();
+        learningPathService.deleteLearningPath(id, organization);
         return ApiResponse.noContent();
     }
 
@@ -65,9 +78,11 @@ public class LearningPathController {
     public ApiResponse<?> addCourseToLearningPath(
             @PathVariable Integer learningPathId,
             @PathVariable Integer courseId,
-            @RequestParam Integer orderIndex) {
+            @RequestParam Integer orderIndex,
+            @AuthenticationPrincipal User user) {
+        Organization organization = user.getOrganization();
         LearningPathDTO updatedLearningPath = learningPathService.addCourseToLearningPath(
-                learningPathId, courseId, orderIndex);
+                learningPathId, courseId, orderIndex, organization);
         return ApiResponse.success("Course added to learning path successfully", updatedLearningPath);
     }
 
@@ -75,9 +90,11 @@ public class LearningPathController {
     @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> removeCourseFromLearningPath(
             @PathVariable Integer learningPathId,
-            @PathVariable Integer courseId) {
+            @PathVariable Integer courseId,
+            @AuthenticationPrincipal User user) {
+        Organization organization = user.getOrganization();
         LearningPathDTO updatedLearningPath = learningPathService.removeCourseFromLearningPath(
-                learningPathId, courseId);
+                learningPathId, courseId, organization);
         return ApiResponse.success("Course removed from learning path successfully", updatedLearningPath);
     }
 }
