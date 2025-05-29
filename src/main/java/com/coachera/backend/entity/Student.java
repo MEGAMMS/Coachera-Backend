@@ -116,4 +116,12 @@ public class Student extends Auditable {
                 .map(StudentSkill::getSkill)
                 .collect(Collectors.toSet());
     }
+
+    // Helper method to maintain bidirectional relationship
+    public void setUser(User user) {
+        this.user = user;
+        if (user != null && user.getStudent() != this) {
+            user.setStudent(this);
+        }
+    }
 }

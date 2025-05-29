@@ -1,7 +1,6 @@
 package com.coachera.backend.entity;
 
 import jakarta.persistence.*;
-
 import lombok.*;
 
 @Entity
@@ -12,25 +11,84 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class User extends Auditable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-	@Column(nullable = false)
-	private String password;
+    @Column(nullable = false)
+    private String password;
 
-	@Column(nullable = false, unique = true)
-	private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-	@Column(nullable = false, unique = true)
-	private String username;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-	@Column(nullable = false)
-	private String role;
+    @Column(nullable = false)
+    private String role;
 
-	@OneToOne
-	@JoinColumn
-	private Image profileImage;
+    @OneToOne
+    @JoinColumn
+    private Image profileImage;
 
-	private Boolean isVerified;
+    private Boolean isVerified;
+
+    // Bidirectional relationship with Organization
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Organization organization;
+
+    // Bidirectional relationship with Student
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Student student;
+
+    // Bidirectional relationship with Instructor
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Instructor instructor;
+
+    // Helper methods for managing relationships
+    public void setOrganization(Organization organization) {
+        if (organization == null) {
+            if (this.organization != null) {
+                this.organization.setUser(null);
+            }
+        } else {
+            organization.setUser(this);
+        }
+        this.organization = organization;
+    }
+
+    public void setStudent(Student student) {
+        if (student == null) {
+            if (this.student != null) {
+                this.student.setUser(null);
+            }
+        } else {
+            student.setUser(this);
+        }
+        this.student = student;
+    }
+
+    public void setInstructor(Instructor instructor) {
+        if (instructor == null) {
+            if (this.instructor != null) {
+                this.instructor.setUser(null);
+            }
+        } else {
+            instructor.setUser(this);
+        }
+        this.instructor = instructor;
+    }
+
+    // Convenience method to check user type
+    public boolean isOrganization() {
+        return this.organization != null;
+    }
+
+    public boolean isStudent() {
+        return this.student != null;
+    }
+
+    public boolean isInstructor() {
+        return this.instructor != null;
+    }
 }

@@ -20,7 +20,7 @@ public class LearningPathController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> createLearningPath(@RequestBody @Valid LearningPathDTO learningPathDTO) {
         LearningPathDTO createdLearningPath = learningPathService.createLearningPath(learningPathDTO);
         return ApiResponse.created("Learning path created successfully", createdLearningPath);
@@ -45,7 +45,7 @@ public class LearningPathController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> updateLearningPath(
             @PathVariable Integer id,
             @RequestBody @Valid LearningPathDTO learningPathDTO) {
@@ -54,14 +54,14 @@ public class LearningPathController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> deleteLearningPath(@PathVariable Integer id) {
         learningPathService.deleteLearningPath(id);
         return ApiResponse.noContent();
     }
 
     @PostMapping("/{learningPathId}/courses/{courseId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> addCourseToLearningPath(
             @PathVariable Integer learningPathId,
             @PathVariable Integer courseId,
@@ -72,7 +72,7 @@ public class LearningPathController {
     }
 
     @DeleteMapping("/{learningPathId}/courses/{courseId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> removeCourseFromLearningPath(
             @PathVariable Integer learningPathId,
             @PathVariable Integer courseId) {
