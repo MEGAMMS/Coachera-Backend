@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.CourseDTO;
+import com.coachera.backend.dto.CourseWithModulesDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
@@ -38,10 +39,10 @@ public class CourseService {
         return courseDTO2;
     }
 
-    public CourseDTO getCourseById(Integer id) {
+    public CourseWithModulesDTO getCourseById(Integer id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
-        CourseDTO courseDTO=new CourseDTO(course);
+        CourseWithModulesDTO courseDTO=new CourseWithModulesDTO(course);
         return courseDTO;
     }
 

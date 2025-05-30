@@ -53,6 +53,7 @@ public class CourseGenerator {
                                     .ignore(Select.field(Course::getCategories))
                                     .ignore(Select.field(Course::getLearningPaths))
                                     .ignore(Select.field(Course::getImage))
+                                    .ignore(Select.field(Course::getModules))
                                     .create();
 
                             if (course == null) {

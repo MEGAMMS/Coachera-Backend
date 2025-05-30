@@ -31,7 +31,7 @@ public class LearningPathDTO extends AuditableDTO {
     private String description;
 
     @Schema(example = "java-path.jpg", description = "Image URL or filename")
-    private String image;
+    private String imageUrl;
 
     @Schema(description = "Courses in this learning path with their order")
     private Set<LearningPathCourseDTO> courses;
@@ -41,7 +41,7 @@ public class LearningPathDTO extends AuditableDTO {
         this.orgId = learningPath.getOrganization().getId();
         this.title = learningPath.getTitle();
         this.description = learningPath.getDescription();
-        this.image = learningPath.getImage().getUrl();
+        this.imageUrl = learningPath.getImage().getUrl();
         this.courses = learningPath.getCourses().stream()
                 .map(LearningPathCourseDTO::new)
                 .collect(Collectors.toSet());

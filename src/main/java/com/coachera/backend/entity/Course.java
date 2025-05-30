@@ -57,15 +57,20 @@ public class Course extends Auditable {
     @JoinColumn
     private Image image;
 
-    // Add bidirectional relationship
+    // bidirectional relationship categories
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<CourseCategory> categories = new HashSet<>();
 
-    // In Course.java add:
+    // bidirectional relationship with learning paths
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<LearningPathCourse> learningPaths = new HashSet<>();
+
+    // bidirectional relationship with modules
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Module> modules = new HashSet<>();
 
     // Helper methods for managing categories
     public void addCategory(Category category) {
@@ -79,4 +84,18 @@ public class Course extends Auditable {
         category.getCourses().remove(courseCategory);
         categories.remove(courseCategory);
     }
+
+    public void addModule(Module module) {
+        if(modules ==null){
+            modules =new HashSet<>();
+        }
+        modules.add(module);
+        module.setCourse(this);
+    }
+
+    public void removeModule(Module module) {
+        modules.remove(module);
+        module.setCourse(null);
+    }
+
 }

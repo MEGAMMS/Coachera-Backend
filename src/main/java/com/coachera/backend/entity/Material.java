@@ -22,4 +22,7 @@ public class Material extends Auditable{
 
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
+
+    @OneToOne(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Quiz quiz;
 }

@@ -58,6 +58,12 @@ public class StudentService {
         return new StudentDTO(student);
     }
 
+    public StudentDTO getStudentById(Integer id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        return new StudentDTO(student);
+    }
+
     public List<StudentDTO> getAllStudents() {
         return studentRepository.findAll().stream()
                 .map(student -> new StudentDTO(student))

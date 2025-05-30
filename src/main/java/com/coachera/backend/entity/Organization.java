@@ -17,7 +17,11 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "organizations")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Organization extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,5 +36,12 @@ public class Organization extends Auditable {
 
     @Column(nullable = false)
     private String orgDescription;
-}
 
+    // Helper method to maintain bidirectional relationship
+    public void setUser(User user) {
+        this.user = user;
+        if (user != null && user.getOrganization() != this) {
+            user.setOrganization(this);
+        }
+    }
+}

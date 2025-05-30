@@ -39,6 +39,8 @@ public class MaterialGenerator {
                             .supply(Select.field(Material::getTitle), () -> 
                                 "Material " + materialOrderCounter + " - " + generateRandomMaterialType())
                             .supply(Select.field(Material::getOrderIndex), materialOrderCounter::getAndIncrement)
+                            .supply(Select.field(Material::getOrderIndex), materialOrderCounter::getAndIncrement)
+                            .ignore(Select.field(Material::getQuiz))
                             .create();
 
                         if (material.getSection() == null) {

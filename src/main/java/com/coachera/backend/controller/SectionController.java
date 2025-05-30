@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/weeks/{weekId}/sections")
+@RequestMapping("/api/modules/{moduleId}/sections")
 public class SectionController {
 
     private final SectionService sectionService;
@@ -26,9 +26,9 @@ public class SectionController {
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
     public ResponseEntity<SectionDTO> createSection(
-            @PathVariable Integer weekId,
+            @PathVariable Integer moduleId,
             @Valid @RequestBody SectionDTO sectionDTO) {
-        SectionDTO createdSection = sectionService.createSection(weekId, sectionDTO);
+        SectionDTO createdSection = sectionService.createSection(moduleId, sectionDTO);
         return new ResponseEntity<>(createdSection, HttpStatus.CREATED);
     }
 
@@ -43,16 +43,16 @@ public class SectionController {
 
     @GetMapping("/{sectionId}")
     public ResponseEntity<SectionDTO> getSectionById(
-            @PathVariable Integer weekId,
+            @PathVariable Integer moduleId,
             @PathVariable Integer sectionId) {
         SectionDTO sectionDTO = sectionService.getSectionById(sectionId);
         return ResponseEntity.ok(sectionDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<SectionDTO>> getAllSectionsByWeekId(
-            @PathVariable Integer weekId) {
-        List<SectionDTO> sections = sectionService.getAllSectionsByWeekId(weekId);
+    public ResponseEntity<List<SectionDTO>> getAllSectionsByModuleId(
+            @PathVariable Integer moduleId) {
+        List<SectionDTO> sections = sectionService.getAllSectionsByModuleId(moduleId);
         return ResponseEntity.ok(sections);
     }
 

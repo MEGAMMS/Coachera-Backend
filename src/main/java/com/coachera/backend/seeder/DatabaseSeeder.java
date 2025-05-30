@@ -6,9 +6,56 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.coachera.backend.entity.*;
-import com.coachera.backend.generator.*;
-import com.coachera.backend.repository.*;
+import com.coachera.backend.entity.Category;
+import com.coachera.backend.entity.Certificate;
+import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.Enrollment;
+import com.coachera.backend.entity.Instructor;
+import com.coachera.backend.entity.LearningPath;
+import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.Question;
+import com.coachera.backend.entity.Quiz;
+import com.coachera.backend.entity.Review;
+import com.coachera.backend.entity.Section;
+import com.coachera.backend.entity.Skill;
+import com.coachera.backend.entity.Student;
+import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.Module;
+
+import com.coachera.backend.generator.CategoryGenerator;
+import com.coachera.backend.generator.CertificateGenerator;
+import com.coachera.backend.generator.CourseGenerator;
+import com.coachera.backend.generator.EnrollmentGenerator;
+import com.coachera.backend.generator.InstructorGenerator;
+import com.coachera.backend.generator.LearningPathGenerator;
+import com.coachera.backend.generator.MaterialGenerator;
+import com.coachera.backend.generator.OrganizationGenerator;
+import com.coachera.backend.generator.QuestionGenerator;
+import com.coachera.backend.generator.QuizGenerator;
+import com.coachera.backend.generator.ReviewGenerator;
+import com.coachera.backend.generator.SectionGenerator;
+import com.coachera.backend.generator.SkillGenerator;
+import com.coachera.backend.generator.StudentGenerator;
+import com.coachera.backend.generator.UserGenerator;
+import com.coachera.backend.generator.ModuleGenerator;
+
+import com.coachera.backend.repository.CategoryRepository;
+import com.coachera.backend.repository.CertificateRepository;
+import com.coachera.backend.repository.CourseRepository;
+import com.coachera.backend.repository.EnrollmentRepository;
+import com.coachera.backend.repository.InstructorRepository;
+import com.coachera.backend.repository.LearningPathRepository;
+import com.coachera.backend.repository.MaterialRepository;
+import com.coachera.backend.repository.OrganizationRepository;
+import com.coachera.backend.repository.QuestionRepository;
+import com.coachera.backend.repository.QuizRepository;
+import com.coachera.backend.repository.ReviewRepository;
+import com.coachera.backend.repository.SectionRepository;
+import com.coachera.backend.repository.SkillRepository;
+import com.coachera.backend.repository.StudentRepository;
+import com.coachera.backend.repository.UserRepository;
+import com.coachera.backend.repository.ModuleRepository;
 
 @Component
 public class DatabaseSeeder {
@@ -21,7 +68,7 @@ public class DatabaseSeeder {
     private final CategoryRepository categoryRepo;
     private final EnrollmentRepository enrollmentRepo;
     private final CertificateRepository certificateRepo;
-    private final WeekRepository weekRepo;
+    private final ModuleRepository moduleRepo;
     private final SectionRepository sectionRepo;
     private final MaterialRepository materialRepo;
     private final QuizRepository quizRepo;
@@ -29,7 +76,6 @@ public class DatabaseSeeder {
     private final ReviewRepository reviewRepo;
     private final LearningPathRepository learningPathRepo;
     private final SkillRepository skillRepo;
-    private final ImageRepository imageRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -40,15 +86,14 @@ public class DatabaseSeeder {
             CategoryRepository categoryRepo,
             EnrollmentRepository enrollmentRepo,
             CertificateRepository certificateRepo,
-            WeekRepository weekRepo,
+            ModuleRepository moduleRepo,
             SectionRepository sectionRepo,
             MaterialRepository materialRepo,
             QuizRepository quizRepo,
             QuestionRepository questionRepo,
             ReviewRepository reviewRepo,
             LearningPathRepository learningPathRepo,
-            SkillRepository skillRepo,
-            ImageRepository imageRepo) {
+            SkillRepository skillRepo) {
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -57,7 +102,7 @@ public class DatabaseSeeder {
         this.categoryRepo = categoryRepo;
         this.enrollmentRepo = enrollmentRepo;
         this.certificateRepo = certificateRepo;
-        this.weekRepo = weekRepo;
+        this.moduleRepo = moduleRepo;
         this.sectionRepo = sectionRepo;
         this.materialRepo = materialRepo;
         this.quizRepo = quizRepo;
@@ -65,7 +110,6 @@ public class DatabaseSeeder {
         this.reviewRepo = reviewRepo;
         this.learningPathRepo = learningPathRepo;
         this.skillRepo = skillRepo;
-        this.imageRepo = imageRepo;
     }
 
     @Transactional
@@ -136,12 +180,12 @@ public class DatabaseSeeder {
         List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
         certificateRepo.saveAll(certificates);
 
-        // Seed Weeks
-        List<Week> weeks = WeekGenerator.fromCourses(courses);
-        weekRepo.saveAll(weeks);
+        // Seed Modules
+        List<Module> modules = ModuleGenerator.fromCourses(courses);
+        moduleRepo.saveAll(modules);
 
         // Seed Sections
-        List<Section> sections = SectionGenerator.fromWeeks(weeks);
+        List<Section> sections = SectionGenerator.fromModules(modules);
         sectionRepo.saveAll(sections);
 
         // Seed Materials
@@ -191,7 +235,7 @@ public class DatabaseSeeder {
         quizRepo.deleteAll();
         materialRepo.deleteAll();
         sectionRepo.deleteAll();
-        weekRepo.deleteAll();
+        moduleRepo.deleteAll();
         certificateRepo.deleteAll();
         enrollmentRepo.deleteAll();
         courseRepo.deleteAll();
@@ -200,6 +244,5 @@ public class DatabaseSeeder {
         instructorRepo.deleteAll();
         studentRepo.deleteAll();
         userRepo.deleteAll();
-        imageRepo.deleteAll();
     }
 }

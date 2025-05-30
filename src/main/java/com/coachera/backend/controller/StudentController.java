@@ -30,10 +30,18 @@ public class StudentController {
 
     }
 
-    @GetMapping("/user")
+    @GetMapping("/me")
     public ApiResponse<?> getStudent(@AuthenticationPrincipal User user) {
 
         StudentDTO student = studentService.getStudentByUser(user);
+        return ApiResponse.success(student);
+
+    }
+
+    @GetMapping("/id")
+    public ApiResponse<?> getStudentById(@PathVariable Integer id) {
+
+        StudentDTO student = studentService.getStudentById(id);
         return ApiResponse.success(student);
 
     }

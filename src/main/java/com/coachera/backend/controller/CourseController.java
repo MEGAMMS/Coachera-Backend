@@ -2,6 +2,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CourseDTO;
+import com.coachera.backend.dto.CourseWithModulesDTO;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.CourseService;
 import jakarta.validation.Valid;
@@ -39,7 +40,7 @@ public class CourseController {
     @GetMapping("/{id}")
     public ApiResponse<?> getCourse(@PathVariable Integer id) {
 
-        CourseDTO course = courseService.getCourseById(id);
+        CourseWithModulesDTO course = courseService.getCourseById(id);
         return ApiResponse.success(course);
 
     }

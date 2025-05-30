@@ -36,6 +36,9 @@ public class AdminSeeder implements CommandLineRunner{
                 .set(Select.field(User::getRole),"ADMIN")
                 .set(Select.field(User::getIsVerified),true)
                 .ignore(Select.field(User::getProfileImage))
+                .ignore(Select.field(User::getOrganization))
+                .ignore(Select.field(User::getStudent))
+                .ignore(Select.field(User::getInstructor))
                 .create();
 
         userRepo.save(user);

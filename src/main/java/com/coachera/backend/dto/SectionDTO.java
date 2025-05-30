@@ -1,5 +1,8 @@
 package com.coachera.backend.dto;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.coachera.backend.entity.Section;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,16 +24,21 @@ public class SectionDTO extends AuditableDTO {
     private String title;
 
     @Schema(required = true, example = "1", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer weekId;
+    private Integer moduleId;
 
     @Schema(required = true, example = "1")
     private Integer orderIndex;
 
+    @Schema(description = "List of materials in this section")
+    private Set<MaterialDTO> materials;
+
     public SectionDTO(Section section) {
         this.id = section.getId();
         this.title = section.getTitle();
-        this.weekId = section.getWeek().getId();
+        this.moduleId = section.getModule().getId();
         this.orderIndex = section.getOrderIndex();
+        this.materials = section.getMaterials().stream().map(MaterialDTO::new)
+                .collect(Collectors.toSet());
         this.setCreatedAt(section.getCreatedAt());
         this.setUpdatedAt(section.getUpdatedAt());
     }
