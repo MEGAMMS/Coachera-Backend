@@ -2,10 +2,9 @@ package com.coachera.backend.dto;
 
 import lombok.Data;
 import java.time.Instant;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
@@ -15,9 +14,10 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
     public static class ResponseBody<D> {
         @Schema(example = "200")
         private final int status;
-        @Schema(example = "hello world")
+        @Schema(example = "Operation successful")
         private final String message;
         private final D data;
+        @Schema(example = "2024-03-20T10:30:00Z")
         private final Instant timestamp = Instant.now();
     }
 
@@ -38,6 +38,14 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
 
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(HttpStatus.OK, "Success", data);
+    }
+
+    public static <T> ApiResponse<PaginatedResponse<T>> paginated(Page<T> page) {
+        return new ApiResponse<>(
+            HttpStatus.OK,
+            "Successfully retrieved paginated data",
+            PaginatedResponse.of(page)
+        );
     }
 
     public static ApiResponse<Void> noContentResponse() {

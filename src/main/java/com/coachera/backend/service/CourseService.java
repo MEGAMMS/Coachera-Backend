@@ -11,10 +11,10 @@ import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +25,9 @@ public class CourseService {
     private final OrganizationRepository organizationRepository;
     private final ModelMapper modelMapper;
 
-    public CourseDTO createCourse(CourseDTO courseDTO ,User user) {   
-        Organization org =organizationRepository.findByUserId(user.getId());
-        if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(),org.getId())) {
+    public CourseDTO createCourse(CourseDTO courseDTO, User user) {
+        Organization org = organizationRepository.findByUserId(user.getId());
+        if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), org.getId())) {
             throw new ConflictException("Course with this title already exists in the organization");
         }
 
@@ -35,35 +35,32 @@ public class CourseService {
         course.setOrg(org);
 
         Course savedCourse = courseRepository.save(course);
-        CourseDTO courseDTO2=new CourseDTO(savedCourse);
-        return courseDTO2;
+        return new CourseDTO(savedCourse);
     }
 
     public CourseWithModulesDTO getCourseById(Integer id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
-        CourseWithModulesDTO courseDTO=new CourseWithModulesDTO(course);
+        CourseWithModulesDTO courseDTO = new CourseWithModulesDTO(course);
         return courseDTO;
     }
 
-    public List<CourseDTO> getCoursesByOrganization(Integer orgId) {
-        return courseRepository.findByOrgId(orgId).stream()
-                .map(course -> new CourseDTO(course))
-                .toList();
+    public Page<CourseDTO> getCoursesByOrganization(Integer orgId, Pageable pageable) {
+        return courseRepository.findByOrgId(orgId, pageable)
+                .map(CourseDTO::new);
     }
 
     public CourseDTO updateCourse(Integer id, CourseDTO courseDTO) {
         Course existingCourse = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
 
-      
-        if (!existingCourse.getTitle().equals(courseDTO.getTitle()) && 
-            courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), courseDTO.getOrgId())) {
+        if (!existingCourse.getTitle().equals(courseDTO.getTitle()) &&
+                courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), courseDTO.getOrgId())) {
             throw new ConflictException("Course title already exists in this organization");
         }
 
-        if (courseDTO.getOrgId() != null && 
-            !courseDTO.getOrgId().equals(existingCourse.getOrg().getId())) {
+        if (courseDTO.getOrgId() != null &&
+                !courseDTO.getOrgId().equals(existingCourse.getOrg().getId())) {
             Organization org = organizationRepository.findById(courseDTO.getOrgId())
                     .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
             existingCourse.setOrg(org);
@@ -71,8 +68,7 @@ public class CourseService {
 
         modelMapper.map(courseDTO, existingCourse);
         Course updatedCourse = courseRepository.save(existingCourse);
-        CourseDTO courseDTO2=new CourseDTO(updatedCourse);
-        return courseDTO2;
+        return new CourseDTO(updatedCourse);
     }
 
     public void deleteCourse(Integer id) {
@@ -82,11 +78,8 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
-    public List<CourseDTO> getACourses()
-    {
-        return courseRepository.findAll()
-            .stream()
-            .map(org -> new CourseDTO(org))
-            .toList();
+    public Page<CourseDTO> getCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable)
+                .map(CourseDTO::new);
     }
 }
