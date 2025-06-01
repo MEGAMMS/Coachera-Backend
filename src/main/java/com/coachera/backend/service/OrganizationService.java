@@ -9,6 +9,8 @@ import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +25,12 @@ public class OrganizationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-
     public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
-      
-        User user = userRepository.findById(organizationDTO.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + organizationDTO.getUserId()));
 
-        
+        User user = userRepository.findById(organizationDTO.getUserId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User not found with id: " + organizationDTO.getUserId()));
+
         if (organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
             throw new ConflictException("Organization with name '" + organizationDTO.getOrgName() + "' already exists");
         }
@@ -56,17 +57,15 @@ public class OrganizationService {
         Organization existingOrg = organizationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + id));
 
-      
         if (!existingOrg.getOrgName().equals(organizationDTO.getOrgName()) &&
-            organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
+                organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
             throw new ConflictException("Organization name already exists");
         }
 
         modelMapper.map(organizationDTO, existingOrg);
-        
-        
-        if (organizationDTO.getUserId() != null && 
-            !organizationDTO.getUserId().equals(existingOrg.getUser().getId())) {
+
+        if (organizationDTO.getUserId() != null &&
+                !organizationDTO.getUserId().equals(existingOrg.getUser().getId())) {
             User user = userRepository.findById(organizationDTO.getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             existingOrg.setUser(user);
@@ -83,11 +82,16 @@ public class OrganizationService {
         organizationRepository.deleteById(id);
     }
 
-   public List<OrganizationDTO> getAllOrganizations() {
-    return organizationRepository.findAll()
-            .stream()
-            .map(org -> modelMapper.map(org, OrganizationDTO.class))
-            .toList();
-}
+    public List<OrganizationDTO> getAllOrganizations() {
+        return organizationRepository.findAll()
+                .stream()
+                .map(org -> modelMapper.map(org, OrganizationDTO.class))
+                .toList();
+    }
+
+    public Page<OrganizationDTO> getOrganizations(Pageable pageable) {
+        return organizationRepository.findAll(pageable)
+                .map(OrganizationDTO::new);
+    }
 
 }

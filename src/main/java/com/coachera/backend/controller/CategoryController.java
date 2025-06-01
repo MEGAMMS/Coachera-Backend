@@ -2,7 +2,6 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CategoryDTO;
-import com.coachera.backend.dto.pagination.PaginatedResponse;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.service.CategoryService;
 import jakarta.validation.Valid;
@@ -36,7 +35,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ApiResponse<PaginatedResponse<CategoryDTO>> getAllCategories(@Valid PaginationRequest paginationRequest) {
+    public ApiResponse<?> getAllCategories(@Valid PaginationRequest paginationRequest) {
 
         return ApiResponse.paginated(categoryService.getCategories(paginationRequest.toPageable()));
 

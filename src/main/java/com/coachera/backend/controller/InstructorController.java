@@ -2,7 +2,6 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.InstructorDTO;
-import com.coachera.backend.dto.pagination.PaginatedResponse;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.InstructorService;
@@ -39,8 +38,8 @@ public class InstructorController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<PaginatedResponse<InstructorDTO>> getAllInstructors(@Valid PaginationRequest paginationRequest) {
+    // @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<?> getAllInstructors(@Valid PaginationRequest paginationRequest) {
         return ApiResponse.paginated(instructorService.getInstructors(paginationRequest.toPageable()));
     }
 
