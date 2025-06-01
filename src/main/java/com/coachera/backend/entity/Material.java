@@ -5,10 +5,15 @@ import lombok.*;
 
 @Entity
 @Table(name = "materials")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Material extends Auditable{
+public class Material extends Auditable {
+    public enum MaterialType {
+        VIDEO, ARTICLE, QUIZ
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,6 +28,29 @@ public class Material extends Auditable{
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MaterialType type;
+
     @OneToOne(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     private Quiz quiz;
+
+    @Column(name = "video_url")
+    private String videoUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String article;
+
+    // Business logic methods
+    public boolean isVideo() {
+        return type == MaterialType.VIDEO;
+    }
+
+    public boolean isArticle() {
+        return type == MaterialType.ARTICLE;
+    }
+
+    public boolean isQuiz() {
+        return type == MaterialType.QUIZ;
+    }
 }

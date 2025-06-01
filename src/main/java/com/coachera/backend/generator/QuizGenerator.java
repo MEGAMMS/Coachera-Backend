@@ -1,6 +1,7 @@
 package com.coachera.backend.generator;
 
 import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.entity.Quiz;
 import org.instancio.Instancio;
 import org.instancio.Select;
@@ -16,6 +17,7 @@ public class QuizGenerator {
         }
 
         return materials.stream()
+            .filter(material -> material.getType() == MaterialType.QUIZ)
             .map(material -> {
                 // Ensure material is managed/persisted
                 if (material.getId() == null) {

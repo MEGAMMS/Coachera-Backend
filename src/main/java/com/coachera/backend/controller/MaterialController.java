@@ -1,13 +1,14 @@
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.MaterialDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.MaterialService;
 
 import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,41 +25,42 @@ public class MaterialController {
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
-    public ResponseEntity<MaterialDTO> createMaterial(
+    public ApiResponse<?> createMaterial(
             @PathVariable Integer sectionId,
-            @Valid @RequestBody MaterialDTO materialDTO) {
+            @Valid @RequestBody MaterialDTO materialDTO,
+            @AuthenticationPrincipal User user) {
         MaterialDTO createdMaterial = materialService.createMaterial(sectionId, materialDTO);
-        return new ResponseEntity<>(createdMaterial, HttpStatus.CREATED);
+        return ApiResponse.created("Material was created successfully", createdMaterial);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PutMapping("/{materialId}")
-    public ResponseEntity<MaterialDTO> updateMaterial(
+    public ApiResponse<?> updateMaterial(
             @PathVariable Integer materialId,
             @Valid @RequestBody MaterialDTO materialDTO) {
         MaterialDTO updatedMaterial = materialService.updateMaterial(materialId, materialDTO);
-        return ResponseEntity.ok(updatedMaterial);
+        return ApiResponse.success("Material was updated successfully", updatedMaterial);
     }
 
     @GetMapping("/{materialId}")
-    public ResponseEntity<MaterialDTO> getMaterialById(
+    public ApiResponse<?> getMaterialById(
             @PathVariable Integer materialId) {
         MaterialDTO materialDTO = materialService.getMaterialById(materialId);
-        return ResponseEntity.ok(materialDTO);
+        return ApiResponse.success(materialDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<MaterialDTO>> getAllMaterialsBySectionId(
+    public ApiResponse<?> getAllMaterialsBySectionId(
             @PathVariable Integer sectionId) {
         List<MaterialDTO> materials = materialService.getAllMaterialsBySectionId(sectionId);
-        return ResponseEntity.ok(materials);
+        return ApiResponse.success(materials);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @DeleteMapping("/{materialId}")
-    public ResponseEntity<Void> deleteMaterial(
+    public ApiResponse<?> deleteMaterial(
             @PathVariable Integer materialId) {
         materialService.deleteMaterial(materialId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContentResponse();
     }
 }

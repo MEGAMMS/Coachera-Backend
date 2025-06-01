@@ -36,6 +36,7 @@ public class ModuleDTO extends AuditableDTO {
         this.id = module.getId();
         this.courseId = module.getCourse().getId();
         this.orderIndex = module.getOrderIndex();
+        this.title= module.getTitle();
         this.sections = module.getSections().stream()
                 .map(SectionDTO::new)
                 .collect(Collectors.toSet());
