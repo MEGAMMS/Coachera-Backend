@@ -2,6 +2,8 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.pagination.PaginatedResponse;
+import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.InstructorService;
 
@@ -11,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/instructors")
@@ -39,9 +40,8 @@ public class InstructorController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<?> getAllInstructors() {
-        List<InstructorDTO> instructors = instructorService.getAllInstructors();
-        return ApiResponse.success(instructors);
+    public ApiResponse<PaginatedResponse<InstructorDTO>> getAllInstructors(@Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(instructorService.getInstructors(paginationRequest.toPageable()));
     }
 
     @GetMapping("/{id}")
