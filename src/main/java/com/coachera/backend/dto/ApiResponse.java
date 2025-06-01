@@ -1,13 +1,18 @@
 package com.coachera.backend.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.Instant;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import com.coachera.backend.dto.pagination.PaginatedResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ApiResponse<T> extends ResponseEntity<Object> {
     // Create a response body structure
     @Data

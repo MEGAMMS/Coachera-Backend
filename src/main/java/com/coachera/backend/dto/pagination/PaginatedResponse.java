@@ -1,4 +1,4 @@
-package com.coachera.backend.dto;
+package com.coachera.backend.dto.pagination;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

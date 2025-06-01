@@ -3,7 +3,7 @@ package com.coachera.backend.controller;
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.CourseWithModulesDTO;
-import com.coachera.backend.dto.PaginatedResponse;
+import com.coachera.backend.dto.pagination.PaginatedResponse;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.CourseService;
