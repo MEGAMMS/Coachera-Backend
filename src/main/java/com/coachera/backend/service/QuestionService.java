@@ -63,10 +63,10 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
-    public QuestionDTO getQuestionById(Integer questionId) {
+    public QuestionResponseDTO getQuestionById(Integer questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
-        return new QuestionDTO(question);
+        return new QuestionResponseDTO(question);
     }
 
     @Transactional(readOnly = true)

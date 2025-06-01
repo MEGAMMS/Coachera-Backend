@@ -2,6 +2,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.MaterialDTO;
+import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.MaterialService;
 
@@ -37,8 +38,10 @@ public class MaterialController {
     @PutMapping("/{materialId}")
     public ApiResponse<?> updateMaterial(
             @PathVariable Integer materialId,
-            @Valid @RequestBody MaterialDTO materialDTO) {
-        MaterialDTO updatedMaterial = materialService.updateMaterial(materialId, materialDTO);
+            @Valid @RequestBody MaterialDTO materialDTO,
+            @AuthenticationPrincipal User user) {
+        Organization org = user.getOrganization();
+        MaterialDTO updatedMaterial = materialService.updateMaterial(materialId, materialDTO, org);
         return ApiResponse.success("Material was updated successfully", updatedMaterial);
     }
 
@@ -59,8 +62,10 @@ public class MaterialController {
     @PreAuthorize("hasRole('ORGANIZATION')")
     @DeleteMapping("/{materialId}")
     public ApiResponse<?> deleteMaterial(
-            @PathVariable Integer materialId) {
-        materialService.deleteMaterial(materialId);
+            @PathVariable Integer materialId,
+            @AuthenticationPrincipal User user) {
+        Organization org = user.getOrganization();
+        materialService.deleteMaterial(materialId, org);
         return ApiResponse.noContentResponse();
     }
 }
