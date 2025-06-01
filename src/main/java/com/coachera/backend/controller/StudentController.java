@@ -2,14 +2,13 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
@@ -47,11 +46,10 @@ public class StudentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<?> getAllStudents() {
+    // @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<?> getAllStudents(@Valid PaginationRequest paginationRequest) {
 
-        List<StudentDTO> students = studentService.getAllStudents();
-        return ApiResponse.success(students);
+        return ApiResponse.paginated(studentService.getStudents(paginationRequest.toPageable()));
 
     }
 
