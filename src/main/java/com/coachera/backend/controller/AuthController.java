@@ -22,7 +22,7 @@ public class AuthController {
     public ApiResponse<?> registerUser(@RequestBody RegisterRequest registerRequest) {
         try {
             authService.register(registerRequest);
-            return ApiResponse.success("User registered successfully!", null);
+            return ApiResponse.success("Registered successfully!", null);
         } catch (IllegalArgumentException e) {
             return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -32,7 +32,7 @@ public class AuthController {
     public ApiResponse<AuthResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
             AuthResponse authResponse = authService.login(loginRequest);
-            return ApiResponse.success(authResponse);
+            return ApiResponse.success("logged in successfuly",authResponse);
         } catch (BadCredentialsException e) {
             return ApiResponse.error(HttpStatus.UNAUTHORIZED, "Invalid username/email or password");
         }
@@ -42,7 +42,7 @@ public class AuthController {
     public ApiResponse<?> logoutUser(@RequestHeader("Authorization") String authorizationHeader) {
         boolean loggedOut = authService.logout(authorizationHeader);
         if (loggedOut) {
-            return ApiResponse.success("Logged out successfully.");
+            return ApiResponse.success("Logged out successfully.",null);
         }
         return ApiResponse.error(HttpStatus.BAD_REQUEST, "Logout failed. Invalid or missing token.");
     }
