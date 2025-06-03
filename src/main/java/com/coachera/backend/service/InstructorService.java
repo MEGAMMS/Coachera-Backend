@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +57,11 @@ public class InstructorService {
         return instructorRepository.findAll().stream()
                 .map(instructor -> new InstructorDTO(instructor))
                 .collect(Collectors.toList());
+    }
+
+    public Page<InstructorDTO> getInstructors(Pageable pageable) {
+        return instructorRepository.findAll(pageable).
+                map(InstructorDTO::new);
     }
 
     public InstructorDTO updateInstructor(User user, InstructorDTO instructorDTO) {

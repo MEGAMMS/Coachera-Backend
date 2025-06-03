@@ -2,14 +2,13 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CategoryDTO;
+import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -36,10 +35,9 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ApiResponse<?> getAllCategories() {
+    public ApiResponse<?> getAllCategories(@Valid PaginationRequest paginationRequest) {
 
-        List<CategoryDTO> categories = categoryService.getAllCategories();
-        return ApiResponse.success(categories);
+        return ApiResponse.paginated(categoryService.getCategories(paginationRequest.toPageable()));
 
     }
 

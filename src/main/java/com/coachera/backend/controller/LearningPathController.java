@@ -2,6 +2,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.LearningPathDTO;
+import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.LearningPathService;
@@ -39,9 +40,8 @@ public class LearningPathController {
     }
 
     @GetMapping
-    public ApiResponse<?> getAllLearningPaths() {
-        List<LearningPathDTO> learningPaths = learningPathService.getAllLearningPaths();
-        return ApiResponse.success(learningPaths);
+    public ApiResponse<?> getAllLearningPaths(@Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(learningPathService.getLearningPaths(paginationRequest.toPageable()));
     }
 
     @GetMapping("/organization")

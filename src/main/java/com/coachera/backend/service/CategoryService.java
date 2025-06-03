@@ -7,6 +7,8 @@ import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +23,8 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
-
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        
+
         if (categoryRepository.existsByName(categoryDTO.getName())) {
             throw new ConflictException("Category with name '" + categoryDTO.getName() + "' already exists");
         }
@@ -33,7 +34,6 @@ public class CategoryService {
         return new CategoryDTO(savedCategory);
     }
 
-    
     public CategoryDTO getCategoryById(Integer id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
@@ -46,12 +46,17 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    public Page<CategoryDTO> getCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(CategoryDTO::new);
+    }
+
     public CategoryDTO updateCategory(Integer id, CategoryDTO categoryDTO) {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
 
-        if (!existingCategory.getName().equals(categoryDTO.getName()) && 
-            categoryRepository.existsByName(categoryDTO.getName())) {
+        if (!existingCategory.getName().equals(categoryDTO.getName()) &&
+                categoryRepository.existsByName(categoryDTO.getName())) {
             throw new ConflictException("Category with name '" + categoryDTO.getName() + "' already exists");
         }
 

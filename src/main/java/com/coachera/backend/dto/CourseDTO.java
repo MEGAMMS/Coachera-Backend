@@ -41,7 +41,7 @@ public class CourseDTO extends AuditableDTO {
     private Integer orgId;
 
     @Schema(example = "[2,3]", description = "Course's categories")
-    private Set<Integer> categoryIds;
+    private Set<String> categories;
 
     @Schema(example = "[2,3]", description = "Learning paths associated with this course")
     private Set<Integer> learningPathIds;
@@ -60,7 +60,7 @@ public class CourseDTO extends AuditableDTO {
         this.durationHours = course.getDurationHours();
         this.price = course.getPrice();
         this.rating = course.getRating();
-        this.categoryIds = course.getCategories().stream().map(c -> c.getCategory().getId())
+        this.categories = course.getCategories().stream().map(c -> c.getCategory().getName())
                 .collect(Collectors.toSet());
         this.learningPathIds = course.getLearningPaths().stream().map(lp -> lp.getLearningPath().getId())
                 .collect(Collectors.toSet());

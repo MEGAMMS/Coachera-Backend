@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.QuestionDTO;
+import com.coachera.backend.dto.QuestionResponseDTO;
 import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
 import com.coachera.backend.exception.InvalidQuestionException;
@@ -62,20 +63,20 @@ public class QuestionService {
     }
 
     @Transactional(readOnly = true)
-    public QuestionDTO getQuestionById(Integer questionId) {
+    public QuestionResponseDTO getQuestionById(Integer questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
-        return new QuestionDTO(question);
+        return new QuestionResponseDTO(question);
     }
 
     @Transactional(readOnly = true)
-    public List<QuestionDTO> getAllQuestionsByQuizId(Integer quizId) {
+    public List<QuestionResponseDTO> getAllQuestionsByQuizId(Integer quizId) {
         if (!quizRepository.existsById(quizId)) {
             throw new ResourceNotFoundException("Quiz not found with id: " + quizId);
         }
 
         return questionRepository.findByQuizIdOrderByIdAsc(quizId).stream()
-                .map(QuestionDTO::new)
+                .map(QuestionResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
