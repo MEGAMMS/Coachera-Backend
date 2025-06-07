@@ -76,6 +76,7 @@ public class DatabaseSeeder {
     private final ReviewRepository reviewRepo;
     private final LearningPathRepository learningPathRepo;
     private final SkillRepository skillRepo;
+    private final UserGenerator userGenerator;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -93,7 +94,9 @@ public class DatabaseSeeder {
             QuestionRepository questionRepo,
             ReviewRepository reviewRepo,
             LearningPathRepository learningPathRepo,
-            SkillRepository skillRepo) {
+            SkillRepository skillRepo,
+            UserGenerator userGenerator) {
+        this.userGenerator = userGenerator;
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
         this.instructorRepo = instructorRepo;
@@ -115,7 +118,7 @@ public class DatabaseSeeder {
     @Transactional
     public void run() {
         // Generate and assign roles before saving
-        List<User> users = UserGenerator.generate(15);
+        List<User> users = userGenerator.generate(15);
 
         // Assign roles
         for (int i = 0; i < users.size(); i++) {
