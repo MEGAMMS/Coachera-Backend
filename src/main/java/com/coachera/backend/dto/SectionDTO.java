@@ -1,8 +1,10 @@
 package com.coachera.backend.dto;
 
-import java.util.Set;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Section;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,15 +32,17 @@ public class SectionDTO extends AuditableDTO {
     private Integer orderIndex;
 
     @Schema(description = "List of materials in this section")
-    private Set<MaterialDTO> materials;
+    private List<MaterialDTO> materials;
 
     public SectionDTO(Section section) {
         this.id = section.getId();
         this.title = section.getTitle();
         this.moduleId = section.getModule().getId();
         this.orderIndex = section.getOrderIndex();
-        this.materials = section.getMaterials().stream().map(MaterialDTO::new)
-                .collect(Collectors.toSet());
+        this.materials = section.getMaterials().stream()
+                .sorted(Comparator.comparingInt(Material::getOrderIndex)) 
+                .map(material -> new MaterialDTO(material)) 
+                .collect(Collectors.toList());
         this.setCreatedAt(section.getCreatedAt());
         this.setUpdatedAt(section.getUpdatedAt());
     }

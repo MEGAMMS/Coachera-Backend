@@ -1,9 +1,12 @@
 package com.coachera.backend.dto;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.coachera.backend.entity.Module;
+import com.coachera.backend.entity.Section;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -30,7 +33,7 @@ public class ModuleDTO extends AuditableDTO {
     private Integer orderIndex;
 
     @Schema(description = "Sections belonging to this module")
-    private Set<SectionDTO> sections;
+    private List<SectionDTO> sections;
 
     public ModuleDTO(Module module) {
         this.id = module.getId();
@@ -38,7 +41,8 @@ public class ModuleDTO extends AuditableDTO {
         this.orderIndex = module.getOrderIndex();
         this.title= module.getTitle();
         this.sections = module.getSections().stream()
-                .map(SectionDTO::new)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparingInt(Section::getOrderIndex))
+                .map(section -> new SectionDTO(section)) 
+                .collect(Collectors.toList());
     }
 }
