@@ -2,29 +2,27 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.QuizDTO;
-import com.coachera.backend.dto.QuizResultDTO;
-import com.coachera.backend.dto.QuizSubmissionDTO;
 import com.coachera.backend.service.QuizService;
-import com.coachera.backend.service.QuizVerificationService;
+
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/materials/{materialId}/quizzes")
 public class QuizController {
 
     private final QuizService quizService;
-    private final QuizVerificationService quizVerificationService;
     
-    public QuizController(QuizService quizService, QuizVerificationService quizVerificationService) {
+    
+    public QuizController(QuizService quizService) {
         this.quizService = quizService;
-        this.quizVerificationService = quizVerificationService;
+       
         
     }
    
@@ -58,13 +56,5 @@ public class QuizController {
         return ApiResponse.noContentResponse();
     }
 
-    @PostMapping("/verify")
-     public ApiResponse<Map<String, Object>> verifyQuizAnswers(@RequestBody QuizSubmissionDTO request) {
-        QuizResultDTO result = quizVerificationService.verifyAnswers(request);
-
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("data", result);
-
-        return ApiResponse.success(responseMap);
-    }
+    
 }
