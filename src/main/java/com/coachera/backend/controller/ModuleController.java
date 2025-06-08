@@ -1,9 +1,11 @@
 
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.ModuleDTO;
 import com.coachera.backend.service.ModuleService;
 
+import io.swagger.v3.core.model.ApiDescription;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -25,35 +27,35 @@ public class ModuleController {
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping("/courses/{courseId}")
-    public ResponseEntity<ModuleDTO> createModule(@PathVariable Integer courseId, @Valid @RequestBody ModuleDTO moduleDTO) {
+    public ApiResponse<ModuleDTO> createModule(@PathVariable Integer courseId, @Valid @RequestBody ModuleDTO moduleDTO) {
         ModuleDTO createdModule = moduleService.createModule(courseId, moduleDTO);
-        return new ResponseEntity<>(createdModule, HttpStatus.CREATED);
+        return ApiResponse.success("Module was created successfuly",createdModule);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PutMapping("/{moduleId}")
-    public ResponseEntity<ModuleDTO> updateModule(@PathVariable Integer moduleId, @Valid @RequestBody ModuleDTO moduleDTO) {
+    public ApiResponse<ModuleDTO> updateModule(@PathVariable Integer moduleId, @Valid @RequestBody ModuleDTO moduleDTO) {
         ModuleDTO updatedModule = moduleService.updateModule(moduleId, moduleDTO);
-        return ResponseEntity.ok(updatedModule);
+        return ApiResponse.success("Module was updated successfuly",updatedModule);
     }
 
     @GetMapping("/{moduleId}")
-    public ResponseEntity<ModuleDTO> getModuleById(@PathVariable Integer moduleId) {
+    public ApiResponse<ModuleDTO> getModuleById(@PathVariable Integer moduleId) {
         ModuleDTO moduleDTO = moduleService.getModuleById(moduleId);
-        return ResponseEntity.ok(moduleDTO);
+        return ApiResponse.success(moduleDTO);
     }
 
 
     @GetMapping("/courses/{courseId}")
-    public ResponseEntity<List<ModuleDTO>> getAllModulesByCourseId(@PathVariable Integer courseId) {
+    public ApiResponse<List<ModuleDTO>> getAllModulesByCourseId(@PathVariable Integer courseId) {
         List<ModuleDTO> modules = moduleService.getAllModulesByCourseId(courseId);
-        return ResponseEntity.ok(modules);
+        return ApiResponse.success(modules);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @DeleteMapping("/{moduleId}")
-    public ResponseEntity<Void> deleteModule(@PathVariable Integer moduleId) {
+    public ApiResponse<Void> deleteModule(@PathVariable Integer moduleId) {
         moduleService.deleteModule(moduleId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContentResponse();
     }
 }

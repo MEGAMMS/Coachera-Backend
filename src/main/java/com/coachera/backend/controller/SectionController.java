@@ -1,5 +1,6 @@
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.SectionDTO;
 import com.coachera.backend.service.SectionService;
 
@@ -25,42 +26,42 @@ public class SectionController {
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
-    public ResponseEntity<SectionDTO> createSection(
+    public ApiResponse<SectionDTO> createSection(
             @PathVariable Integer moduleId,
             @Valid @RequestBody SectionDTO sectionDTO) {
         SectionDTO createdSection = sectionService.createSection(moduleId, sectionDTO);
-        return new ResponseEntity<>(createdSection, HttpStatus.CREATED);
+        return ApiResponse.created("Section was created successfuly",createdSection);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PutMapping("/{sectionId}")
-    public ResponseEntity<SectionDTO> updateSection(
+    public ApiResponse<SectionDTO> updateSection(
             @PathVariable Integer sectionId,
             @Valid @RequestBody SectionDTO sectionDTO) {
         SectionDTO updatedSection = sectionService.updateSection(sectionId, sectionDTO);
-        return ResponseEntity.ok(updatedSection);
+        return ApiResponse.success("Section was updated successfuly",updatedSection);
     }
 
     @GetMapping("/{sectionId}")
-    public ResponseEntity<SectionDTO> getSectionById(
+    public ApiResponse<SectionDTO> getSectionById(
             @PathVariable Integer moduleId,
             @PathVariable Integer sectionId) {
         SectionDTO sectionDTO = sectionService.getSectionById(sectionId);
-        return ResponseEntity.ok(sectionDTO);
+        return ApiResponse.success(sectionDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<SectionDTO>> getAllSectionsByModuleId(
+    public ApiResponse<List<SectionDTO>> getAllSectionsByModuleId(
             @PathVariable Integer moduleId) {
         List<SectionDTO> sections = sectionService.getAllSectionsByModuleId(moduleId);
-        return ResponseEntity.ok(sections);
+        return ApiResponse.success(sections);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @DeleteMapping("/{sectionId}")
-    public ResponseEntity<Void> deleteSection(
+    public ApiResponse<Void> deleteSection(
             @PathVariable Integer sectionId) {
         sectionService.deleteSection(sectionId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContentResponse();
     }
 }
