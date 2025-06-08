@@ -1,52 +1,60 @@
 package com.coachera.backend.controller;
 
+import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.QuizDTO;
 import com.coachera.backend.service.QuizService;
 
+
 import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/materials/{materialId}/quizzes")
 public class QuizController {
 
     private final QuizService quizService;
-
+    
+    
     public QuizController(QuizService quizService) {
         this.quizService = quizService;
+       
+        
     }
+   
 
     @PostMapping
-    public ResponseEntity<QuizDTO> createQuiz(
+    public ApiResponse<QuizDTO> createQuiz(
             @PathVariable Integer materialId,
             @Valid @RequestBody QuizDTO quizDTO) {
         QuizDTO createdQuiz = quizService.createQuiz(materialId, quizDTO);
-        return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);
+        return ApiResponse.created("Quiz was created successfuly",createdQuiz);
     }
 
     @GetMapping("/{quizId}")
-    public ResponseEntity<QuizDTO> getQuizById(
+    public ApiResponse<QuizDTO> getQuizById(
             @PathVariable Integer quizId) {
         QuizDTO quizDTO = quizService.getQuizById(quizId);
-        return ResponseEntity.ok(quizDTO);
+        return ApiResponse.success(quizDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<QuizDTO>> getAllQuizzesByMaterialId(
+    public ApiResponse<List<QuizDTO>> getAllQuizzesByMaterialId(
             @PathVariable Integer materialId) {
         List<QuizDTO> quizzes = quizService.getAllQuizzesByMaterialId(materialId);
-        return ResponseEntity.ok(quizzes);
+        return ApiResponse.success(quizzes);
     }
 
     @DeleteMapping("/{quizId}")
-    public ResponseEntity<Void> deleteQuiz(
+    public ApiResponse<Void> deleteQuiz(
             @PathVariable Integer quizId) {
         quizService.deleteQuiz(quizId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.noContentResponse();
     }
+
+    
 }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 @Data
 @NoArgsConstructor
@@ -31,7 +32,8 @@ public class CourseWithModulesDTO extends CourseDTO {
     public CourseWithModulesDTO(Course course) {
         super(course);
         this.modules = course.getModules().stream()
-                .map(ModuleDTO::new)
+                .sorted(Comparator.comparingInt(m -> m.getOrderIndex()))
+                .map(module -> new ModuleDTO(module))
                 .collect(Collectors.toList());
     }
 }

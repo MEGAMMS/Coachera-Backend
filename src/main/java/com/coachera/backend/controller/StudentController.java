@@ -37,7 +37,7 @@ public class StudentController {
 
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ApiResponse<?> getStudentById(@PathVariable Integer id) {
 
         StudentDTO student = studentService.getStudentById(id);
@@ -65,6 +65,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
     public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
 
         studentService.deleteStudent(id);
