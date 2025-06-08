@@ -25,12 +25,9 @@ public class QuizSubmissionController {
     }
 
     @PostMapping("/verify")
-     public ApiResponse<Map<String, Object>> verifyQuizAnswers(@RequestBody QuizSubmissionDTO request) {
+     public ApiResponse<?> verifyQuizAnswers(@RequestBody QuizSubmissionDTO request) {
         QuizResultDTO result = quizVerificationService.verifyAnswers(request);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("data", result);
-
-        return ApiResponse.success(responseMap);
+        return ApiResponse.success(result);
     }
 }
