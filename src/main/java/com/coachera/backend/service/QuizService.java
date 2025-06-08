@@ -58,4 +58,6 @@ public class QuizService {
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with id: " + quizId));
         quizRepository.delete(quiz);
     }
+
+    
 }
