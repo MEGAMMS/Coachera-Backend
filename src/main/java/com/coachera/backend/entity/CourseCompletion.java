@@ -9,10 +9,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "course_completion")
-public class CourseCompletion {
+@AllArgsConstructor @NoArgsConstructor @Getter @Setter
+public class CourseCompletion extends Auditable {
     @Id @ManyToOne
     private Enrollment enrollment;
     
