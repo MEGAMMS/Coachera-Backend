@@ -18,5 +18,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
+
+        registry.addResourceHandler("/videos/**")
+                .addResourceLocations("file:" + uploadDir + "/")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
     }
 }
