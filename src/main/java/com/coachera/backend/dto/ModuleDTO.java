@@ -1,7 +1,6 @@
 package com.coachera.backend.dto;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +32,7 @@ public class ModuleDTO extends AuditableDTO {
     private Integer orderIndex;
 
     @Schema(description = "Sections belonging to this module")
-    private List<SectionDTO> sections;
+    private Set<SectionDTO> sections;
 
     public ModuleDTO(Module module) {
         this.id = module.getId();
@@ -43,6 +42,6 @@ public class ModuleDTO extends AuditableDTO {
         this.sections = module.getSections().stream()
                 .sorted(Comparator.comparingInt(Section::getOrderIndex))
                 .map(section -> new SectionDTO(section)) 
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }
