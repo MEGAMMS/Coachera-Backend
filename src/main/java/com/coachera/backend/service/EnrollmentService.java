@@ -2,6 +2,7 @@ package com.coachera.backend.service;
 
 import com.coachera.backend.dto.EnrollmentDTO;
 import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.CourseCompletion;
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +42,8 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public EnrollmentDTO enrollStudent(User user, Integer courseId, String progress) {
-       Integer studentId  = studentRepository.findByUserId(user.getId()).getId();
+    public EnrollmentDTO enrollStudent(User user, Integer courseId, BigDecimal progress) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
 
         if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
             throw new IllegalStateException("Student is already enrolled in this course");
@@ -53,21 +55,36 @@ public class EnrollmentService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 
-        Enrollment enrollment = new Enrollment();
-        enrollment.setStudent(student);
-        enrollment.setCourse(course);
-        enrollment.setProgress(progress);
-        
+        // Create new enrollment
+        Enrollment enrollment = Enrollment.builder()
+                .student(student)
+                .course(course)
+                .build();
+
+        // Create and set course completion
+        CourseCompletion courseCompletion = new CourseCompletion();
+        courseCompletion.setEnrollment(enrollment);
+        courseCompletion.setProgress(progress != null ? progress : BigDecimal.ZERO);
+        enrollment.setCourseCompletion(courseCompletion);
+
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
         return new EnrollmentDTO(savedEnrollment);
     }
 
     @Transactional
-    public EnrollmentDTO updateProgress(Integer studentId, Integer courseId, String progress) {
+    public EnrollmentDTO updateProgress(Integer studentId, Integer courseId, BigDecimal progress) {
         Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found for studentId: " + studentId + " and courseId: " + courseId));
         
-        enrollment.setProgress(progress);
+        if (enrollment.getCourseCompletion() == null) {
+            CourseCompletion courseCompletion = new CourseCompletion();
+            courseCompletion.setEnrollment(enrollment);
+            courseCompletion.setProgress(progress);
+            enrollment.setCourseCompletion(courseCompletion);
+        } else {
+            enrollment.getCourseCompletion().setProgress(progress);
+        }
+        
         Enrollment updatedEnrollment = enrollmentRepository.save(enrollment);
         return new EnrollmentDTO(updatedEnrollment);
     }

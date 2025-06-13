@@ -1,7 +1,6 @@
 package com.coachera.backend.dto;
 
 import com.coachera.backend.entity.CourseCompletion;
-import com.coachera.backend.dto.AuditableDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

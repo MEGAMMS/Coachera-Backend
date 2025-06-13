@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,7 @@ public class EnrollmentController {
     public ApiResponse<?> enrollStudent(
             @AuthenticationPrincipal User user,
             @PathVariable Integer courseId,
-            @RequestParam(defaultValue = "0%") String progress) {
+            @RequestParam(defaultValue = "0%") BigDecimal progress) {
 
         EnrollmentDTO enrollmentDTO = enrollmentService.enrollStudent(user, courseId, progress);
         return ApiResponse.created("Student was enrolled", enrollmentDTO);
