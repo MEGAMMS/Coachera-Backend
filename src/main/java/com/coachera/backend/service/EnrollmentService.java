@@ -51,7 +51,7 @@ public class EnrollmentService {
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
-        
+
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
 
@@ -74,8 +74,9 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentDTO updateProgress(Integer studentId, Integer courseId, BigDecimal progress) {
         Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId)
-                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found for studentId: " + studentId + " and courseId: " + courseId));
-        
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Enrollment not found for studentId: " + studentId + " and courseId: " + courseId));
+
         if (enrollment.getCourseCompletion() == null) {
             CourseCompletion courseCompletion = new CourseCompletion();
             courseCompletion.setEnrollment(enrollment);
@@ -84,7 +85,7 @@ public class EnrollmentService {
         } else {
             enrollment.getCourseCompletion().setProgress(progress);
         }
-        
+
         Enrollment updatedEnrollment = enrollmentRepository.save(enrollment);
         return new EnrollmentDTO(updatedEnrollment);
     }
@@ -93,8 +94,14 @@ public class EnrollmentService {
     public void unenrollStudent(User user, Integer courseId) {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         if (!enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
-            throw new ResourceNotFoundException("Enrollment not found for studentId: " + studentId + " and courseId: " + courseId);
+            throw new ResourceNotFoundException(
+                    "Enrollment not found for studentId: " + studentId + " and courseId: " + courseId);
         }
         enrollmentRepository.deleteByStudentIdAndCourseId(studentId, courseId);
+    }
+
+    public Enrollment getEnrollmentById(Integer enrollmentId) {
+        return enrollmentRepository.findById(enrollmentId).orElse(null);
+
     }
 }

@@ -1,8 +1,10 @@
 package com.coachera.backend.service;
 
+import com.coachera.backend.dto.CourseCompletionDTO;
 import com.coachera.backend.entity.*;
 import com.coachera.backend.entity.enums.CompletionState;
 import com.coachera.backend.entity.enums.CompletionTriggerType;
+import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -37,15 +39,16 @@ public class CompletionService {
 
         switch (material.getType()) {
             // case VIDEO:
-            //     completed = videoViewingService.isViewed(enrollment, material);
-            //     state = completed ? CompletionState.COMPLETE : CompletionState.INCOMPLETE;
-            //     triggerType = CompletionTriggerType.VIEWING;
-            //     break;
+            // completed = videoViewingService.isViewed(enrollment, material);
+            // state = completed ? CompletionState.COMPLETE : CompletionState.INCOMPLETE;
+            // triggerType = CompletionTriggerType.VIEWING;
+            // break;
             // case QUIZ:
-            //     completed = quizService.isQuizPassed(enrollment, material);
-            //     state = completed ? CompletionState.COMPLETE_PASS : CompletionState.COMPLETE_FAIL;
-            //     triggerType = CompletionTriggerType.GRADE;
-            //     break;
+            // completed = quizService.isQuizPassed(enrollment, material);
+            // state = completed ? CompletionState.COMPLETE_PASS :
+            // CompletionState.COMPLETE_FAIL;
+            // triggerType = CompletionTriggerType.GRADE;
+            // break;
             case ARTICLE:
                 // Articles might be marked complete manually or after certain reading time
                 // This would require additional tracking
@@ -53,8 +56,8 @@ public class CompletionService {
         }
 
         if (completed) {
-            Optional<MaterialCompletion> existingCompletion = 
-                materialCompletionRepository.findByEnrollmentAndMaterial(enrollment, material);
+            Optional<MaterialCompletion> existingCompletion = materialCompletionRepository
+                    .findByEnrollmentAndMaterial(enrollment, material);
 
             if (existingCompletion.isPresent()) {
                 MaterialCompletion completion = existingCompletion.get();
@@ -86,14 +89,13 @@ public class CompletionService {
         Course course = enrollment.getCourse();
         long totalMaterials = materialRepository.countByCourse(course);
         long completedMaterials = materialCompletionRepository
-            .countByEnrollmentAndCompleted(enrollment, true);
+                .countByEnrollmentAndCompleted(enrollment, true);
 
         if (totalMaterials > 0) {
             BigDecimal progress = BigDecimal.valueOf((double) completedMaterials / totalMaterials * 100)
-                .setScale(2, RoundingMode.HALF_UP);
+                    .setScale(2, RoundingMode.HALF_UP);
 
-            Optional<CourseCompletion> existingCompletion = 
-                courseCompletionRepository.findById(enrollment);
+            Optional<CourseCompletion> existingCompletion = courseCompletionRepository.findById(enrollment);
 
             if (existingCompletion.isPresent()) {
                 CourseCompletion completion = existingCompletion.get();
@@ -144,7 +146,13 @@ public class CompletionService {
     /**
      * Get course completion status for a student
      */
-    public Optional<CourseCompletion> getCourseCompletion(Enrollment enrollment) {
-        return courseCompletionRepository.findById(enrollment);
+    public CourseCompletionDTO getCourseCompletion(Integer enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
+        
+        CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+                .orElseThrow(() -> new ResourceNotFoundException("course not started yet" + enrollment));
+
+        return new CourseCompletionDTO(courseCompletion);
     }
 }
