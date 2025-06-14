@@ -5,11 +5,8 @@ import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.ModuleDTO;
 import com.coachera.backend.service.ModuleService;
 
-import io.swagger.v3.core.model.ApiDescription;
 import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,16 +24,18 @@ public class ModuleController {
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping("/courses/{courseId}")
-    public ApiResponse<ModuleDTO> createModule(@PathVariable Integer courseId, @Valid @RequestBody ModuleDTO moduleDTO) {
+    public ApiResponse<ModuleDTO> createModule(@PathVariable Integer courseId,
+            @Valid @RequestBody ModuleDTO moduleDTO) {
         ModuleDTO createdModule = moduleService.createModule(courseId, moduleDTO);
-        return ApiResponse.success("Module was created successfuly",createdModule);
+        return ApiResponse.success("Module was created successfuly", createdModule);
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PutMapping("/{moduleId}")
-    public ApiResponse<ModuleDTO> updateModule(@PathVariable Integer moduleId, @Valid @RequestBody ModuleDTO moduleDTO) {
+    public ApiResponse<ModuleDTO> updateModule(@PathVariable Integer moduleId,
+            @Valid @RequestBody ModuleDTO moduleDTO) {
         ModuleDTO updatedModule = moduleService.updateModule(moduleId, moduleDTO);
-        return ApiResponse.success("Module was updated successfuly",updatedModule);
+        return ApiResponse.success("Module was updated successfuly", updatedModule);
     }
 
     @GetMapping("/{moduleId}")
@@ -44,7 +43,6 @@ public class ModuleController {
         ModuleDTO moduleDTO = moduleService.getModuleById(moduleId);
         return ApiResponse.success(moduleDTO);
     }
-
 
     @GetMapping("/courses/{courseId}")
     public ApiResponse<List<ModuleDTO>> getAllModulesByCourseId(@PathVariable Integer courseId) {

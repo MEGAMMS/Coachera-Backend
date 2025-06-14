@@ -6,7 +6,6 @@ import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
-import com.coachera.backend.repository.ImageRepository;
 import com.coachera.backend.repository.UserRepository;
 import com.coachera.backend.service.ImageService;
 
