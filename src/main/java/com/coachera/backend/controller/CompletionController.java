@@ -37,22 +37,22 @@ public class CompletionController {
     @PostMapping("/materials/check")
     @PreAuthorize("hasRole('STUDENT')")
     public ApiResponse<?> checkMaterialCompletion(
-            @RequestParam Enrollment enrollment,
-            @RequestParam Material material) {
-        completionService.checkMaterialCompletion(enrollment, material);
+            @RequestParam Integer enrollmentId,
+            @RequestParam Integer materialId) {
+        completionService.checkMaterialCompletion(enrollmentId, materialId);
         return ApiResponse.noContentResponse();
     }
 
-    // @PostMapping("/materials/manual")
-    // @PreAuthorize("hasRole('INSTRUCTOR')")
-    // public ApiResponse<?> markMaterialComplete(
-    //         @Valid @RequestBody MaterialCompletionDTO request) {
-    //     return ApiResponse.created(
-    //             "Material marked as complete",
-    //             completionService.markMaterialComplete(
-    //                     request.getEnrollmentId(),
-    //                     request.getMaterialId()));
-    // }
+    @PostMapping("/materials/manual")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public ApiResponse<?> markMaterialComplete(
+            @Valid @RequestBody MaterialCompletionDTO request) {
+        return ApiResponse.created(
+                "Material marked as complete",
+                completionService.markMaterialComplete(
+                        request.getEnrollmentId(),
+                        request.getMaterialId()));
+    }
 
     // @PutMapping("/enrollment/{enrollmentId}/progress")
     // @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")

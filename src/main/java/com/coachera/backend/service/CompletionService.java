@@ -34,10 +34,16 @@ public class CompletionService {
      * Checks and updates material completion status based on the material type
      */
     @Transactional
-    public void checkMaterialCompletion(Enrollment enrollment, Material material) {
+    public void checkMaterialCompletion(Integer enrollmentId, Integer materialId) {
         boolean completed = false;
         CompletionState state = CompletionState.INCOMPLETE;
         CompletionTriggerType triggerType = null;
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
+
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
 
         switch (material.getType()) {
             // case VIDEO:
@@ -124,7 +130,13 @@ public class CompletionService {
      * Manually mark a material as complete for a student
      */
     @Transactional
-    public MaterialCompletion markMaterialComplete(Enrollment enrollment, Material material) {
+    public MaterialCompletionDTO markMaterialComplete(Integer enrollmentId, Integer materialId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
+
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
+        
         MaterialCompletion completion = new MaterialCompletion();
         completion.setEnrollment(enrollment);
         completion.setMaterial(material);
@@ -135,7 +147,7 @@ public class CompletionService {
 
         materialCompletionRepository.save(completion);
         updateCourseProgress(enrollment);
-        return completion;
+        return new MaterialCompletionDTO(completion);
     }
 
     /**
@@ -144,7 +156,7 @@ public class CompletionService {
     public List<MaterialCompletionDTO> getMaterialCompletions(Integer enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
-        
+
         return materialCompletionRepository.findByEnrollment(enrollment).stream()
                 .map(MaterialCompletionDTO::new)
                 .collect(Collectors.toList());
@@ -156,7 +168,7 @@ public class CompletionService {
     public CourseCompletionDTO getCourseCompletion(Integer enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
-        
+
         CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
                 .orElseThrow(() -> new ResourceNotFoundException("course not started yet" + enrollment));
 
