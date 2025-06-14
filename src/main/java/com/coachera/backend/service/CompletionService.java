@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.CourseCompletionDTO;
+import com.coachera.backend.dto.MaterialCompletionDTO;
 import com.coachera.backend.entity.*;
 import com.coachera.backend.entity.enums.CompletionState;
 import com.coachera.backend.entity.enums.CompletionTriggerType;
@@ -16,6 +17,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,8 +141,13 @@ public class CompletionService {
     /**
      * Get completion status for all materials in a course for a student
      */
-    public List<MaterialCompletion> getMaterialCompletions(Enrollment enrollment) {
-        return materialCompletionRepository.findByEnrollment(enrollment);
+    public List<MaterialCompletionDTO> getMaterialCompletions(Integer enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
+        
+        return materialCompletionRepository.findByEnrollment(enrollment).stream()
+                .map(MaterialCompletionDTO::new)
+                .collect(Collectors.toList());
     }
 
     /**

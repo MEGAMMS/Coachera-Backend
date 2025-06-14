@@ -24,14 +24,14 @@ public class CompletionController {
 
     @GetMapping("/enrollment/{enrollmentId}")
     @PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")
-    public ApiResponse<?> getCourseCompletion(@PathVariable EnrollmentDTO enrollmentDTO) {
-        return ApiResponse.success(completionService.getCourseCompletion(enrollmentDTO.getId()));
+    public ApiResponse<?> getCourseCompletion(@PathVariable Integer enrollmentId) {
+        return ApiResponse.success(completionService.getCourseCompletion(enrollmentId));
     }
 
     @GetMapping("/enrollment/{enrollmentId}/materials")
     @PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")
-    public ApiResponse<?> getMaterialCompletions(@PathVariable Enrollment enrollment) {
-        return ApiResponse.success(completionService.getMaterialCompletions(enrollment));
+    public ApiResponse<?> getMaterialCompletions(@PathVariable Integer enrollmentId) {
+        return ApiResponse.success(completionService.getMaterialCompletions(enrollmentId));
     }
 
     @PostMapping("/materials/check")
