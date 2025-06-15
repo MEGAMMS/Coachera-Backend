@@ -192,4 +192,21 @@ public class CompletionService {
 
         return completionDTOs;
     }
+
+    public List<CourseCompletionDTO> getCompletionsByStudent(Integer studentId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
+
+        List<CourseCompletionDTO> completionDTOs = new ArrayList<>();
+
+        for (Enrollment enrollment : enrollments) {
+
+            CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Course completion not found for enrollment: " + enrollment.getId()));
+
+            completionDTOs.add(new CourseCompletionDTO(courseCompletion));
+        }
+
+        return completionDTOs;
+    }
 }

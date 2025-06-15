@@ -71,12 +71,12 @@ public class CompletionController {
                 completionService.getCompletionsByCourse(courseId));
     }
 
-    // @GetMapping("/student/{studentId}")
-    // @PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")
-    // public ApiResponse<?> getCompletionsByStudent(@PathVariable Integer studentId) {
-    //     return ApiResponse.success(
-    //             completionService.getCompletionsByStudent(studentId));
-    // }
+    @GetMapping("/student/{studentId}")
+    @PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")
+    public ApiResponse<?> getCompletionsByStudent(@PathVariable Integer studentId) {
+        return ApiResponse.success(
+                completionService.getCompletionsByStudent(studentId));
+    }
 
     // @PatchMapping("/enrollment/{enrollmentId}/reset")
     // @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
