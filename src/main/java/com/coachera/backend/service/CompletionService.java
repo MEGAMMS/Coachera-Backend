@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -136,7 +137,7 @@ public class CompletionService {
 
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
-        
+
         MaterialCompletion completion = new MaterialCompletion();
         completion.setEnrollment(enrollment);
         completion.setMaterial(material);
@@ -173,5 +174,22 @@ public class CompletionService {
                 .orElseThrow(() -> new ResourceNotFoundException("course not started yet" + enrollment));
 
         return new CourseCompletionDTO(courseCompletion);
+    }
+
+    public List<CourseCompletionDTO> getCompletionsByCourse(Integer courseId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
+
+        List<CourseCompletionDTO> completionDTOs = new ArrayList<>();
+
+        for (Enrollment enrollment : enrollments) {
+
+            CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Course completion not found for enrollment: " + enrollment.getId()));
+
+            completionDTOs.add(new CourseCompletionDTO(courseCompletion));
+        }
+
+        return completionDTOs;
     }
 }
