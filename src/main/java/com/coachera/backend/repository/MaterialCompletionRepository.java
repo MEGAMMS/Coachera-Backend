@@ -12,4 +12,5 @@ public interface MaterialCompletionRepository extends JpaRepository<MaterialComp
     Optional<MaterialCompletion> findByEnrollmentAndMaterial(Enrollment enrollment, Material material);
     List<MaterialCompletion> findByEnrollment(Enrollment enrollment);
     long countByEnrollmentAndCompleted(Enrollment enrollment, boolean completed);
+    void deleteByEnrollment(Enrollment enrollment);
 }

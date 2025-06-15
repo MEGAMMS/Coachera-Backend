@@ -78,11 +78,11 @@ public class CompletionController {
                 completionService.getCompletionsByStudent(studentId));
     }
 
-    // @PatchMapping("/enrollment/{enrollmentId}/reset")
-    // @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
-    // public ApiResponse<?> resetCompletion(
-    //         @PathVariable Integer enrollmentId) {
-    //     completionService.resetCompletion(enrollmentId);
-    //     return ApiResponse.noContentResponse();
-    // }
+    @PatchMapping("/enrollment/{enrollmentId}/reset")
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
+    public ApiResponse<?> resetCompletion(
+            @PathVariable Integer enrollmentId) {
+        completionService.resetCompletion(enrollmentId);
+        return ApiResponse.noContentResponse();
+    }
 }

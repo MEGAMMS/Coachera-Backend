@@ -154,6 +154,7 @@ public class CompletionService {
     /**
      * Get completion status for all materials in a course for a student
      */
+    @Transactional
     public List<MaterialCompletionDTO> getMaterialCompletions(Integer enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
@@ -166,6 +167,7 @@ public class CompletionService {
     /**
      * Get course completion status for a student
      */
+    @Transactional
     public CourseCompletionDTO getCourseCompletion(Integer enrollmentId) {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
@@ -176,6 +178,10 @@ public class CompletionService {
         return new CourseCompletionDTO(courseCompletion);
     }
 
+    /**
+     * Get completions status for a course
+     */
+    @Transactional
     public List<CourseCompletionDTO> getCompletionsByCourse(Integer courseId) {
         List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
 
@@ -193,20 +199,45 @@ public class CompletionService {
         return completionDTOs;
     }
 
+    /**
+     * Get courses completion status for a student
+     */
+    @Transactional
     public List<CourseCompletionDTO> getCompletionsByStudent(Integer studentId) {
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
 
-        List<CourseCompletionDTO> completionDTOs = new ArrayList<>();
+        return enrollments.stream()
+                .map(enrollment -> courseCompletionRepository.findById(enrollment)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Course completion not found for enrollment: " + enrollment.getId())))
+                .map(CourseCompletionDTO::new)
+                .collect(Collectors.toList());
+    }
 
-        for (Enrollment enrollment : enrollments) {
+    /**
+     * Resets all completion progress for a given enrollment
+     * - Deletes all material completions
+     * - Resets course completion progress to 0
+     */
+    @Transactional
+    public void resetCompletion(Integer enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
 
-            CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Course completion not found for enrollment: " + enrollment.getId()));
+        // Delete all material completions for this enrollment
+        materialCompletionRepository.deleteByEnrollment(enrollment);
 
-            completionDTOs.add(new CourseCompletionDTO(courseCompletion));
-        }
+        // Reset course completion
+        CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+                .orElseGet(() -> {
+                    CourseCompletion newCompletion = new CourseCompletion();
+                    newCompletion.setEnrollment(enrollment);
+                    return newCompletion;
+                });
 
-        return completionDTOs;
+        courseCompletion.setProgress(BigDecimal.ZERO);
+        courseCompletion.setCompleted(false);
+        courseCompletion.setCompletionDate(null);
+        courseCompletionRepository.save(courseCompletion);
     }
 }
