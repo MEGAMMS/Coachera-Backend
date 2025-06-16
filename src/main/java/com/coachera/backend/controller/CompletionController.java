@@ -1,11 +1,10 @@
 package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
-import com.coachera.backend.dto.EnrollmentDTO;
 import com.coachera.backend.dto.MaterialCompletionDTO;
-import com.coachera.backend.entity.Enrollment;
-import com.coachera.backend.entity.Material;
 import com.coachera.backend.service.CompletionService;
+import com.coachera.backend.service.StudentService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,10 +16,14 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/completions")
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class CompletionController {
 
     private final CompletionService completionService;
+
+    public CompletionController(CompletionService completionService) {
+        this.completionService = completionService;
+    }
 
     @GetMapping("/enrollment/{enrollmentId}")
     @PreAuthorize("hasAnyRole('STUDENT', 'INSTRUCTOR', 'ADMIN')")

@@ -6,9 +6,7 @@ import com.coachera.backend.entity.*;
 import com.coachera.backend.entity.enums.CompletionState;
 import com.coachera.backend.entity.enums.CompletionTriggerType;
 import com.coachera.backend.exception.ResourceNotFoundException;
-import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 public class CompletionService {
 
     private final MaterialCompletionRepository materialCompletionRepository;
@@ -30,6 +28,19 @@ public class CompletionService {
     private final QuizService quizService;
     // private final VideoViewingService videoViewingService;
     private final EnrollmentRepository enrollmentRepository;
+
+    public CompletionService(
+            MaterialCompletionRepository materialCompletionRepository,
+            CourseCompletionRepository courseCompletionRepository,
+            MaterialRepository materialRepository,
+            QuizService quizService,
+            EnrollmentRepository enrollmentRepository) {
+        this.materialCompletionRepository = materialCompletionRepository;
+        this.courseCompletionRepository = courseCompletionRepository;
+        this.materialRepository = materialRepository;
+        this.quizService = quizService;
+        this.enrollmentRepository = enrollmentRepository;
+    }
 
     /**
      * Checks and updates material completion status based on the material type
