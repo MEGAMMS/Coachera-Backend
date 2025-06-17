@@ -233,8 +233,8 @@ public class DatabaseSeeder {
     public void clean() {
         skillRepo.deleteAll();
         learningPathRepo.deleteAll();
-        reviewRepo.deleteAll();
         questionRepo.deleteAll();
+        reviewRepo.deleteAll();
         quizRepo.deleteAll();
         materialRepo.deleteAll();
         sectionRepo.deleteAll();

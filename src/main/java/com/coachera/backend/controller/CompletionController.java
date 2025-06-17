@@ -3,10 +3,8 @@ package com.coachera.backend.controller;
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.MaterialCompletionDTO;
 import com.coachera.backend.service.CompletionService;
-import com.coachera.backend.service.StudentService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

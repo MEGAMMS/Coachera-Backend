@@ -115,7 +115,7 @@ public class CompletionService {
             BigDecimal progress = BigDecimal.valueOf((double) completedMaterials / totalMaterials * 100)
                     .setScale(2, RoundingMode.HALF_UP);
 
-            Optional<CourseCompletion> existingCompletion = courseCompletionRepository.findById(enrollment);
+            Optional<CourseCompletion> existingCompletion = courseCompletionRepository.findByEnrollment(enrollment);
 
             if (existingCompletion.isPresent()) {
                 CourseCompletion completion = existingCompletion.get();
@@ -183,7 +183,7 @@ public class CompletionService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + enrollmentId));
 
-        CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+        CourseCompletion courseCompletion = courseCompletionRepository.findByEnrollment(enrollment)
                 .orElseThrow(() -> new ResourceNotFoundException("course not started yet" + enrollment));
 
         return new CourseCompletionDTO(courseCompletion);
@@ -200,7 +200,7 @@ public class CompletionService {
 
         for (Enrollment enrollment : enrollments) {
 
-            CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+            CourseCompletion courseCompletion = courseCompletionRepository.findByEnrollment(enrollment)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Course completion not found for enrollment: " + enrollment.getId()));
 
@@ -218,7 +218,7 @@ public class CompletionService {
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(studentId);
 
         return enrollments.stream()
-                .map(enrollment -> courseCompletionRepository.findById(enrollment)
+                .map(enrollment -> courseCompletionRepository.findByEnrollment(enrollment)
                         .orElseThrow(() -> new ResourceNotFoundException(
                                 "Course completion not found for enrollment: " + enrollment.getId())))
                 .map(CourseCompletionDTO::new)
@@ -239,7 +239,7 @@ public class CompletionService {
         materialCompletionRepository.deleteByEnrollment(enrollment);
 
         // Reset course completion
-        CourseCompletion courseCompletion = courseCompletionRepository.findById(enrollment)
+        CourseCompletion courseCompletion = courseCompletionRepository.findByEnrollment(enrollment)
                 .orElseGet(() -> {
                     CourseCompletion newCompletion = new CourseCompletion();
                     newCompletion.setEnrollment(enrollment);
