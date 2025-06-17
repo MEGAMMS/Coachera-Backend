@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Schema(description = "Course Completion Data Transfer Object")
 public class CourseCompletionDTO extends AuditableDTO {
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
+    private Integer id;
+
     @Schema(required = true, example = "123", description = "Enrollment ID associated with the course completion")
     private Integer enrollmentId;
 
