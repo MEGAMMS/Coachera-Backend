@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Certificate;
 import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.CourseCompletion;
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.LearningPath;
@@ -26,6 +27,7 @@ import com.coachera.backend.entity.Module;
 
 import com.coachera.backend.generator.CategoryGenerator;
 import com.coachera.backend.generator.CertificateGenerator;
+import com.coachera.backend.generator.CourseCompletionGenerator;
 import com.coachera.backend.generator.CourseGenerator;
 import com.coachera.backend.generator.EnrollmentGenerator;
 import com.coachera.backend.generator.InstructorGenerator;
@@ -44,6 +46,7 @@ import com.coachera.backend.generator.ModuleGenerator;
 
 import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
+import com.coachera.backend.repository.CourseCompletionRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.EnrollmentRepository;
 import com.coachera.backend.repository.InstructorRepository;
@@ -81,6 +84,7 @@ public class DatabaseSeeder {
     private final SkillRepository skillRepo;
     private final UserGenerator userGenerator;
     private final MaterialCompletionRepository materialCompletionRepo;
+    private final CourseCompletionRepository courseCompletionRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -100,7 +104,8 @@ public class DatabaseSeeder {
             LearningPathRepository learningPathRepo,
             SkillRepository skillRepo,
             UserGenerator userGenerator,
-            MaterialCompletionRepository materialCompletionRepo) {
+            MaterialCompletionRepository materialCompletionRepo,
+            CourseCompletionRepository courseCompletionRepo) {
         this.userGenerator = userGenerator;
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
@@ -119,6 +124,7 @@ public class DatabaseSeeder {
         this.learningPathRepo = learningPathRepo;
         this.skillRepo = skillRepo;
         this.materialCompletionRepo = materialCompletionRepo;
+        this.courseCompletionRepo = courseCompletionRepo;
     }
 
     @Transactional
@@ -206,6 +212,10 @@ public class DatabaseSeeder {
                 .forEnrollmentsAndMaterials(enrollments, materials);
         materialCompletionRepo.saveAll(materialCompletions);
 
+        // Seed Course Completions
+        List<CourseCompletion> courseCompletions = CourseCompletionGenerator.forEnrollmentsWithMaterialProgress(enrollments);
+        courseCompletionRepo.saveAll(courseCompletions);
+
         // Seed Quizzes
         List<Quiz> quizzes = QuizGenerator.fromMaterials(materials);
         quizRepo.saveAll(quizzes);
@@ -247,6 +257,7 @@ public class DatabaseSeeder {
         questionRepo.deleteAll();
         reviewRepo.deleteAll();
         quizRepo.deleteAll();
+        courseCompletionRepo.deleteAll();
         materialCompletionRepo.deleteAll();
         materialRepo.deleteAll();
         sectionRepo.deleteAll();
