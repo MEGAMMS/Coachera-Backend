@@ -25,7 +25,7 @@ public class CompletionService {
     private final MaterialCompletionRepository materialCompletionRepository;
     private final CourseCompletionRepository courseCompletionRepository;
     private final MaterialRepository materialRepository;
-    private final QuizService quizService;
+    private final QuizVerificationService quizService;
     // private final VideoViewingService videoViewingService;
     private final EnrollmentRepository enrollmentRepository;
 
@@ -33,7 +33,7 @@ public class CompletionService {
             MaterialCompletionRepository materialCompletionRepository,
             CourseCompletionRepository courseCompletionRepository,
             MaterialRepository materialRepository,
-            QuizService quizService,
+            QuizVerificationService quizService,
             EnrollmentRepository enrollmentRepository) {
         this.materialCompletionRepository = materialCompletionRepository;
         this.courseCompletionRepository = courseCompletionRepository;
@@ -63,12 +63,12 @@ public class CompletionService {
             // state = completed ? CompletionState.COMPLETE : CompletionState.INCOMPLETE;
             // triggerType = CompletionTriggerType.VIEWING;
             // break;
-            // case QUIZ:
-            // completed = quizService.isQuizPassed(enrollment, material);
-            // state = completed ? CompletionState.COMPLETE_PASS :
-            // CompletionState.COMPLETE_FAIL;
-            // triggerType = CompletionTriggerType.GRADE;
-            // break;
+            case QUIZ:
+            completed = quizService.isQuizPassed(enrollment, material);
+            state = completed ? CompletionState.COMPLETE_PASS :
+            CompletionState.COMPLETE_FAIL;
+            triggerType = CompletionTriggerType.GRADE;
+            break;
             case ARTICLE:
                 markMaterialComplete(enrollmentId,materialId);
                 break;

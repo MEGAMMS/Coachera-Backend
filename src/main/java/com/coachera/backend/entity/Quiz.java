@@ -26,7 +26,7 @@ public class Quiz extends Auditable {
     @Builder.Default
     private Set<Question> questions = new HashSet<>();
 
-        // Helper method to add a question and maintain the bidirectional relationship
+    // Helper method to add a question and maintain the bidirectional relationship
     public void addQuestion(Question question) {
         if (question != null) {
             if (questions == null) {
@@ -37,7 +37,8 @@ public class Quiz extends Auditable {
         }
     }
 
-    // Helper method to remove a question and maintain the bidirectional relationship
+    // Helper method to remove a question and maintain the bidirectional
+    // relationship
     public void deleteQuestion(Question question) {
         if (question != null && questions != null) {
             question.setQuiz(null);

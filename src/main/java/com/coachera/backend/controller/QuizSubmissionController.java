@@ -1,8 +1,5 @@
 package com.coachera.backend.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/quizzes")
 public class QuizSubmissionController {
 
-    private final QuizVerificationService quizVerificationService ;
+    private final QuizVerificationService quizVerificationService;
 
     public QuizSubmissionController(QuizVerificationService quizVerificationService) {
         this.quizVerificationService = quizVerificationService;
     }
 
     @PostMapping("/verify")
-     public ApiResponse<?> verifyQuizAnswers(@RequestBody QuizSubmissionDTO request) {
+    public ApiResponse<?> verifyQuizAnswers(@RequestBody QuizSubmissionDTO request) {
         QuizResultDTO result = quizVerificationService.verifyAnswers(request);
 
         return ApiResponse.success(result);
