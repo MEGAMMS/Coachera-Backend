@@ -29,6 +29,9 @@ public class Category extends Auditable {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = true)
+    private String icon;
+
     // Add bidirectional relationship
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
