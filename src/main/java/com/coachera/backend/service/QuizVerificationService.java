@@ -1,5 +1,6 @@
 package com.coachera.backend.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.coachera.backend.dto.*;
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.MaterialCompletion;
 import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
+import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.enums.CompletionState;
+import com.coachera.backend.entity.enums.CompletionTriggerType;
+import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.EnrollmentRepository;
+import com.coachera.backend.repository.MaterialCompletionRepository;
+import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.QuizRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,9 +32,12 @@ import lombok.RequiredArgsConstructor;
 public class QuizVerificationService {
 
     private final QuizRepository quizRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final MaterialRepository materialRepository;
+    private final MaterialCompletionRepository materialCompletionRepository;
 
     @Transactional(readOnly = true)
-    public QuizResultDTO verifyAnswers(QuizSubmissionDTO request) {
+    public QuizResultDTO verifyAnswers(QuizSubmissionDTO request, User user) {
         Quiz quiz = quizRepository.findById(request.getQuizId().intValue())
                 .orElseThrow(() -> new IllegalArgumentException("Quiz not found"));
 
@@ -58,6 +70,12 @@ public class QuizVerificationService {
         int total = quizQuestions.size();
         double percentage = total == 0 ? 0 : (correctCount * 100.0 / total);
 
+        // Storing score
+        Integer studentId = user.getStudent().getId();
+        Integer materialId = quiz.getMaterial().getId();
+        Integer courseId = quiz.getMaterial().getSection().getModule().getCourse().getId();
+        markMaterialComplete(studentId, courseId, materialId, percentage);
+
         QuizResultDTO response = new QuizResultDTO();
         response.setQuizId(request.getQuizId());
         response.setTotalQuestions(total);
@@ -71,5 +89,31 @@ public class QuizVerificationService {
     public boolean isQuizPassed(Enrollment enrollment, Material material) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'isQuizPassed'");
+    }
+
+    @Transactional
+    public void markMaterialComplete(Integer studentId, Integer courseId, Integer materialId, double percentage) {
+        Enrollment enrollment = enrollmentRepository.findByStudentIdAndCourseId(studentId, courseId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Enrollment not found for student: " + studentId + " in course " + courseId));
+
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
+
+        MaterialCompletion completion = new MaterialCompletion();
+        completion.setEnrollment(enrollment);
+        completion.setMaterial(material);
+        completion.setCompletionDate(LocalDateTime.now());
+        completion.setTriggerType(CompletionTriggerType.GRADE);
+
+        if (percentage > 70) {
+            completion.setCompleted(true);
+            completion.setCompletionState(CompletionState.COMPLETE_PASS);
+        } else {
+            completion.setCompleted(false);
+            completion.setCompletionState(CompletionState.COMPLETE_FAIL);
+        }
+
+        materialCompletionRepository.save(completion);
     }
 }
