@@ -8,10 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
-
 @RestController
 @RequestMapping("/api/completions")
 // @RequiredArgsConstructor
@@ -54,16 +50,6 @@ public class CompletionController {
                         request.getEnrollmentId(),
                         request.getMaterialId()));
     }
-
-    // @PutMapping("/enrollment/{enrollmentId}/progress")
-    // @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")
-    // public ApiResponse<?> updateCourseProgress(
-    //         @PathVariable Integer enrollmentId,
-    //         @RequestParam BigDecimal progress) {
-    //     return ApiResponse.success(
-    //             completionService.updateCourseProgress(enrollmentId, progress));
-    // }
-
 
     @GetMapping("/course/{courseId}")
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'ADMIN')")

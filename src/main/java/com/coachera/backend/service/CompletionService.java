@@ -70,8 +70,7 @@ public class CompletionService {
             // triggerType = CompletionTriggerType.GRADE;
             // break;
             case ARTICLE:
-                // Articles might be marked complete manually or after certain reading time
-                // This would require additional tracking
+                markMaterialComplete(enrollmentId,materialId);
                 break;
         }
 
