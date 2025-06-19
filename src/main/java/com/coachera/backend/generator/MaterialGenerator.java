@@ -105,8 +105,8 @@ public class MaterialGenerator {
             .create();
 
         // Explicitly set content fields based on type
-        material.setVideoUrl(type == MaterialType.VIDEO ? 
-            VIDEO_URLS[random.nextInt(VIDEO_URLS.length)] : null);
+        // material.setVideoUrl(type == MaterialType.VIDEO ? 
+        //     VIDEO_URLS[random.nextInt(VIDEO_URLS.length)] : null);
         material.setArticle(type == MaterialType.ARTICLE ? 
             ARTICLE_CONTENTS[random.nextInt(ARTICLE_CONTENTS.length)] : null);
 
