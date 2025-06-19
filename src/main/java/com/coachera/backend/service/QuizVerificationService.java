@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -87,8 +88,16 @@ public class QuizVerificationService {
     }
 
     public boolean isQuizPassed(Enrollment enrollment, Material material) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isQuizPassed'");
+        Optional<MaterialCompletion> existingCompletion = materialCompletionRepository
+                    .findByEnrollmentAndMaterial(enrollment, material);
+        if (existingCompletion.isPresent()){
+            MaterialCompletion completion = existingCompletion.get();
+            if(completion.getCompletionState()==CompletionState.COMPLETE_PASS)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional
