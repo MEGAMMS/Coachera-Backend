@@ -15,7 +15,6 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +25,7 @@ public class CompletionService {
     private final CourseCompletionRepository courseCompletionRepository;
     private final MaterialRepository materialRepository;
     private final QuizVerificationService quizService;
-    // private final VideoViewingService videoViewingService;
+    private final VideoViewingService videoViewingService;
     private final EnrollmentRepository enrollmentRepository;
 
     public CompletionService(
@@ -34,12 +33,14 @@ public class CompletionService {
             CourseCompletionRepository courseCompletionRepository,
             MaterialRepository materialRepository,
             QuizVerificationService quizService,
-            EnrollmentRepository enrollmentRepository) {
+            EnrollmentRepository enrollmentRepository,
+            VideoViewingService videoViewingService) {
         this.materialCompletionRepository = materialCompletionRepository;
         this.courseCompletionRepository = courseCompletionRepository;
         this.materialRepository = materialRepository;
         this.quizService = quizService;
         this.enrollmentRepository = enrollmentRepository;
+        this.videoViewingService = videoViewingService;
     }
 
     /**
@@ -58,11 +59,11 @@ public class CompletionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
 
         switch (material.getType()) {
-            // case VIDEO:
-            // completed = videoViewingService.isViewed(enrollment, material);
-            // state = completed ? CompletionState.COMPLETE : CompletionState.INCOMPLETE;
-            // triggerType = CompletionTriggerType.VIEWING;
-            // break;
+            case VIDEO:
+                completed = videoViewingService.isViewed(enrollment, material);
+                state = completed ? CompletionState.COMPLETE : CompletionState.INCOMPLETE;
+                triggerType = CompletionTriggerType.VIEWING;
+                break;
             case QUIZ:
                 completed = quizService.isQuizPassed(enrollment, material);
                 state = completed ? CompletionState.COMPLETE_PASS : CompletionState.COMPLETE_FAIL;
