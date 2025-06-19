@@ -89,13 +89,10 @@ public class QuizVerificationService {
 
     public boolean isQuizPassed(Enrollment enrollment, Material material) {
         Optional<MaterialCompletion> existingCompletion = materialCompletionRepository
-                    .findByEnrollmentAndMaterial(enrollment, material);
-        if (existingCompletion.isPresent()){
-            MaterialCompletion completion = existingCompletion.get();
-            if(completion.getCompletionState()==CompletionState.COMPLETE_PASS)
-            {
-                return true;
-            }
+                .findByEnrollmentAndMaterial(enrollment, material);
+        if (existingCompletion.isPresent() &&
+                existingCompletion.get().getCompletionState() == CompletionState.COMPLETE_PASS) {
+            return true;
         }
         return false;
     }
@@ -109,9 +106,15 @@ public class QuizVerificationService {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
 
-        MaterialCompletion completion = new MaterialCompletion();
-        completion.setEnrollment(enrollment);
-        completion.setMaterial(material);
+        MaterialCompletion completion = materialCompletionRepository
+                .findByEnrollmentAndMaterial(enrollment, material)
+                .orElseGet(() -> {
+                    MaterialCompletion newCompletion = new MaterialCompletion();
+                    newCompletion.setEnrollment(enrollment);
+                    newCompletion.setMaterial(material);
+                    return newCompletion;
+                });
+
         completion.setCompletionDate(LocalDateTime.now());
         completion.setTriggerType(CompletionTriggerType.GRADE);
 

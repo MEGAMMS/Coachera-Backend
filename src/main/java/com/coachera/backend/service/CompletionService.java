@@ -64,37 +64,30 @@ public class CompletionService {
             // triggerType = CompletionTriggerType.VIEWING;
             // break;
             case QUIZ:
-            completed = quizService.isQuizPassed(enrollment, material);
-            state = completed ? CompletionState.COMPLETE_PASS :
-            CompletionState.COMPLETE_FAIL;
-            triggerType = CompletionTriggerType.GRADE;
-            break;
+                completed = quizService.isQuizPassed(enrollment, material);
+                state = completed ? CompletionState.COMPLETE_PASS : CompletionState.COMPLETE_FAIL;
+                triggerType = CompletionTriggerType.GRADE;
+                break;
             case ARTICLE:
-                markMaterialComplete(enrollmentId,materialId);
+                markMaterialComplete(enrollmentId, materialId);
                 break;
         }
 
         if (completed) {
-            Optional<MaterialCompletion> existingCompletion = materialCompletionRepository
-                    .findByEnrollmentAndMaterial(enrollment, material);
+            MaterialCompletion completion = materialCompletionRepository
+                    .findByEnrollmentAndMaterial(enrollment, material)
+                    .orElseGet(() -> {
+                        MaterialCompletion newCompletion = new MaterialCompletion();
+                        newCompletion.setEnrollment(enrollment);
+                        newCompletion.setMaterial(material);
+                        return newCompletion;
+                    });
 
-            if (existingCompletion.isPresent()) {
-                MaterialCompletion completion = existingCompletion.get();
-                completion.setCompleted(true);
-                completion.setCompletionState(state);
-                completion.setCompletionDate(LocalDateTime.now());
-                completion.setTriggerType(triggerType);
-                materialCompletionRepository.save(completion);
-            } else {
-                MaterialCompletion newCompletion = new MaterialCompletion();
-                newCompletion.setEnrollment(enrollment);
-                newCompletion.setMaterial(material);
-                newCompletion.setCompleted(true);
-                newCompletion.setCompletionState(state);
-                newCompletion.setCompletionDate(LocalDateTime.now());
-                newCompletion.setTriggerType(triggerType);
-                materialCompletionRepository.save(newCompletion);
-            }
+            completion.setCompleted(true);
+            completion.setCompletionState(state);
+            completion.setCompletionDate(LocalDateTime.now());
+            completion.setTriggerType(triggerType);
+            materialCompletionRepository.save(completion);
 
             updateCourseProgress(enrollment);
         }
@@ -107,34 +100,27 @@ public class CompletionService {
     public void updateCourseProgress(Enrollment enrollment) {
         Course course = enrollment.getCourse();
         long totalMaterials = materialRepository.countByCourse(course);
-        long completedMaterials = materialCompletionRepository
-                .countByEnrollmentAndCompleted(enrollment, true);
+        if (totalMaterials == 0)
+            return;
 
-        if (totalMaterials > 0) {
-            BigDecimal progress = BigDecimal.valueOf((double) completedMaterials / totalMaterials * 100)
-                    .setScale(2, RoundingMode.HALF_UP);
+        long completedMaterials = materialCompletionRepository.countByEnrollmentAndCompleted(enrollment, true);
+        BigDecimal progress = BigDecimal.valueOf((double) completedMaterials / totalMaterials * 100)
+                .setScale(2, RoundingMode.HALF_UP);
+        boolean isCompleted = progress.compareTo(BigDecimal.valueOf(100)) >= 0;
 
-            Optional<CourseCompletion> existingCompletion = courseCompletionRepository.findByEnrollment(enrollment);
+        CourseCompletion completion = courseCompletionRepository.findByEnrollment(enrollment)
+                .orElseGet(() -> {
+                    CourseCompletion newCompletion = new CourseCompletion();
+                    newCompletion.setEnrollment(enrollment);
+                    return newCompletion;
+                });
 
-            if (existingCompletion.isPresent()) {
-                CourseCompletion completion = existingCompletion.get();
-                completion.setProgress(progress);
-                completion.setCompleted(progress.compareTo(BigDecimal.valueOf(100)) >= 0);
-                if (completion.isCompleted()) {
-                    completion.setCompletionDate(LocalDateTime.now());
-                }
-                courseCompletionRepository.save(completion);
-            } else {
-                CourseCompletion newCompletion = new CourseCompletion();
-                newCompletion.setEnrollment(enrollment);
-                newCompletion.setProgress(progress);
-                newCompletion.setCompleted(progress.compareTo(BigDecimal.valueOf(100)) >= 0);
-                if (newCompletion.isCompleted()) {
-                    newCompletion.setCompletionDate(LocalDateTime.now());
-                }
-                courseCompletionRepository.save(newCompletion);
-            }
+        completion.setProgress(progress);
+        completion.setCompleted(isCompleted);
+        if (isCompleted) {
+            completion.setCompletionDate(LocalDateTime.now());
         }
+        courseCompletionRepository.save(completion);
     }
 
     /**
