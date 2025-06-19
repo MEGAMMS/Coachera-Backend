@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/categories")
-@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')") 
     public ApiResponse<?> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
 
         CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
@@ -42,6 +42,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')") 
     public ApiResponse<?> updateCategory(
             @PathVariable Integer id,
             @Valid @RequestBody CategoryDTO categoryDTO) {
@@ -51,6 +52,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')") 
     public ApiResponse<?> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
         return ApiResponse.noContentResponse();

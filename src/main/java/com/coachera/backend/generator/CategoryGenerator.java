@@ -25,6 +25,7 @@ public class CategoryGenerator {
                         Category category = Instancio.of(Category.class)
                                 .ignore(Select.field(Category::getId))
                                 .supply(Select.field(Category::getName), () -> name)
+                                .ignore(Select.field(Category::getIcon))
                                 .ignore(Select.field(Category::getCourses))
                                 .create();
 
