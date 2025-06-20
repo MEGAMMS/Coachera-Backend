@@ -6,12 +6,62 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.coachera.backend.entity.*;
+import com.coachera.backend.entity.Category;
+import com.coachera.backend.entity.Certificate;
+import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.CourseCompletion;
+import com.coachera.backend.entity.Enrollment;
+import com.coachera.backend.entity.Instructor;
+import com.coachera.backend.entity.LearningPath;
+import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.MaterialCompletion;
+import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.Question;
+import com.coachera.backend.entity.Quiz;
+import com.coachera.backend.entity.Review;
+import com.coachera.backend.entity.Section;
+import com.coachera.backend.entity.Skill;
+import com.coachera.backend.entity.Student;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.Module;
 
-import com.coachera.backend.generator.*;
+import com.coachera.backend.generator.CategoryGenerator;
+import com.coachera.backend.generator.CertificateGenerator;
+import com.coachera.backend.generator.CourseCompletionGenerator;
+import com.coachera.backend.generator.CourseGenerator;
+import com.coachera.backend.generator.EnrollmentGenerator;
+import com.coachera.backend.generator.InstructorGenerator;
+import com.coachera.backend.generator.LearningPathGenerator;
+import com.coachera.backend.generator.MaterialCompletionGenerator;
+import com.coachera.backend.generator.MaterialGenerator;
+import com.coachera.backend.generator.OrganizationGenerator;
+import com.coachera.backend.generator.QuestionGenerator;
+import com.coachera.backend.generator.QuizGenerator;
+import com.coachera.backend.generator.ReviewGenerator;
+import com.coachera.backend.generator.SectionGenerator;
+import com.coachera.backend.generator.SkillGenerator;
+import com.coachera.backend.generator.StudentGenerator;
+import com.coachera.backend.generator.UserGenerator;
+import com.coachera.backend.generator.ModuleGenerator;
 
-import com.coachera.backend.repository.*;
+import com.coachera.backend.repository.CategoryRepository;
+import com.coachera.backend.repository.CertificateRepository;
+import com.coachera.backend.repository.CourseCompletionRepository;
+import com.coachera.backend.repository.CourseRepository;
+import com.coachera.backend.repository.EnrollmentRepository;
+import com.coachera.backend.repository.InstructorRepository;
+import com.coachera.backend.repository.LearningPathRepository;
+import com.coachera.backend.repository.MaterialCompletionRepository;
+import com.coachera.backend.repository.MaterialRepository;
+import com.coachera.backend.repository.OrganizationRepository;
+import com.coachera.backend.repository.QuestionRepository;
+import com.coachera.backend.repository.QuizRepository;
+import com.coachera.backend.repository.ReviewRepository;
+import com.coachera.backend.repository.SectionRepository;
+import com.coachera.backend.repository.SkillRepository;
+import com.coachera.backend.repository.StudentRepository;
+import com.coachera.backend.repository.UserRepository;
+import com.coachera.backend.repository.ModuleRepository;
 
 @Component
 public class DatabaseSeeder {
@@ -33,6 +83,8 @@ public class DatabaseSeeder {
     private final LearningPathRepository learningPathRepo;
     private final SkillRepository skillRepo;
     private final UserGenerator userGenerator;
+    private final MaterialCompletionRepository materialCompletionRepo;
+    private final CourseCompletionRepository courseCompletionRepo;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -51,7 +103,9 @@ public class DatabaseSeeder {
             ReviewRepository reviewRepo,
             LearningPathRepository learningPathRepo,
             SkillRepository skillRepo,
-            UserGenerator userGenerator) {
+            UserGenerator userGenerator,
+            MaterialCompletionRepository materialCompletionRepo,
+            CourseCompletionRepository courseCompletionRepo) {
         this.userGenerator = userGenerator;
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
@@ -69,6 +123,8 @@ public class DatabaseSeeder {
         this.reviewRepo = reviewRepo;
         this.learningPathRepo = learningPathRepo;
         this.skillRepo = skillRepo;
+        this.materialCompletionRepo = materialCompletionRepo;
+        this.courseCompletionRepo = courseCompletionRepo;
     }
 
     @Transactional
@@ -151,6 +207,15 @@ public class DatabaseSeeder {
         List<Material> materials = MaterialGenerator.fromSections(sections);
         materialRepo.saveAll(materials);
 
+        // Seed Material Completions
+        List<MaterialCompletion> materialCompletions = MaterialCompletionGenerator
+                .forEnrollmentsAndMaterials(enrollments, materials);
+        materialCompletionRepo.saveAll(materialCompletions);
+
+        // Seed Course Completions
+        List<CourseCompletion> courseCompletions = CourseCompletionGenerator.forEnrollmentsWithMaterialProgress(enrollments);
+        courseCompletionRepo.saveAll(courseCompletions);
+
         // Seed Quizzes
         List<Quiz> quizzes = QuizGenerator.fromMaterials(materials);
         quizRepo.saveAll(quizzes);
@@ -189,9 +254,11 @@ public class DatabaseSeeder {
     public void clean() {
         skillRepo.deleteAll();
         learningPathRepo.deleteAll();
-        reviewRepo.deleteAll();
         questionRepo.deleteAll();
+        reviewRepo.deleteAll();
         quizRepo.deleteAll();
+        courseCompletionRepo.deleteAll();
+        materialCompletionRepo.deleteAll();
         materialRepo.deleteAll();
         sectionRepo.deleteAll();
         moduleRepo.deleteAll();

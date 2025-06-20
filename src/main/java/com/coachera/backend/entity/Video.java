@@ -12,13 +12,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Video extends Auditable{
+public class Video extends Auditable {
 	@Id
 	@GeneratedValue
 	private Long id;
 
 	@Column(unique = true)
 	private String uuidName;
+
+	@OneToOne
+	@JoinColumn(name = "material_id", nullable = false, unique = true)
+	private Material material;
 
 	public String getUrl() {
 		return ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -34,4 +38,4 @@ public class Video extends Auditable{
 			throw new IllegalArgumentException("Invalid video URL format: " + url);
 		}
 	}
-} 
+}

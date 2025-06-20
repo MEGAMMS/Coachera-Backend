@@ -1,5 +1,8 @@
 package com.coachera.backend.dto;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.coachera.backend.entity.Enrollment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -23,15 +26,20 @@ public class EnrollmentDTO extends AuditableDTO {
     @Schema(required = true, description = "Associated student")
     private Integer studentId;
 
-    @Schema(required = true, example = "75%", description = "Student's course progress")
-    private String progress;
+    @Schema(required = true, description = "Info about course status")
+    private CourseCompletionDTO courseCompletion;
+
+    @Schema(required = true, description = "Info about course status")
+    private Set<MaterialCompletionDTO> materialCompletions;
 
     // Constructor from entity
     public EnrollmentDTO(Enrollment enrollment) {
         this.id = enrollment.getId();
         this.courseId = enrollment.getCourse().getId();
         this.studentId = enrollment.getStudent().getId();
-        this.progress = enrollment.getProgress();
+        this.courseCompletion = new CourseCompletionDTO(enrollment.getCourseCompletion());
+        this.materialCompletions = enrollment.getMaterialCompletions().stream().map(MaterialCompletionDTO::new)
+                .collect(Collectors.toSet());
         this.setCreatedAt(enrollment.getCreatedAt());
         this.setUpdatedAt(enrollment.getUpdatedAt());
     }

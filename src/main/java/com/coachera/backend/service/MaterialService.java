@@ -4,10 +4,13 @@ import com.coachera.backend.dto.MaterialDTO;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.Section;
+import com.coachera.backend.entity.Video;
 import com.coachera.backend.exception.DuplicateOrderIndexException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.SectionRepository;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
@@ -19,15 +22,17 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class MaterialService {
 
     private final MaterialRepository materialRepository;
     private final SectionRepository sectionRepository;
+    private final VideoService videoService;
 
-    public MaterialService(MaterialRepository materialRepository, SectionRepository sectionRepository) {
-        this.materialRepository = materialRepository;
-        this.sectionRepository = sectionRepository;
-    }
+    // public MaterialService(MaterialRepository materialRepository, SectionRepository sectionRepository) {
+    //     this.materialRepository = materialRepository;
+    //     this.sectionRepository = sectionRepository;
+    // }
 
     public MaterialDTO createMaterial(Integer sectionId, MaterialDTO materialDTO) {
         Section section = sectionRepository.findById(sectionId)
@@ -40,7 +45,8 @@ public class MaterialService {
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
         material.setType(materialDTO.getType());
-        material.setVideoUrl(materialDTO.getVideoUrl());
+        Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
+        material.setVideo(video);
         material.setArticle(materialDTO.getArticle());
 
         Material savedMaterial = materialRepository.save(material);

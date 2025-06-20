@@ -28,7 +28,7 @@ public class ModuleGenerator {
                             Module module = Instancio.of(Module.class)
                                     .ignore(Select.field(Module::getId))
                                     .supply(Select.field(Module::getCourse), () -> course)
-                                    .supply(Select.field(Module::getTitle), () -> course.getTitle() + orderCounter)
+                                    .supply(Select.field(Module::getTitle), () -> "Module " + orderCounter)
                                     .supply(Select.field(Module::getOrderIndex), orderCounter::getAndIncrement)
                                     .ignore(Select.field(Module::getSections))
                                     .create();

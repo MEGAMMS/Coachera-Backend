@@ -45,7 +45,7 @@ public class MaterialDTO extends AuditableDTO {
         this.sectionId = material.getSection().getId();
         this.orderIndex = material.getOrderIndex();
         this.type = material.getType();
-        this.videoUrl = material.getVideoUrl();
+        this.videoUrl = material.getVideo().getUrl();
         this.article = material.getArticle();
 
         Quiz quizEntity = material.getQuiz();
