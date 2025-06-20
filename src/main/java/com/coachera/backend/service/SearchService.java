@@ -67,6 +67,19 @@ public class SearchService {
 
         Pageable pageable = searchRequest.toPageable();
 
+        // Sorting
+        if (pageable.getSort().isSorted()) {
+            List<jakarta.persistence.criteria.Order> orders = new ArrayList<>();
+            pageable.getSort().forEach(order -> {
+                if (order.isAscending()) {
+                    orders.add(cb.asc(root.get(order.getProperty())));
+                } else {
+                    orders.add(cb.desc(root.get(order.getProperty())));
+                }
+            });
+            cq.orderBy(orders);
+        }
+
         // Build count query with separate root and predicates
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<T> countRoot = countQuery.from(entityClass);

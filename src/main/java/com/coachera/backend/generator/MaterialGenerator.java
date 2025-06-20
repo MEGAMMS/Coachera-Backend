@@ -102,6 +102,7 @@ public class MaterialGenerator {
             .supply(Select.field(Material::getOrderIndex), orderCounter::getAndIncrement)
             .supply(Select.field(Material::getType), () -> type)
             .ignore(Select.field(Material::getQuiz))
+            .ignore(Select.field(Material::getVideo))
             .create();
 
         // Explicitly set content fields based on type
