@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.instancio.Instancio;
 import org.instancio.Select;
 
+import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.User;
 
@@ -19,6 +20,7 @@ public class InstructorGenerator {
                         .ignore(Select.field(Instructor::getId))
                         .supply(Select.field(Instructor::getUser), () -> user)
                         .supply(Select.field(Instructor::getBio), () -> "Experienced instructor with a passion for teaching.")
+                        .ignore(Select.field(Instructor::getCourses))
                         .create();
                     
                     if (instructor == null) {
