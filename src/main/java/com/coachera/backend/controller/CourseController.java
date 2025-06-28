@@ -76,7 +76,7 @@ public class CourseController {
 
     }
 
-    @PostMapping("/{id}/instructor")
+    @PostMapping("/{courseId}/instructors")
     @PreAuthorize("hasRole('ORGANIZATION')")
     public ApiResponse<?> addInstructorToCourse(
             @PathVariable Integer courseId,
@@ -91,7 +91,7 @@ public class CourseController {
         return ApiResponse.success(courseDTO);
     }
 
-    @DeleteMapping("/{instructorId}")
+    @DeleteMapping("/{courseId}/{instructorId}")
     public ApiResponse<?> removeInstructorFromCourse(
             @PathVariable Integer courseId,
             @PathVariable Integer instructorId,

@@ -68,14 +68,14 @@ public class InstructorController {
         return ApiResponse.noContentResponse();
     }
 
-      @GetMapping("/instructors/{instructorId}/courses")
+      @GetMapping("/{instructorId}/courses")
     public ResponseEntity<List<CourseDTO>> getCoursesByInstructorId(
             @PathVariable Integer instructorId) {
         List<CourseDTO> courses = instructorService.getCoursesByInstructorId(instructorId);
         return ResponseEntity.ok(courses);
     }
 
-    @GetMapping("/courses/{courseId}/instructors")
+    @GetMapping("/courses/{courseId}")
     public ResponseEntity<List<InstructorDTO>> getInstructorsByCourseId(
             @PathVariable Integer courseId) {
         List<InstructorDTO> instructors = instructorService.getInstructorsByCourseId(courseId);
