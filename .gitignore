@@ -9,6 +9,7 @@ resources/static/
 
 # shell files
 coachera.log
+spring-shell.log
 
 # MG3MZ-specific files
 .project
@@ -16,3 +17,5 @@ coachera.log
 .factorypath
 .settings/
 **/.settings/
+
+.env
