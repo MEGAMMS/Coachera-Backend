@@ -72,4 +72,6 @@ public class CourseDTO extends AuditableDTO {
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());
     }
+
+    
 }
