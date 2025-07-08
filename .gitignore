@@ -18,4 +18,8 @@ spring-shell.log
 .settings/
 **/.settings/
 
+# .env files 
 .env
+
+# firebase account key
+firebase-service-account.json

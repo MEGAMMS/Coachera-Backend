@@ -16,8 +16,8 @@ import com.coachera.backend.entity.enums.NotificationStatus;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    // Find notifications by recipient with pagination
-    Page<Notification> findByRecipientOrderByCreatedAtDesc(User recipient, Pageable pageable);
+    // // Find notifications by recipient with pagination
+    // Page<Notification> findByRecipientOrderByCreatedAtDesc(User recipient, Pageable pageable);
 
     // Count unread notifications for a user
     long countByRecipientAndReadFalse(User recipient);
