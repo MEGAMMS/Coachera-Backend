@@ -1,27 +1,63 @@
 package com.coachera.backend.entity;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.coachera.backend.entity.enums.NotificationStatus;
+import com.coachera.backend.entity.enums.NotificationType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "notifications")
-@Getter @Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notification {
+public class Notification extends Auditable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User recipient;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
 
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String message;
+    private String content;
 
-    @Column(name = "is_read", nullable = false)
-    private Boolean isRead = false;
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus status;
+
+    private String actionUrl; // Deep link URL
+
+    @ElementCollection
+    @CollectionTable(name = "notification_metadata", joinColumns = @JoinColumn(name = "notification_id"))
+    @MapKeyColumn(name = "meta_key")
+    @Column(name = "meta_value")
+    private Map<String, String> metadata = new HashMap<>();
+
+    private boolean read = false;
+
+    private LocalDateTime sentAt;
+
+    private LocalDateTime readAt;
+
+    // For mobile push
+    private String deviceToken;
+
+    // For web push
+    @Column(columnDefinition = "TEXT")
+    private String webPushSubscriptionJson;
+
+    // For email
+    private String emailAddress;
 }
