@@ -42,7 +42,7 @@ public class FavoriteController {
 
     }
 
-    @DeleteMapping("delete/{courseId}")
+    @DeleteMapping("{courseId}")
     @Operation(summary = "Remove a course from student's favorites")
     public ApiResponse<?> removeFavorite(
             @AuthenticationPrincipal User user,
