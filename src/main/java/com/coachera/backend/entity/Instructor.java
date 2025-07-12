@@ -18,6 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Instructor extends Auditable {
 
     @Id
@@ -32,7 +33,7 @@ public class Instructor extends Auditable {
     private String bio;
 
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
-    // @Builder.Default
+    @Builder.Default
     private Set<CourseInstructor> courses = new HashSet<>();
 
     // Helper method to maintain bidirectional relationship

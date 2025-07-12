@@ -137,12 +137,15 @@ public class DatabaseSeeder {
             // users.get(i).setProfileImage(images.get(i));
             if (i < 4) {
                 users.get(i).setRole("STUDENT");
+                users.get(i).setEmail("student" +i+"@gmail.com");
             } else if (i < 8) {
                 users.get(i).setRole("INSTRUCTOR");
+                users.get(i).setEmail("instructer" +i+"@gmail.com");
             } else {
                 users.get(i).setRole("ORGANIZATION");
+                users.get(i).setEmail("organization" +i+"@gmail.com");
             }
-        }
+        } 
 
         userRepo.saveAll(users);
         userRepo.flush();

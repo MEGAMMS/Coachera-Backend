@@ -3,7 +3,9 @@ package com.coachera.backend.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,14 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+
+    /// Added this for debugging purposes
+    // public User getUserById(Integer id) {
+    //     User user = userRepository.findById(id)
+    //             .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        
+    //     return user;
+    // }
 
 }
