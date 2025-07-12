@@ -2,13 +2,21 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CourseDTO;
+import com.coachera.backend.dto.CourseInstructorDTO;
 import com.coachera.backend.dto.CourseWithModulesDTO;
 import com.coachera.backend.dto.pagination.PaginatedResponse;
 import com.coachera.backend.dto.pagination.PaginationRequest;
+import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.CourseService;
+import com.coachera.backend.service.InstructorService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.nio.file.AccessDeniedException;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 public class CourseController {
 
     private final CourseService courseService;
+    private final InstructorService instructorService;
+    
 
     @GetMapping
     public ApiResponse<PaginatedResponse<CourseDTO>> getAllCourses(@Valid PaginationRequest paginationRequest) {
@@ -64,5 +74,35 @@ public class CourseController {
         courseService.deleteCourse(id);
         return ApiResponse.noContentResponse();
 
+    }
+
+    @PostMapping("/{courseId}/instructors")
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public ApiResponse<?> addInstructorToCourse(
+            @PathVariable Integer courseId,
+            @RequestBody CourseInstructorDTO courseInstructorDTO,
+            @AuthenticationPrincipal User user) throws AccessDeniedException {
+        
+        CourseDTO courseDTO = instructorService.addInstructorToCourse(
+            courseId, 
+            courseInstructorDTO.getInstructorId(), 
+            user
+        );
+        return ApiResponse.success(courseDTO);
+    }
+
+    @DeleteMapping("/{courseId}/{instructorId}")
+    public ApiResponse<?> removeInstructorFromCourse(
+            @PathVariable Integer courseId,
+            @PathVariable Integer instructorId,
+            @AuthenticationPrincipal User user) throws AccessDeniedException {
+        
+    
+        CourseDTO courseDTO = instructorService.removeInstructorFromCourse(
+            courseId, 
+            instructorId, 
+            user
+        );
+        return ApiResponse.success("the instructor was remove from course",courseDTO);
     }
 }

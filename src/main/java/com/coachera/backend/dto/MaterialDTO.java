@@ -3,6 +3,8 @@ package com.coachera.backend.dto;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.entity.Quiz;
+import com.coachera.backend.entity.Video;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,7 +39,7 @@ public class MaterialDTO extends AuditableDTO {
     private String article;
 
     @Schema(description = "Quiz attached to this material")
-    private QuizDTO quiz;    
+    private QuizDTO quiz;
 
     public MaterialDTO(Material material) {
         this.id = material.getId();
@@ -45,9 +47,17 @@ public class MaterialDTO extends AuditableDTO {
         this.sectionId = material.getSection().getId();
         this.orderIndex = material.getOrderIndex();
         this.type = material.getType();
-        this.videoUrl = material.getVideo().getUrl();
-        this.article = material.getArticle();
 
+        // add vid if exists
+        Video video = material.getVideo();
+        if (video != null) {
+            this.videoUrl = video.getUrl();
+        }
+        
+        // add article (can be null)
+        this.article = material.getArticle();
+        
+        // add quiz if exists
         Quiz quizEntity = material.getQuiz();
         if (quizEntity != null) {
             this.quiz = new QuizDTO(quizEntity);

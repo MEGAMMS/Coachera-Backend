@@ -67,6 +67,11 @@ public class Course extends Auditable {
     @Builder.Default
     private Set<LearningPathCourse> learningPaths = new HashSet<>();
 
+     // bidirectional relationship with learning paths
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<CourseInstructor> instructors = new HashSet<>();
+
     // bidirectional relationship with modules
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -97,5 +102,27 @@ public class Course extends Auditable {
         modules.remove(module);
         module.setCourse(null);
     }
+
+    
+public void addInstructor(Instructor instructor) {
+    CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
+    if (instructors == null) {
+        instructors = new HashSet<>();
+    }
+    instructors.add(courseInstructor);
+    instructor.getCourses().add(courseInstructor);
+}
+
+
+
+public void removeInstructor(Instructor instructor) {
+    CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
+    instructors.remove(courseInstructor);
+    instructor.getCourses().remove(courseInstructor);
+    courseInstructor.setInstructor(null);
+    courseInstructor.setCourse(null);
+}
+
+    
 
 }

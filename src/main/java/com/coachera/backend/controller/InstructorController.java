@@ -1,6 +1,7 @@
 package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
+import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.InstructorDTO;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
@@ -8,6 +9,9 @@ import com.coachera.backend.service.InstructorService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -63,4 +67,20 @@ public class InstructorController {
         instructorService.deleteInstructor(id);
         return ApiResponse.noContentResponse();
     }
+
+      @GetMapping("/{instructorId}/courses")
+    public ApiResponse<?> getCoursesByInstructorId(
+            @PathVariable Integer instructorId) {
+        List<CourseDTO> courses = instructorService.getCoursesByInstructorId(instructorId);
+        return ApiResponse.success(courses);
+    }
+
+    @GetMapping("/courses/{courseId}")
+    public ApiResponse<?> getInstructorsByCourseId(
+            @PathVariable Integer courseId) {
+        List<InstructorDTO> instructors = instructorService.getInstructorsByCourseId(courseId);
+        return ApiResponse.success(instructors);
+    }
+
+
 }
