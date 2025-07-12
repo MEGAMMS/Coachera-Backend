@@ -14,26 +14,25 @@ import com.coachera.backend.entity.User;
 public class UserGenerator {
       
 
-     private final PasswordEncoder passwordEncoder; // Non-static
+    private final PasswordEncoder passwordEncoder; // Non-static
 
     public UserGenerator(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public   List<User> generate(int count) {
+    public List<User> generate(int count) {
 
-        AtomicInteger emailCounter = new AtomicInteger(1);
+        // AtomicInteger emailCounter = new AtomicInteger(1);
         AtomicInteger usernameCounter = new AtomicInteger(1);
 
 
         return Instancio.ofList(User.class).size(count)
                 .ignore(Select.field(User::getId)) // ← prevent random ID generation
-                .supply(Select.field(User::getEmail),
-                        () -> "user" + emailCounter.getAndIncrement() + "@example.com")
+                .ignore(Select.field(User::getEmail))
                 .supply(Select.field(User::getUsername),
                         () -> "user" + usernameCounter.getAndIncrement())
                  .supply(Select.field(User::getPassword), 
-                        () -> passwordEncoder.encode("password123!")) 
+                        () -> passwordEncoder.encode("password")) 
                 .set(Select.field(User::getRole), "ADMIN")
                 .supply(Select.field(User::getIsVerified), () -> true)
                 .ignore(Select.field(User::getProfileImage))

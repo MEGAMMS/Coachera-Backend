@@ -28,6 +28,8 @@ public class AdminSeeder implements CommandLineRunner{
     @Transactional
     public void run(String... args) throws Exception {
 
+        System.out.println(">>> AdminSeeder is running...");
+        
         User user = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
                 .set(Select.field(User::getEmail),"admin@example.com")
