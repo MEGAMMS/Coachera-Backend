@@ -4,11 +4,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.coachera.backend.dto.ApiResponse;
+import com.coachera.backend.dto.CourseWithModulesDTO;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
+
+    private final UserService userService;
 
     // public route
     @GetMapping("/public-info")
@@ -34,4 +42,11 @@ public class UserController {
     public String studentArea() {
         return "Student dashboard";
     }
+
+    // @GetMapping("/{id}")
+    // public ApiResponse<?> getUser(@PathVariable Integer id) {
+
+    //     User user = userService.getUserById(id);
+    //     return ApiResponse.success(user);
+    // }
 }
