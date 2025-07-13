@@ -4,10 +4,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import com.coachera.backend.dto.ApiResponse;
-import com.coachera.backend.dto.CourseWithModulesDTO;
+// import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.entity.User;
-import com.coachera.backend.service.UserService;
+// import com.coachera.backend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    // private final UserService userService;
 
     // public route
     @GetMapping("/public-info")
@@ -32,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')") 
+    @PreAuthorize("hasRole('ADMIN')")
     public String adminArea() {
         return "Admin dashboard";
     }
@@ -43,6 +42,7 @@ public class UserController {
         return "Student dashboard";
     }
 
+    /// Added this for debugging purposes
     // @GetMapping("/{id}")
     // public ApiResponse<?> getUser(@PathVariable Integer id) {
 

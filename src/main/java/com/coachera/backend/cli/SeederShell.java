@@ -24,6 +24,12 @@ public class SeederShell {
         return "Database seeded successfully.";
     }
 
+    @ShellMethod(key = "seed-admin", value = "Seed the Admin to datatbase.")
+    public String seedAdmin() throws Exception {
+        adminSeeder.run();
+        return "Admin seeded successfully.";
+    }
+
     @ShellMethod(key = "clear-db", value = "Clear the database of all seeded data.")
     public String cleanDatabase() {
         seeder.clean();
@@ -31,4 +37,3 @@ public class SeederShell {
     }
 
 }
-

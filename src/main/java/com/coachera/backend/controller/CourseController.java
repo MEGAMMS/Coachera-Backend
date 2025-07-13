@@ -6,7 +6,6 @@ import com.coachera.backend.dto.CourseInstructorDTO;
 import com.coachera.backend.dto.CourseWithModulesDTO;
 import com.coachera.backend.dto.pagination.PaginatedResponse;
 import com.coachera.backend.dto.pagination.PaginationRequest;
-import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.CourseService;
 import com.coachera.backend.service.InstructorService;

@@ -21,10 +21,10 @@ public class AdminSeeder {
     private final AdminRepository adminRepo;
     private final PasswordEncoder passwordEncoder; // Non-static
 
-    public AdminSeeder(UserRepository userRepo, AdminRepository adminRepo,PasswordEncoder passwordEncoder) {
+    public AdminSeeder(UserRepository userRepo, AdminRepository adminRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.adminRepo = adminRepo;
-         this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // @Override
