@@ -135,15 +135,15 @@ public class DatabaseSeeder {
         // Assign roles
         for (int i = 0; i < users.size(); i++) {
             // users.get(i).setProfileImage(images.get(i));
-            if (i < 4) {
+            if (i < 5) {
                 users.get(i).setRole("STUDENT");
-                users.get(i).setEmail("student" +i+"@gmail.com");
-            } else if (i < 8) {
+                users.get(i).setEmail("student" +(i+1)+"@gmail.com");
+            } else if (i < 10) {
                 users.get(i).setRole("INSTRUCTOR");
-                users.get(i).setEmail("instructer" +i+"@gmail.com");
+                users.get(i).setEmail("instructer" +(i-4)+"@gmail.com");
             } else {
                 users.get(i).setRole("ORGANIZATION");
-                users.get(i).setEmail("organization" +i+"@gmail.com");
+                users.get(i).setEmail("organization" +(i-9)+"@gmail.com");
             }
         } 
 
