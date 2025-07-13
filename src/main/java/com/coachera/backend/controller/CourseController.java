@@ -9,6 +9,7 @@ import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.CourseService;
 import com.coachera.backend.service.InstructorService;
+import com.coachera.backend.service.CourseRecommendationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class CourseController {
 
     private final CourseService courseService;
     private final InstructorService instructorService;
+    private final CourseRecommendationService courseRecommendationService;
     
 
     @GetMapping
@@ -45,6 +47,32 @@ public class CourseController {
 
         CourseWithModulesDTO course = courseService.getCourseById(id);
         return ApiResponse.success(course);
+    }
+
+    @GetMapping("/recommended")
+    @PreAuthorize("isAuthenticated()")
+    public ApiResponse<PaginatedResponse<CourseDTO>> getRecommendedCourses(@AuthenticationPrincipal User user, @Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(courseRecommendationService.getRecommendedCourses(user, paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/popular")
+    public ApiResponse<PaginatedResponse<CourseDTO>> getPopularCourses(@Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(courseRecommendationService.getPopularCourses(paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/trending")
+    public ApiResponse<PaginatedResponse<CourseDTO>> getTrendingCourses(@Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(courseRecommendationService.getTrendingCourses(paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ApiResponse<PaginatedResponse<CourseDTO>> getCoursesByCategory(@PathVariable Integer categoryId, @Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(courseRecommendationService.getCoursesByCategory(categoryId, paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/{courseId}/similar")
+    public ApiResponse<PaginatedResponse<CourseDTO>> getSimilarCourses(@PathVariable Integer courseId, @Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(courseRecommendationService.getSimilarCourses(courseId, paginationRequest.toPageable()));
     }
 
     @GetMapping("/organization/{orgId}")
