@@ -132,20 +132,26 @@ public class DatabaseSeeder {
         // Generate and assign roles before saving
         List<User> users = userGenerator.generate(15);
 
+        users.get(0).setRole("STUDENT");
+        users.get(0).setEmail("student@gmail.com");
+        users.get(1).setRole("INSTRUCTOR");
+        users.get(1).setEmail("instructer@gmail.com");
+        users.get(2).setRole("ORGANIZATION");
+        users.get(2).setEmail("organization@gmail.com");
         // Assign roles
-        for (int i = 0; i < users.size(); i++) {
+        for (int i = 3; i < users.size(); i++) {
             // users.get(i).setProfileImage(images.get(i));
             if (i < 5) {
                 users.get(i).setRole("STUDENT");
-                users.get(i).setEmail("student" +(i+1)+"@gmail.com");
+                users.get(i).setEmail("student" + i + "@gmail.com");
             } else if (i < 10) {
                 users.get(i).setRole("INSTRUCTOR");
-                users.get(i).setEmail("instructer" +(i-4)+"@gmail.com");
+                users.get(i).setEmail("instructer" + i + "@gmail.com");
             } else {
                 users.get(i).setRole("ORGANIZATION");
-                users.get(i).setEmail("organization" +(i-9)+"@gmail.com");
+                users.get(i).setEmail("organization" + i + "@gmail.com");
             }
-        } 
+        }
 
         userRepo.saveAll(users);
         userRepo.flush();
@@ -216,7 +222,8 @@ public class DatabaseSeeder {
         materialCompletionRepo.saveAll(materialCompletions);
 
         // Seed Course Completions
-        List<CourseCompletion> courseCompletions = CourseCompletionGenerator.forEnrollmentsWithMaterialProgress(enrollments);
+        List<CourseCompletion> courseCompletions = CourseCompletionGenerator
+                .forEnrollmentsWithMaterialProgress(enrollments);
         courseCompletionRepo.saveAll(courseCompletions);
 
         // Seed Quizzes
