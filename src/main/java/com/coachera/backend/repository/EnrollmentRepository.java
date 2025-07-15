@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.coachera.backend.entity.Enrollment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer> {
     List<Enrollment> findByStudentId(Integer studentId);
@@ -16,4 +18,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Integer>
     boolean existsByStudentIdAndCourseId(Integer studentId, Integer courseId);
 
     void deleteByStudentIdAndCourseId(Integer studentId,Integer courseId);
+
+    Page<Enrollment> findByStudentId(Integer studentId, Pageable pageable);
 }

@@ -9,11 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.StudentDTO;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.EnrollmentRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
@@ -24,13 +26,16 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final EnrollmentRepository enrollmentRepository;
 
     public StudentService(StudentRepository studentRepository, 
                         UserRepository userRepository,
-                        ModelMapper modelMapper) {
+                        ModelMapper modelMapper,
+                        EnrollmentRepository enrollmentRepository) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     public StudentDTO createStudent(StudentDTO studentDTO,User user) {
@@ -103,4 +108,9 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
     
+    public Page<CourseDTO> getEnrolledCoursesByUser(User user, Pageable pageable) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
+        return enrollmentRepository.findByStudentId(studentId, pageable)
+                .map(enrollment -> new CourseDTO(enrollment.getCourse()));
+    }
 }
