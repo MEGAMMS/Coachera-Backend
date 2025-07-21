@@ -1,6 +1,8 @@
 package com.coachera.backend.service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -9,13 +11,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.entity.Course;
+import com.coachera.backend.entity.CourseInstructor;
 import com.coachera.backend.entity.Instructor;
+import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.InstructorRepository;
+import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
@@ -24,13 +34,20 @@ public class InstructorService {
     private final InstructorRepository instructorRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final CourseRepository courseRepository;
+    private final OrganizationRepository organizationRepository;
+    
 
     public InstructorService(InstructorRepository instructorRepository, 
                            UserRepository userRepository,
-                           ModelMapper modelMapper) {
+                           ModelMapper modelMapper,
+                           CourseRepository courseRepository,
+                           OrganizationRepository organizationRepository) {
         this.instructorRepository = instructorRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.courseRepository = courseRepository;
+        this.organizationRepository = organizationRepository;
     }
 
     public InstructorDTO createInstructor(InstructorDTO instructorDTO, User user) {
@@ -95,4 +112,62 @@ public class InstructorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + id));
         return new InstructorDTO(instructor);
     }
+
+    public CourseDTO addInstructorToCourse(Integer courseId, Integer instructorId, User user) throws AccessDeniedException {
+        Organization organization = organizationRepository.findByUserId(user.getId());
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        
+        // Verify the requesting organization owns the course
+        if (!organization.getId().equals(course.getOrg().getId())) {
+            throw new AccessDeniedException("Your organization doesn't own this course");
+        }
+
+        Instructor instructor = instructorRepository.findById(instructorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
+
+        course.addInstructor(instructor);
+        Course updatedCourse = courseRepository.save(course);
+        return new CourseDTO(updatedCourse);
+    }
+
+    public CourseDTO removeInstructorFromCourse(Integer courseId, Integer instructorId, User user) throws AccessDeniedException {
+        Organization organization = organizationRepository.findByUserId(user.getId());
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+        
+        // Verify the requesting organization owns the course
+        if (!organization.getId().equals(course.getOrg().getId())) {
+            throw new AccessDeniedException("Your organization doesn't own this course");
+        }
+
+        Instructor instructor = instructorRepository.findById(instructorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
+
+        course.removeInstructor(instructor);
+        Course updatedCourse = courseRepository.save(course);
+        return new CourseDTO(updatedCourse);
+    }
+
+     public List<CourseDTO> getCoursesByInstructorId(Integer instructorId) {
+        Instructor instructor = instructorRepository.findById(instructorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
+           
+
+        return instructor.getCourses().stream()
+                .map(CourseInstructor::getCourse)
+                .map(course -> new CourseDTO(course))
+                .collect(Collectors.toList());
+    }
+
+    public List<InstructorDTO> getInstructorsByCourseId(Integer courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
+
+        return course.getInstructors().stream()
+                .map(CourseInstructor::getInstructor)
+                .map(instructor -> new InstructorDTO(instructor))
+                .collect(Collectors.toList());
+    }
+
 }

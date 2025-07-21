@@ -37,6 +37,12 @@ public class StudentController {
 
     }
 
+    @GetMapping("/me/courses")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ApiResponse<?> getEnrolledCourses(@AuthenticationPrincipal User user, @Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(studentService.getEnrolledCoursesByUser(user, paginationRequest.toPageable()));
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<?> getStudentById(@PathVariable Integer id) {
 
