@@ -37,13 +37,20 @@ public class EnrollmentController {
     public ApiResponse<?> enrollStudent(
             @AuthenticationPrincipal User user,
             @PathVariable Integer courseId,
-            @RequestParam(defaultValue = "0%") BigDecimal progress) {
+            @RequestParam(defaultValue = "0%") String progressStr) {
 
+        BigDecimal progress = null;
+        if (progressStr != null) {
+            // Remove non-numeric characters
+            String numericOnly = progressStr.replaceAll("[^\\d.]", "");
+            progress = numericOnly.isEmpty()
+                    ? BigDecimal.ZERO
+                    : new BigDecimal(numericOnly);
+        }
         EnrollmentDTO enrollmentDTO = enrollmentService.enrollStudent(user, courseId, progress);
         return ApiResponse.created("Student was enrolled", enrollmentDTO);
 
     }
-
 
     @DeleteMapping("/delete/{courseId}/student")
     @Operation(summary = "Unenroll a student from a course")
