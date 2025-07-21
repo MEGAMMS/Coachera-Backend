@@ -40,7 +40,7 @@ public class EnrollmentDTO extends AuditableDTO {
         if (enrollment.getCourseCompletion() != null) {
             this.courseCompletion = new CourseCompletionDTO(enrollment.getCourseCompletion());
         } else {
-            this.courseCompletion = null; // or set a default value
+            this.courseCompletion = null;
         }
 
         this.materialCompletions = enrollment.getMaterialCompletions().stream().map(MaterialCompletionDTO::new)
