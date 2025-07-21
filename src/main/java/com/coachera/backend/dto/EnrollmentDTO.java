@@ -37,7 +37,12 @@ public class EnrollmentDTO extends AuditableDTO {
         this.id = enrollment.getId();
         this.courseId = enrollment.getCourse().getId();
         this.studentId = enrollment.getStudent().getId();
-        this.courseCompletion = new CourseCompletionDTO(enrollment.getCourseCompletion());
+        if (enrollment.getCourseCompletion() != null) {
+            this.courseCompletion = new CourseCompletionDTO(enrollment.getCourseCompletion());
+        } else {
+            this.courseCompletion = null; // or set a default value
+        }
+
         this.materialCompletions = enrollment.getMaterialCompletions().stream().map(MaterialCompletionDTO::new)
                 .collect(Collectors.toSet());
         this.setCreatedAt(enrollment.getCreatedAt());
