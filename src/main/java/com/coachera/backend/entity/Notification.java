@@ -16,6 +16,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class Notification extends Auditable {
 
     @Id
@@ -43,8 +44,10 @@ public class Notification extends Auditable {
     @CollectionTable(name = "notification_metadata", joinColumns = @JoinColumn(name = "notification_id"))
     @MapKeyColumn(name = "meta_key")
     @Column(name = "meta_value")
+    @Builder.Default
     private Map<String, String> metadata = new HashMap<>();
 
+    @Builder.Default
     private boolean read = false;
 
     private LocalDateTime sentAt;
