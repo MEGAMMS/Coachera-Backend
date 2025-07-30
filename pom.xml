@@ -69,10 +69,10 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-    <groupId>org.modelmapper</groupId>
-    <artifactId>modelmapper</artifactId>
-    <version>3.1.1</version>
-</dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.1.1</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -103,6 +103,20 @@
 			<groupId>org.springframework.shell</groupId>
 			<artifactId>spring-shell-starter</artifactId>
 			<version>3.1.5</version>
+		</dependency>
+		
+		<!-- Web Push Library for browser notifications -->
+		<dependency>
+			<groupId>nl.martijndwars</groupId>
+			<artifactId>web-push</artifactId>
+			<version>5.1.1</version>
+		</dependency>
+
+		<!-- Bouncy Castle for Web Push cryptography -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.70</version>
 		</dependency>
 	</dependencies>
 
