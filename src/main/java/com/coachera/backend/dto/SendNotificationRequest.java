@@ -21,7 +21,7 @@ public class SendNotificationRequest {
 
     @NotNull(message = "User ID is required")
     @Schema(example = "123", description = "ID of the recipient user", required = true)
-    private Long userId;
+    private int userId;
 
     @NotNull(message = "Notification type is required")
     @Schema(example = "SYSTEM_ALERT", 
