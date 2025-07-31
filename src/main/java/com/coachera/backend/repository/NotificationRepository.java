@@ -3,8 +3,8 @@ package com.coachera.backend.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springdoc.core.converters.models.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,8 +16,8 @@ import com.coachera.backend.entity.enums.NotificationStatus;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    // // Find notifications by recipient with pagination
-    // Page<Notification> findByRecipientOrderByCreatedAtDesc(User recipient, Pageable pageable);
+    // Find notifications by recipient with pagination
+    Page<Notification> findByRecipientOrderByCreatedAtDesc(User recipient, Pageable pageable);
 
     // Count unread notifications for a user
     long countByRecipientAndReadFalse(User recipient);
@@ -37,4 +37,27 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     // Find web push subscriptions by user
     @Query("SELECT n.webPushSubscriptionJson FROM Notification n WHERE n.recipient = :user AND n.webPushSubscriptionJson IS NOT NULL")
     List<String> findWebPushSubscriptionsByUser(@Param("user") User user);
+
+    // Find notifications by recipient and type
+    Page<Notification> findByRecipientAndTypeOrderByCreatedAtDesc(User recipient, com.coachera.backend.entity.enums.NotificationType type, Pageable pageable);
+
+    // Find recent notifications for a user (last 30 days)
+    @Query("SELECT n FROM Notification n WHERE n.recipient = :user AND n.createdAt > :since ORDER BY n.createdAt DESC")
+    List<Notification> findRecentNotifications(@Param("user") User user, @Param("since") LocalDateTime since);
+
+    // Count notifications by status for analytics
+    @Query("SELECT n.status, COUNT(n) FROM Notification n GROUP BY n.status")
+    List<Object[]> countNotificationsByStatus();
+
+    // Find notifications by recipient and read status
+    Page<Notification> findByRecipientAndReadOrderByCreatedAtDesc(User recipient, boolean read, Pageable pageable);
+
+    // Delete old notifications (for cleanup job)
+    @Modifying
+    @Query("DELETE FROM Notification n WHERE n.createdAt < :cutoff")
+    int deleteOldNotifications(@Param("cutoff") LocalDateTime cutoff);
+
+    // Find notifications with device tokens for bulk operations
+    @Query("SELECT n FROM Notification n WHERE n.deviceToken IS NOT NULL AND n.status = :status")
+    List<Notification> findNotificationsWithDeviceTokenByStatus(@Param("status") NotificationStatus status);
 }
