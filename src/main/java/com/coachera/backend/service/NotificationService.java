@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +18,6 @@ import com.coachera.backend.dto.SendNotificationRequest;
 import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.enums.NotificationStatus;
-import com.coachera.backend.entity.enums.NotificationType;
 import com.coachera.backend.repository.NotificationRepository;
 import com.coachera.backend.repository.UserRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -188,9 +186,9 @@ public class NotificationService {
         }
 
         // Send email
-        // if (channels.contains("email")) {
-        //     sendEmailNotification(notification);
-        // }
+        if (channels.contains("email")) {
+            sendEmailNotification(notification);
+        }
 
         // Update status
         notification.setStatus(NotificationStatus.SENT);
@@ -249,26 +247,26 @@ public class NotificationService {
         }
     }
 
-    // private void sendEmailNotification(Notification notification) {
-    //     try {
-    //         if (notification.getEmailAddress() == null) {
-    //             notification.setEmailAddress(notification.getRecipient().getEmail());
-    //         }
+    private void sendEmailNotification(Notification notification) {
+        try {
+            if (notification.getEmailAddress() == null) {
+                notification.setEmailAddress(notification.getRecipient().getEmail());
+            }
 
-    //         emailService.sendNotificationEmail(
-    //             notification.getEmailAddress(),
-    //             notification.getTitle(),
-    //             notification.getContent(),
-    //             notification.getActionUrl()
-    //         );
+            emailService.sendNotificationEmail(
+                notification.getEmailAddress(),
+                notification.getTitle(),
+                notification.getContent(),
+                notification.getActionUrl()
+            );
 
-    //         log.info("Successfully sent email notification for notification {}", notification.getId());
+            log.info("Successfully sent email notification for notification {}", notification.getId());
 
-    //     } catch (Exception e) {
-    //         log.error("Error sending email notification", e);
-    //         notification.setStatus(NotificationStatus.FAILED);
-    //     }
-    // }
+        } catch (Exception e) {
+            log.error("Error sending email notification", e);
+            notification.setStatus(NotificationStatus.FAILED);
+        }
+    }
 
     private List<String> getChannelsFromMetadata(Notification notification) {
         String channelsStr = notification.getMetadata().get("channels");
