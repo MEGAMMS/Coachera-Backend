@@ -117,29 +117,29 @@ public class NotificationService {
         return notificationRepository.countByRecipientAndReadFalse(user);
     }
 
-    /**
-     * Register device token for push notifications
-     */
-    public void registerDeviceToken(int userId, String deviceToken) {
-        // You might want to store device tokens separately for better management
-        // For now, we'll update the user's latest device token
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    // /**
+    //  * Register device token for push notifications
+    //  */
+    // public void registerDeviceToken(int userId, String deviceToken) {
+    //     // You might want to store device tokens separately for better management
+    //     // For now, we'll update the user's latest device token
+    //     User user = userRepository.findById(userId)
+    //         .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Store device token (you might want a separate DeviceToken entity)
-        log.info("Registered device token for user {}: {}", userId, deviceToken);
-    }
+    //     // Store device token (you might want a separate DeviceToken entity)
+    //     log.info("Registered device token for user {}: {}", userId, deviceToken);
+    // }
 
-    /**
-     * Register web push subscription
-     */
-    public void registerWebPushSubscription(int userId, String subscriptionJson) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    // /**
+    //  * Register web push subscription
+    //  */
+    // public void registerWebPushSubscription(int userId, String subscriptionJson) {
+    //     User user = userRepository.findById(userId)
+    //         .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Store web push subscription (you might want a separate entity for this)
-        log.info("Registered web push subscription for user {}", userId);
-    }
+    //     // Store web push subscription (you might want a separate entity for this)
+    //     log.info("Registered web push subscription for user {}", userId);
+    // }
 
     /**
      * Retry failed notifications
