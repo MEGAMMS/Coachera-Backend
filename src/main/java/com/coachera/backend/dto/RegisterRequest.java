@@ -8,10 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RegisterRequest {
-	@Schema(example = "test")
+	@Schema(example = "student")
 	private String username;
 
-	@Schema(example = "test@gmail.com")
+	@Schema(example = "student@gmail.com")
 	private String email;
 
 	@Schema(example = "password")
