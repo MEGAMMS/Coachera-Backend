@@ -6,62 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.coachera.backend.entity.Category;
-import com.coachera.backend.entity.Certificate;
-import com.coachera.backend.entity.Course;
-import com.coachera.backend.entity.CourseCompletion;
-import com.coachera.backend.entity.Enrollment;
-import com.coachera.backend.entity.Instructor;
-import com.coachera.backend.entity.LearningPath;
-import com.coachera.backend.entity.Material;
-import com.coachera.backend.entity.MaterialCompletion;
-import com.coachera.backend.entity.Organization;
-import com.coachera.backend.entity.Question;
-import com.coachera.backend.entity.Quiz;
-import com.coachera.backend.entity.Review;
-import com.coachera.backend.entity.Section;
-import com.coachera.backend.entity.Skill;
-import com.coachera.backend.entity.Student;
-import com.coachera.backend.entity.User;
-import com.coachera.backend.entity.Module;
-
-import com.coachera.backend.generator.CategoryGenerator;
-import com.coachera.backend.generator.CertificateGenerator;
-import com.coachera.backend.generator.CourseCompletionGenerator;
-import com.coachera.backend.generator.CourseGenerator;
-import com.coachera.backend.generator.EnrollmentGenerator;
-import com.coachera.backend.generator.InstructorGenerator;
-import com.coachera.backend.generator.LearningPathGenerator;
-import com.coachera.backend.generator.MaterialCompletionGenerator;
-import com.coachera.backend.generator.MaterialGenerator;
-import com.coachera.backend.generator.OrganizationGenerator;
-import com.coachera.backend.generator.QuestionGenerator;
-import com.coachera.backend.generator.QuizGenerator;
-import com.coachera.backend.generator.ReviewGenerator;
-import com.coachera.backend.generator.SectionGenerator;
-import com.coachera.backend.generator.SkillGenerator;
-import com.coachera.backend.generator.StudentGenerator;
-import com.coachera.backend.generator.UserGenerator;
-import com.coachera.backend.generator.ModuleGenerator;
-
-import com.coachera.backend.repository.CategoryRepository;
-import com.coachera.backend.repository.CertificateRepository;
-import com.coachera.backend.repository.CourseCompletionRepository;
-import com.coachera.backend.repository.CourseRepository;
-import com.coachera.backend.repository.EnrollmentRepository;
-import com.coachera.backend.repository.InstructorRepository;
-import com.coachera.backend.repository.LearningPathRepository;
-import com.coachera.backend.repository.MaterialCompletionRepository;
-import com.coachera.backend.repository.MaterialRepository;
-import com.coachera.backend.repository.OrganizationRepository;
-import com.coachera.backend.repository.QuestionRepository;
-import com.coachera.backend.repository.QuizRepository;
-import com.coachera.backend.repository.ReviewRepository;
-import com.coachera.backend.repository.SectionRepository;
-import com.coachera.backend.repository.SkillRepository;
-import com.coachera.backend.repository.StudentRepository;
-import com.coachera.backend.repository.UserRepository;
-import com.coachera.backend.repository.ModuleRepository;
+import com.coachera.backend.entity.*;
+import com.coachera.backend.generator.*;
+import com.coachera.backend.repository.*;
 
 @Component
 public class DatabaseSeeder {
@@ -129,18 +76,48 @@ public class DatabaseSeeder {
 
     @Transactional
     public void run() {
-        // Generate and assign roles before saving
-        List<User> users = userGenerator.generate(15);
+        // Seed users and roles
+        List<User> users = seedUsers();
+        
+        // Seed entities by role
+        List<Student> students = seedStudents(users);
+        List<Instructor> instructors = seedInstructors(users);
+        List<Organization> orgs = seedOrganizations(users);
+        
+        // Seed course-related entities
+        List<Course> courses = seedCourses(orgs);
+        seedCategories(courses);
+        List<Enrollment> enrollments = seedEnrollments(students, courses);
+        seedCertificates(courses);
+        
+        // Seed course structure
+        List<com.coachera.backend.entity.Module> modules = seedModules(courses);
+        List<Section> sections = seedSections(modules);
+        List<Material> materials = seedMaterials(sections);
+        
+        // Seed completions and assessments
+        seedCompletions(enrollments, materials);
+        seedQuizzesAndQuestions(materials);
+        seedReviews(courses, students);
+        
+        // Seed learning paths and skills
+        seedLearningPaths(orgs, courses);
+        seedSkills();
+    }
 
+    private List<User> seedUsers() {
+        List<User> users = userGenerator.generate(15);
+        
+        // Set specific users
         users.get(0).setRole("STUDENT");
         users.get(0).setEmail("student@gmail.com");
         users.get(1).setRole("INSTRUCTOR");
         users.get(1).setEmail("instructer@gmail.com");
         users.get(2).setRole("ORGANIZATION");
         users.get(2).setEmail("organization@gmail.com");
-        // Assign roles
+        
+        // Set remaining users
         for (int i = 3; i < users.size(); i++) {
-            // users.get(i).setProfileImage(images.get(i));
             if (i < 5) {
                 users.get(i).setRole("STUDENT");
                 users.get(i).setEmail("student" + i + "@gmail.com");
@@ -152,133 +129,113 @@ public class DatabaseSeeder {
                 users.get(i).setEmail("organization" + i + "@gmail.com");
             }
         }
+        
+        return userRepo.saveAll(users);
+    }
 
-        userRepo.saveAll(users);
-        userRepo.flush();
-
-        // Filter users by role
-        List<User> studentUsers = users.stream()
-                .filter(user -> "STUDENT".equalsIgnoreCase(user.getRole()))
-                .collect(Collectors.toList());
-
-        List<User> instructorUsers = users.stream()
-                .filter(user -> "INSTRUCTOR".equalsIgnoreCase(user.getRole()))
-                .collect(Collectors.toList());
-
-        List<User> orgUsers = users.stream()
-                .filter(user -> "ORGANIZATION".equalsIgnoreCase(user.getRole()))
-                .collect(Collectors.toList());
-
-        // Seed students
+    private List<Student> seedStudents(List<User> users) {
+        List<User> studentUsers = filterUsersByRole(users, "STUDENT");
         List<Student> students = StudentGenerator.fromUsers(studentUsers);
-        studentRepo.saveAll(students);
+        return studentRepo.saveAll(students);
+    }
 
-        // Seed admin
-        List<Instructor> admins = InstructorGenerator.fromUsers(instructorUsers);
-        instructorRepo.saveAll(admins);
+    private List<Instructor> seedInstructors(List<User> users) {
+        List<User> instructorUsers = filterUsersByRole(users, "INSTRUCTOR");
+        List<Instructor> instructors = InstructorGenerator.fromUsers(instructorUsers);
+        return instructorRepo.saveAll(instructors);
+    }
 
-        // Seed organizations
+    private List<Organization> seedOrganizations(List<User> users) {
+        List<User> orgUsers = filterUsersByRole(users, "ORGANIZATION");
         List<Organization> orgs = OrganizationGenerator.fromUsers(orgUsers);
-        orgRepo.saveAll(orgs);
+        return orgRepo.saveAll(orgs);
+    }
 
-        // Seed courses per org
+    private List<Course> seedCourses(List<Organization> orgs) {
         List<Course> courses = CourseGenerator.fromOrg(orgs);
-        courseRepo.saveAll(courses);
+        return courseRepo.saveAll(courses);
+    }
 
-        // for(int i=0;i<24;i++)
-        // {
-        // courses.get(i).setImage(images.get(i));
-        // }
-        // courseRepo.saveAll(courses);
-        // courseRepo.flush();
-
-        // Seed categories
-        List<Category> categories = CategoryGenerator.fromCourses(courses, List.of("AI", "Web", "Business", "Data"));
+    private void seedCategories(List<Course> courses) {
+        List<Category> categories = CategoryGenerator.fromCourses(courses, 
+            List.of("AI", "Web", "Business", "Data"));
         categoryRepo.saveAll(categories);
+    }
 
-        // Seed enrollments for first few courses
+    private List<Enrollment> seedEnrollments(List<Student> students, List<Course> courses) {
         List<Enrollment> enrollments = EnrollmentGenerator.forStudentsAndCourses(students, courses.subList(0, 5));
-        enrollmentRepo.saveAll(enrollments);
+        return enrollmentRepo.saveAll(enrollments);
+    }
 
-        // Seed certificates (optional)
+    private void seedCertificates(List<Course> courses) {
         List<Certificate> certificates = CertificateGenerator.fromCourses(courses);
         certificateRepo.saveAll(certificates);
+    }
 
-        // Seed Modules
-        List<Module> modules = ModuleGenerator.fromCourses(courses);
-        moduleRepo.saveAll(modules);
+    private List<com.coachera.backend.entity.Module> seedModules(List<Course> courses) {
+        List<com.coachera.backend.entity.Module> modules = ModuleGenerator.fromCourses(courses);
+        return moduleRepo.saveAll(modules);
+    }
 
-        // Seed Sections
+    private List<Section> seedSections(List<com.coachera.backend.entity.Module> modules) {
         List<Section> sections = SectionGenerator.fromModules(modules);
-        sectionRepo.saveAll(sections);
+        return sectionRepo.saveAll(sections);
+    }
 
-        // Seed Materials
+    private List<Material> seedMaterials(List<Section> sections) {
         List<Material> materials = MaterialGenerator.fromSections(sections);
-        materialRepo.saveAll(materials);
+        return materialRepo.saveAll(materials);
+    }
 
-        // Seed Material Completions
+    private void seedCompletions(List<Enrollment> enrollments, List<Material> materials) {
         List<MaterialCompletion> materialCompletions = MaterialCompletionGenerator
                 .forEnrollmentsAndMaterials(enrollments, materials);
         materialCompletionRepo.saveAll(materialCompletions);
 
-        // Seed Course Completions
         List<CourseCompletion> courseCompletions = CourseCompletionGenerator
                 .forEnrollmentsWithMaterialProgress(enrollments);
         courseCompletionRepo.saveAll(courseCompletions);
+    }
 
-        // Seed Quizzes
+    private void seedQuizzesAndQuestions(List<Material> materials) {
         List<Quiz> quizzes = QuizGenerator.fromMaterials(materials);
         quizRepo.saveAll(quizzes);
 
-        // Seed questions
         List<Question> questions = QuestionGenerator.fromQuizzes(quizzes);
         questionRepo.saveAll(questions);
+    }
 
-        // Seed Reviews
+    private void seedReviews(List<Course> courses, List<Student> students) {
         List<Review> reviews = ReviewGenerator.generateReviews(courses, students);
         reviewRepo.saveAll(reviews);
+    }
 
-        // Seed LearningPaths
+    private void seedLearningPaths(List<Organization> orgs, List<Course> courses) {
         List<LearningPath> learningPaths = LearningPathGenerator.generateLearningPaths(orgs, courses);
         learningPathRepo.saveAll(learningPaths);
+    }
 
-        // Seed Skills
-
-        List<String> defaultSkillNames = List.of(
-                "Java Programming",
-                "Python Programming",
-                "Web Development",
-                "Data Analysis",
-                "Machine Learning",
-                "Database Design",
-                "Software Architecture",
-                "DevOps",
-                "Cloud Computing",
-                "Mobile Development");
-
-        List<Skill> skills = SkillGenerator.generateSkills(defaultSkillNames);
+    private void seedSkills() {
+        List<String> skillNames = List.of(
+                "Java Programming", "Python Programming", "Web Development", "Data Analysis",
+                "Machine Learning", "Database Design", "Software Architecture", "DevOps",
+                "Cloud Computing", "Mobile Development");
+        List<Skill> skills = SkillGenerator.generateSkills(skillNames);
         skillRepo.saveAll(skills);
+    }
+
+    private List<User> filterUsersByRole(List<User> users, String role) {
+        return users.stream()
+                .filter(user -> role.equalsIgnoreCase(user.getRole()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public void clean() {
-        skillRepo.deleteAll();
-        learningPathRepo.deleteAll();
-        questionRepo.deleteAll();
-        reviewRepo.deleteAll();
-        quizRepo.deleteAll();
-        courseCompletionRepo.deleteAll();
-        materialCompletionRepo.deleteAll();
-        materialRepo.deleteAll();
-        sectionRepo.deleteAll();
-        moduleRepo.deleteAll();
-        certificateRepo.deleteAll();
-        enrollmentRepo.deleteAll();
-        courseRepo.deleteAll();
-        categoryRepo.deleteAll();
-        orgRepo.deleteAll();
-        instructorRepo.deleteAll();
-        studentRepo.deleteAll();
-        userRepo.deleteAll();
+        List.of(skillRepo, learningPathRepo, questionRepo, reviewRepo, quizRepo,
+                courseCompletionRepo, materialCompletionRepo, materialRepo, sectionRepo,
+                moduleRepo, certificateRepo, enrollmentRepo, courseRepo, categoryRepo,
+                orgRepo, instructorRepo, studentRepo, userRepo)
+                .forEach(repo -> repo.deleteAll());
     }
 }
