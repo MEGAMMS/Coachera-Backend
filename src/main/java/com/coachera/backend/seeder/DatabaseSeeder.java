@@ -3,6 +3,7 @@ package com.coachera.backend.seeder;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class DatabaseSeeder {
     private final UserGenerator userGenerator;
     private final MaterialCompletionRepository materialCompletionRepo;
     private final CourseCompletionRepository courseCompletionRepo;
+    private final ImageSeeder imageSeeder;
 
     public DatabaseSeeder(
             UserRepository userRepo,
@@ -52,7 +54,8 @@ public class DatabaseSeeder {
             SkillRepository skillRepo,
             UserGenerator userGenerator,
             MaterialCompletionRepository materialCompletionRepo,
-            CourseCompletionRepository courseCompletionRepo) {
+            CourseCompletionRepository courseCompletionRepo,
+            ImageSeeder imageSeeder) {
         this.userGenerator = userGenerator;
         this.userRepo = userRepo;
         this.studentRepo = studentRepo;
@@ -72,10 +75,14 @@ public class DatabaseSeeder {
         this.skillRepo = skillRepo;
         this.materialCompletionRepo = materialCompletionRepo;
         this.courseCompletionRepo = courseCompletionRepo;
+        this.imageSeeder = imageSeeder;
     }
 
     @Transactional
     public void run() {
+        // Seed images first
+        imageSeeder.seedImages();
+        
         // Seed users and roles
         List<User> users = seedUsers();
         
@@ -152,7 +159,7 @@ public class DatabaseSeeder {
     }
 
     private List<Course> seedCourses(List<Organization> orgs) {
-        List<Course> courses = CourseGenerator.fromOrg(orgs);
+        List<Course> courses = CourseGenerator.fromOrg(orgs, imageSeeder);
         return courseRepo.saveAll(courses);
     }
 
@@ -211,7 +218,7 @@ public class DatabaseSeeder {
     }
 
     private void seedLearningPaths(List<Organization> orgs, List<Course> courses) {
-        List<LearningPath> learningPaths = LearningPathGenerator.generateLearningPaths(orgs, courses);
+        List<LearningPath> learningPaths = LearningPathGenerator.generateLearningPaths(orgs, courses, imageSeeder);
         learningPathRepo.saveAll(learningPaths);
     }
 
@@ -232,6 +239,9 @@ public class DatabaseSeeder {
 
     @Transactional
     public void clean() {
+        // Clean seeded images first
+        imageSeeder.clearSeededImages();
+        
         List.of(skillRepo, learningPathRepo, questionRepo, reviewRepo, quizRepo,
                 courseCompletionRepo, materialCompletionRepo, materialRepo, sectionRepo,
                 moduleRepo, certificateRepo, enrollmentRepo, courseRepo, categoryRepo,

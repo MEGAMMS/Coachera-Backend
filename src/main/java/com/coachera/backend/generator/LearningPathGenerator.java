@@ -1,6 +1,7 @@
 package com.coachera.backend.generator;
 
 import com.coachera.backend.entity.*;
+import com.coachera.backend.seeder.ImageSeeder;
 import org.instancio.Instancio;
 import org.instancio.Select;
 
@@ -23,7 +24,7 @@ public class LearningPathGenerator {
         "Cloud Computing", "Cybersecurity", "AI/ML", "DevOps"
     };
 
-    public static List<LearningPath> generateLearningPaths(List<Organization> organizations, List<Course> courses) {
+    public static List<LearningPath> generateLearningPaths(List<Organization> organizations, List<Course> courses, ImageSeeder imageSeeder) {
         if (organizations == null || organizations.isEmpty() || courses == null) {
             throw new IllegalArgumentException("Organizations and courses lists cannot be null or empty");
         }
@@ -40,9 +41,8 @@ public class LearningPathGenerator {
                     .supply(Select.field(LearningPath::getOrganization), () -> organization)
                     .supply(Select.field(LearningPath::getTitle), () -> generatePathTitle())
                     .supply(Select.field(LearningPath::getDescription), () -> generatePathDescription())
-                    .ignore(Select.field(LearningPath::getImage))
+                    .supply(Select.field(LearningPath::getImage), () -> imageSeeder.getRandomImage())
                     .ignore(Select.field(LearningPath::getCourses))
-                    .ignore(Select.field(LearningPath::getImage))
                     .create();
 
                 // Add 3-8 courses to the learning path
