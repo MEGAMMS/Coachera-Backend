@@ -99,8 +99,10 @@ public class ImageSeeder {
         String uuidName = UUID.randomUUID().toString() + originalExtension;
         Path targetPath = uploadPath.resolve(uuidName);
 
-        // Copy the resource to uploads directory
-        Files.copy(sourceResource.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        // Copy the resource to uploads directory using the correct method
+        try (var inputStream = sourceResource.getInputStream()) {
+            Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
         // Create and save Image entity
         Image image = new Image();
