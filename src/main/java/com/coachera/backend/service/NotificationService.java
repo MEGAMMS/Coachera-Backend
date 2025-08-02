@@ -83,7 +83,7 @@ public class NotificationService {
                         .content(request.getContent())
                         .actionUrl(request.getActionUrl())
                         .metadata(request.getMetadata())
-                        .channels(request.getChannels())
+                        // .channels(request.getChannels())
                         .build();
                     return sendNotification(userRequest).join();
                 })

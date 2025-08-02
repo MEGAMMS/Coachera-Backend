@@ -62,7 +62,7 @@ class NotificationServiceTest {
             .title("Test Notification")
             .content("This is a test notification")
             .actionUrl("/dashboard")
-            .channels(List.of("mobile", "web"))
+            // .channels(List.of("mobile", "web"))
             .build();
     }
 

@@ -15,7 +15,6 @@ import com.coachera.backend.dto.SendNotificationRequest;
 import com.coachera.backend.dto.DeviceTokenRequest;
 import com.coachera.backend.dto.WebPushSubscriptionRequest;
 import com.coachera.backend.dto.pagination.PaginatedResponse;
-// import com.coachera.backend.dto.MarkAsReadRequest;
 import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.NotificationService;
@@ -118,25 +117,25 @@ public class NotificationController {
     /**
      * Mark notifications as read
      */
-    // @PutMapping("/mark-read")
-    // @Operation(summary = "Mark notifications as read")
-    // public ApiResponse<Integer> markAsRead(
-    //         @AuthenticationPrincipal User user,
-    //         @Valid @RequestBody MarkAsReadRequest request) {
+    @PutMapping("/mark-read")
+    @Operation(summary = "Mark notifications as read")
+    public ApiResponse<Integer> markAsRead(
+            @AuthenticationPrincipal User user,
+            @RequestParam List<Long> notificationIds) {
 
-    //     try {
-    //         int updatedCount = notificationService.markNotificationsAsRead(
-    //             user.getId(),
-    //             request.getNotificationIds()
-    //         );
+        try {
+            int updatedCount = notificationService.markNotificationsAsRead(
+                user.getId(),
+                notificationIds
+            );
 
-    //         return ApiResponse.success("Notifications marked as read", updatedCount);
+            return ApiResponse.success("Notifications marked as read", updatedCount);
 
-    //     } catch (Exception e) {
-    //         log.error("Error marking notifications as read for user {}", user.getId(), e);
-    //         return ApiResponse.error(HttpStatus.BAD_REQUEST, "Failed to mark notifications as read: " + e.getMessage());
-    //     }
-    // }
+        } catch (Exception e) {
+            log.error("Error marking notifications as read for user {}", user.getId(), e);
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, "Failed to mark notifications as read: " + e.getMessage());
+        }
+    }
 
 
     /**
@@ -216,7 +215,7 @@ public class NotificationController {
             .title("Test Notification")
             .content("This is a test notification to verify the system is working correctly.")
             .actionUrl("/dashboard")
-            .channels(List.of("mobile", "web"))
+            // .channels(List.of("mobile", "web"))
             .build();
         
         return sendNotification(request);

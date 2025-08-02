@@ -51,19 +51,12 @@ public class SendNotificationRequest {
            description = "Additional metadata for the notification")
     private Map<String, String> metadata;
 
-    @Builder.Default
-    @Schema(example = "[\"mobile\", \"web\"]", 
-           description = "Channels to send the notification through",
-           allowableValues = {"mobile", "web", "email"},
-           defaultValue = "[\"mobile\", \"web\"]")
-    private List<String> channels = List.of("mobile", "web");
-
-    @Schema(example = "fcm_token_abc123", 
-           description = "Specific device token for mobile push (optional)")
-    private String deviceToken;
-
-    @Schema(description = "Web push subscription JSON (optional)")
-    private String webPushSubscriptionJson;
+//     @Builder.Default
+//     @Schema(example = "[\"mobile\", \"web\"]", 
+//            description = "Channels to send the notification through",
+//            allowableValues = {"mobile", "web", "email"},
+//            defaultValue = "[\"mobile\", \"web\"]")
+//     private List<String> channels = List.of("mobile", "web");
 
     @Schema(example = "user@example.com", 
            description = "Email address for email notifications (optional)",
