@@ -1,5 +1,7 @@
 package com.coachera.backend.dto;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,9 +39,17 @@ public class EnrollmentDTO extends AuditableDTO {
         this.id = enrollment.getId();
         this.courseId = enrollment.getCourse().getId();
         this.studentId = enrollment.getStudent().getId();
-        this.courseCompletion = new CourseCompletionDTO(enrollment.getCourseCompletion());
-        this.materialCompletions = enrollment.getMaterialCompletions().stream().map(MaterialCompletionDTO::new)
-                .collect(Collectors.toSet());
+        if (enrollment.getCourseCompletion() != null) {
+            this.courseCompletion = new CourseCompletionDTO(enrollment.getCourseCompletion());
+        } else {
+            this.courseCompletion = null;
+        }
+
+        this.materialCompletions = Optional.ofNullable(enrollment.getMaterialCompletions())
+        .orElse(Collections.emptySet())
+        .stream()
+        .map(MaterialCompletionDTO::new)
+        .collect(Collectors.toSet());
         this.setCreatedAt(enrollment.getCreatedAt());
         this.setUpdatedAt(enrollment.getUpdatedAt());
     }
