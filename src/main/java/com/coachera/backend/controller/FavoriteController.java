@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/favorites")
+@RequestMapping("/api/students/favorites")
 @PreAuthorize("hasRole('STUDENT')")
 @RequiredArgsConstructor
 @Tag(name = "Favorites", description = "Endpoints for managing student's favorite courses")
@@ -22,7 +22,7 @@ public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
-    @GetMapping("/student")
+    @GetMapping("/")
     @Operation(summary = "Get all favorites for a student")
     public ApiResponse<?> getFavoritesByStudentId(@AuthenticationPrincipal User user) {
 
@@ -31,7 +31,7 @@ public class FavoriteController {
 
     }
 
-    @PostMapping("{courseId}/student")
+    @PostMapping("/{courseId}")
     @Operation(summary = "Add a course to student's favorites")
     public ApiResponse<?> addFavorite(
             @AuthenticationPrincipal User user,
@@ -42,7 +42,7 @@ public class FavoriteController {
 
     }
 
-    @DeleteMapping("{courseId}")
+    @DeleteMapping("/{courseId}")
     @Operation(summary = "Remove a course from student's favorites")
     public ApiResponse<?> removeFavorite(
             @AuthenticationPrincipal User user,
@@ -53,7 +53,7 @@ public class FavoriteController {
 
     }
 
-    @GetMapping("/check/{courseId}")
+    @GetMapping("/{courseId}")
     @Operation(summary = "Check if a course is favorited by a student")
     public ApiResponse<?> isCourseFavorited(
             @AuthenticationPrincipal User user,
