@@ -31,9 +31,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             AccessToken at = tokenRepo.findByToken(token).orElse(null);
-            User userEntity = at.getUser();
+            
+            // Check if token exists and is not expired before accessing its properties
             if (at != null && at.getExpiresAt().isAfter(LocalDateTime.now())) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(at.getUser().getUsername());
+                User userEntity = at.getUser();
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userEntity.getUsername());
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userEntity,
                         null,

@@ -30,7 +30,7 @@ public class TokenService {
                 AccessToken at = AccessToken.builder()
                                 .token(token)
                                 .user(user)
-                                .expiresAt(LocalDateTime.now().plusHours(8))
+                                .expiresAt(LocalDateTime.now().plusDays(8))
                                 .build();
                 tokenRepo.save(at);
                 return token;

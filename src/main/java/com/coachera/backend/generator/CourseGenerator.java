@@ -13,9 +13,10 @@ import org.instancio.Select;
 
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Organization;
+import com.coachera.backend.seeder.ImageSeeder;
 
 public class CourseGenerator {
-    public static List<Course> fromOrg(List<Organization> organizations) {
+    public static List<Course> fromOrg(List<Organization> organizations, ImageSeeder imageSeeder) {
 
         if (organizations == null || organizations.isEmpty()) {
             throw new IllegalArgumentException("Orgs list cannot be null or empty");
@@ -50,9 +51,9 @@ public class CourseGenerator {
                                     .supply(Select.field(Course::getRating),
                                             () -> BigDecimal.valueOf(3 + random.nextDouble() * 2)
                                                     .setScale(1, RoundingMode.HALF_UP))
+                                    .supply(Select.field(Course::getImage), () -> imageSeeder.getRandomImage())
                                     .ignore(Select.field(Course::getCategories))
                                     .ignore(Select.field(Course::getLearningPaths))
-                                    .ignore(Select.field(Course::getImage))
                                     .ignore(Select.field(Course::getModules))
                                     .ignore(Select.field(Course::getInstructors))
                                     .create();

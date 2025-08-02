@@ -2,6 +2,7 @@ package com.coachera.backend.repository;
 
 import com.coachera.backend.entity.Image;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,10 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     Optional<Image> findByUuidName(String uuidName);
 
     boolean existsByUuidName(String uuidName);
+
+    List<Image> findByUuidNameStartingWith(String prefix);
+
+    void deleteByUuidNameStartingWith(String prefix);
 
     /**
      * Finds an image by its full URL by extracting the UUID from the URL

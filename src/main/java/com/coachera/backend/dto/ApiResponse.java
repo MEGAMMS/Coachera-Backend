@@ -54,7 +54,7 @@ public class ApiResponse<T> extends ResponseEntity<Object> {
     }
 
     public static ApiResponse<Void> noContentResponse() {
-        return new ApiResponse<>(HttpStatus.NO_CONTENT, "No Content", null);
+        return new ApiResponse<>(HttpStatus.OK, "No Content", null);
     }
 
     public static <T> ApiResponse<T> error(HttpStatus status, String message) {

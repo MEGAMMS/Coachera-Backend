@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Course;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +42,7 @@ public class CourseDTO extends AuditableDTO {
     private Integer orgId;
 
     @Schema(example = "[2,3]", description = "Course's categories")
-    private Set<String> categories;
+    private Set<CategoryDTO> categories;
 
     @Schema(example = "[2,3]", description = "Learning paths associated with this course")
     private Set<Integer> learningPathIds;
@@ -65,7 +66,7 @@ public class CourseDTO extends AuditableDTO {
         this.rating = course.getRating();
         this.instructors = course.getInstructors().stream().map(in -> in.getInstructor().getId())
         .collect(Collectors.toSet());
-        this.categories = course.getCategories().stream().map(c -> c.getCategory().getName())
+        this.categories = course.getCategories().stream().map(c -> new CategoryDTO(c.getCategory()))
                 .collect(Collectors.toSet());
         this.learningPathIds = course.getLearningPaths().stream().map(lp -> lp.getLearningPath().getId())
                 .collect(Collectors.toSet());
