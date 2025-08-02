@@ -15,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.dto.NotificationDTO;
 import com.coachera.backend.dto.SendNotificationRequest;
+import com.coachera.backend.entity.DeviceToken;
 import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.enums.NotificationStatus;
+import com.coachera.backend.repository.DeviceTokenRepository;
 import com.coachera.backend.repository.NotificationRepository;
 import com.coachera.backend.repository.UserRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -33,9 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NotificationService {
 
+    private final DeviceTokenRepository deviceTokenRepository;
     private NotificationRepository notificationRepository;
-    private UserRepository userRepository;
     private FirebaseMessaging firebaseMessaging;
+    private UserRepository userRepository;
     private WebPushService webPushService;
     private EmailService emailService;
 
@@ -55,6 +58,7 @@ public class NotificationService {
                 sendToAllChannels(notification);
 
                 return notification;
+
             } catch (Exception e) {
                 log.error("Error sending notification", e);
                 throw new RuntimeException("Failed to send notification", e);
@@ -117,18 +121,29 @@ public class NotificationService {
         return notificationRepository.countByRecipientAndReadFalse(user);
     }
 
-    // /**
-    //  * Register device token for push notifications
-    //  */
-    // public void registerDeviceToken(int userId, String deviceToken) {
-    //     // You might want to store device tokens separately for better management
-    //     // For now, we'll update the user's latest device token
-    //     User user = userRepository.findById(userId)
-    //         .orElseThrow(() -> new RuntimeException("User not found"));
+    /**
+     * Register device token for push notifications
+     */
+    public void registerDeviceToken(int userId, String token, String platform) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-    //     // Store device token (you might want a separate DeviceToken entity)
-    //     log.info("Registered device token for user {}: {}", userId, deviceToken);
-    // }
+        // Avoid duplicates
+        deviceTokenRepository.findByToken(token).ifPresentOrElse(
+            existing -> log.info("Device token already registered for user {}", userId),
+            () -> {
+                DeviceToken deviceToken = DeviceToken.builder()
+                    .user(user)
+                    .token(token)
+                    .platform(platform)
+                    .build();
+
+                deviceTokenRepository.save(deviceToken);
+                log.info("Registered new device token for user {}: {}", userId, token);
+            }
+        );
+    }
+
 
     // /**
     //  * Register web push subscription
@@ -196,31 +211,35 @@ public class NotificationService {
     }
 
     private void sendMobilePushNotification(Notification notification) {
-        try {
-            if (notification.getDeviceToken() == null) {
-                log.warn("No device token for notification {}", notification.getId());
-                return;
+        List<DeviceToken> tokens = deviceTokenRepository.findByUser(notification.getRecipient());
+
+        if (tokens.isEmpty()) {
+            log.warn("No device tokens for user {}", notification.getRecipient().getId());
+            return;
+        }
+
+        for (DeviceToken deviceToken : tokens) {
+            try {
+                Map<String, String> data = new HashMap<>(notification.getMetadata());
+                data.put("notificationId", notification.getId().toString());
+                data.put("actionUrl", notification.getActionUrl());
+
+                Message message = Message.builder()
+                    .setToken(deviceToken.getToken())
+                    .putAllData(data)
+                    .setNotification(com.google.firebase.messaging.Notification.builder()
+                        .setTitle(notification.getTitle())
+                        .setBody(notification.getContent())
+                        .build())
+                    .build();
+
+                String response = firebaseMessaging.send(message);
+                log.info("Successfully sent mobile push notification: {}", response);
+
+            } catch (FirebaseMessagingException e) {
+                log.error("Error sending mobile push notification", e);
+                notification.setStatus(NotificationStatus.FAILED);
             }
-
-            Map<String, String> data = new HashMap<>(notification.getMetadata());
-            data.put("notificationId", notification.getId().toString());
-            data.put("actionUrl", notification.getActionUrl());
-
-            Message message = Message.builder()
-                .setToken(notification.getDeviceToken())
-                .putAllData(data)
-                .setNotification(com.google.firebase.messaging.Notification.builder()
-                    .setTitle(notification.getTitle())
-                    .setBody(notification.getContent())
-                    .build())
-                .build();
-
-            String response = firebaseMessaging.send(message);
-            log.info("Successfully sent mobile push notification: {}", response);
-
-        } catch (FirebaseMessagingException e) {
-            log.error("Error sending mobile push notification", e);
-            notification.setStatus(NotificationStatus.FAILED);
         }
     }
 

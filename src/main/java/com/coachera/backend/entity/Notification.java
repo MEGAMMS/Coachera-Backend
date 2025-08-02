@@ -54,9 +54,6 @@ public class Notification extends Auditable {
 
     private LocalDateTime readAt;
 
-    // For mobile push
-    private String deviceToken;
-
     // For web push
     @Column(columnDefinition = "TEXT")
     private String webPushSubscriptionJson;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.NotificationDTO;
 import com.coachera.backend.dto.SendNotificationRequest;
-// import com.coachera.backend.dto.DeviceTokenRequest;
+import com.coachera.backend.dto.DeviceTokenRequest;
 // import com.coachera.backend.dto.WebPushSubscriptionRequest;
 import com.coachera.backend.dto.pagination.PaginatedResponse;
 // import com.coachera.backend.dto.MarkAsReadRequest;
@@ -161,22 +161,22 @@ public class NotificationController {
     /**
      * Register device token for push notifications (mobile)
      */
-    // @PostMapping("/register-device")
-    // @Operation(summary = "Register device token for push notifications")
-    // public ApiResponse<Void> registerDeviceToken(
-    //         @AuthenticationPrincipal User user,
-    //         @Valid @RequestBody DeviceTokenRequest request) {
+    @PostMapping("/register-device")
+    @Operation(summary = "Register device token for push notifications")
+    public ApiResponse<Void> registerDeviceToken(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody DeviceTokenRequest request) {
         
-    //     try {
-    //         notificationService.registerDeviceToken(user.getId(), request.getDeviceToken());
+        try {
+            notificationService.registerDeviceToken(user.getId(), request.getDeviceToken(),request.getPlatform());
             
-    //         return ApiResponse.noContentResponse();
+            return ApiResponse.noContentResponse();
             
-    //     } catch (Exception e) {
-    //         log.error("Error registering device token for user {}", user.getId(), e);
-    //         return ApiResponse.error(HttpStatus.BAD_REQUEST,"Failed to register device token: " + e.getMessage());
-    //     }
-    // }
+        } catch (Exception e) {
+            log.error("Error registering device token for user {}", user.getId(), e);
+            return ApiResponse.error(HttpStatus.BAD_REQUEST,"Failed to register device token: " + e.getMessage());
+        }
+    }
 
     /**
      * Register web push subscription (web browsers)
