@@ -1,60 +1,54 @@
 package com.coachera.backend.seeder;
 
+import com.coachera.backend.entity.Image;
+import com.coachera.backend.repository.ImageRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.coachera.backend.entity.Image;
-import com.coachera.backend.repository.ImageRepository;
-
 @Service
 public class ImageSeeder {
 
     private final ImageRepository imageRepository;
     private final Path uploadPath;
-    private List<Path> sourceImageFiles = new ArrayList<>();
+    private List<Resource> sourceImageResources = new ArrayList<>();
     private final Random random = new Random();
 
     public ImageSeeder(ImageRepository imageRepository, @Value("${app.upload.dir}") String uploadDir) throws IOException {
         this.imageRepository = imageRepository;
-        this.uploadPath = Paths.get(uploadDir);
+        this.uploadPath = Path.of(uploadDir);
         Files.createDirectories(uploadPath);
     }
 
     @Transactional
     public void seedImages() {
         try {
-            // Load images from seeder-images folder
-            Resource seederImagesResource = new ClassPathResource("seeder-images");
-            if (seederImagesResource.exists() && seederImagesResource.getFile().isDirectory()) {
-                Path seederImagesPath = seederImagesResource.getFile().toPath();
-                
-                // Get all image files from the seeder-images folder
-                sourceImageFiles = Files.list(seederImagesPath)
-                    .filter(path -> isImageFile(path.toString()))
-                    .toList();
-
-                if (sourceImageFiles.isEmpty()) {
-                    System.out.println("No image files found in seeder-images folder. Will use placeholder images when needed.");
-                } else {
-                    System.out.println("Found " + sourceImageFiles.size() + " images in seeder-images folder");
+            // Load images from seeder-images folder using ResourcePatternResolver
+            PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] resources = resolver.getResources("classpath:seeder-images/*");
+            
+            sourceImageResources.clear();
+            for (Resource resource : resources) {
+                if (isImageFile(resource.getFilename())) {
+                    sourceImageResources.add(resource);
                 }
+            }
+
+            if (sourceImageResources.isEmpty()) {
+                System.out.println("No image files found in seeder-images folder. Will use placeholder images when needed.");
             } else {
-                System.out.println("Seeder-images folder not found. Will use placeholder images when needed.");
+                System.out.println("Found " + sourceImageResources.size() + " images in seeder-images folder");
             }
         } catch (Exception e) {
             System.err.println("Error loading seeder images: " + e.getMessage());
@@ -63,6 +57,7 @@ public class ImageSeeder {
     }
 
     private boolean isImageFile(String fileName) {
+        if (fileName == null) return false;
         String lowerCase = fileName.toLowerCase();
         return lowerCase.endsWith(".jpg") || lowerCase.endsWith(".jpeg") || 
                lowerCase.endsWith(".png") || lowerCase.endsWith(".gif") || 
@@ -74,10 +69,10 @@ public class ImageSeeder {
      */
     public Image getRandomImage() {
         try {
-            if (!sourceImageFiles.isEmpty()) {
+            if (!sourceImageResources.isEmpty()) {
                 // Pick a random source image
-                Path sourceImage = sourceImageFiles.get(random.nextInt(sourceImageFiles.size()));
-                return copyAndStoreImage(sourceImage);
+                Resource sourceResource = sourceImageResources.get(random.nextInt(sourceImageResources.size()));
+                return copyAndStoreImage(sourceResource);
             } else {
                 // Create a placeholder image
                 return createPlaceholderImage();
@@ -99,13 +94,13 @@ public class ImageSeeder {
         return randomImages;
     }
 
-    private Image copyAndStoreImage(Path sourcePath) throws IOException {
-        String originalExtension = getFileExtension(sourcePath.toString());
+    private Image copyAndStoreImage(Resource sourceResource) throws IOException {
+        String originalExtension = getFileExtension(sourceResource.getFilename());
         String uuidName = UUID.randomUUID().toString() + originalExtension;
         Path targetPath = uploadPath.resolve(uuidName);
 
-        // Copy the file to uploads directory
-        Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        // Copy the resource to uploads directory
+        Files.copy(sourceResource.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
         // Create and save Image entity
         Image image = new Image();
@@ -135,16 +130,13 @@ public class ImageSeeder {
                 .filter(path -> path.getFileName().toString().startsWith("placeholder-"))
                 .forEach(path -> {
                     try {
-                        Files.deleteIfExists(path);
+                        Files.delete(path);
                     } catch (IOException e) {
-                        System.err.println("Error deleting placeholder image file: " + e.getMessage());
+                        System.err.println("Error deleting placeholder image: " + e.getMessage());
                     }
                 });
         } catch (IOException e) {
-            System.err.println("Error listing upload directory: " + e.getMessage());
+            System.err.println("Error clearing seeded images: " + e.getMessage());
         }
-
-        // Delete all placeholder images from database
-        imageRepository.deleteByUuidNameStartingWith("placeholder-");
     }
 } 
