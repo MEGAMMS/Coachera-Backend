@@ -13,7 +13,7 @@ import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.NotificationDTO;
 import com.coachera.backend.dto.SendNotificationRequest;
 import com.coachera.backend.dto.DeviceTokenRequest;
-// import com.coachera.backend.dto.WebPushSubscriptionRequest;
+import com.coachera.backend.dto.WebPushSubscriptionRequest;
 import com.coachera.backend.dto.pagination.PaginatedResponse;
 // import com.coachera.backend.dto.MarkAsReadRequest;
 import com.coachera.backend.entity.Notification;
@@ -181,25 +181,26 @@ public class NotificationController {
     /**
      * Register web push subscription (web browsers)
      */
-    // @PostMapping("/register-web-push")
-    // @Operation(summary = "Register web push subscription")
-    // public ApiResponse<Void> registerWebPushSubscription(
-    //         @AuthenticationPrincipal User user,
-    //         @Valid @RequestBody WebPushSubscriptionRequest request) {
+    @PostMapping("/register-web-push")
+    @Operation(summary = "Register web push subscription")
+    public ApiResponse<Void> registerWebPushSubscription(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody WebPushSubscriptionRequest request) {
         
-    //     try {
-    //         notificationService.registerWebPushSubscription(
-    //             user.getId(), 
-    //             request.getSubscriptionJson()
-    //         );
+        try {
+            notificationService.registerWebPushSubscription(
+                user.getId(), 
+                request.getSubscriptionJson(),
+                request.getUserAgent()
+            );
             
-    //         return ApiResponse.noContentResponse();
+            return ApiResponse.noContentResponse();
 
-    //     } catch (Exception e) {
-    //         log.error("Error registering web push subscription for user {}", user.getId(), e);
-    //         return ApiResponse.error(HttpStatus.BAD_REQUEST,"Failed to register web push subscription: " + e.getMessage());
-    //     }
-    // }
+        } catch (Exception e) {
+            log.error("Error registering web push subscription for user {}", user.getId(), e);
+            return ApiResponse.error(HttpStatus.BAD_REQUEST,"Failed to register web push subscription: " + e.getMessage());
+        }
+    }
 
     /**
      * Test endpoint to send a test notification

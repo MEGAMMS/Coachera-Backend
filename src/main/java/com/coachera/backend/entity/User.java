@@ -48,10 +48,15 @@ public class User extends Auditable {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Instructor instructor;
 
-    // Bidirectional relationship with Instructor
+    // Bidirectional relationship with Device Token
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<DeviceToken> deviceTokens = new HashSet<>();
+
+    // Bidirectional relationship with Web Push Subscription
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<WebPushSubscription> webPushSubscriptions = new HashSet<>();
 
 
     // Helper methods for managing relationships

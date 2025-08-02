@@ -54,10 +54,6 @@ public class Notification extends Auditable {
 
     private LocalDateTime readAt;
 
-    // For web push
-    @Column(columnDefinition = "TEXT")
-    private String webPushSubscriptionJson;
-
     // For email
     private String emailAddress;
 }

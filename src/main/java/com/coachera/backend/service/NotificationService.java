@@ -18,10 +18,12 @@ import com.coachera.backend.dto.SendNotificationRequest;
 import com.coachera.backend.entity.DeviceToken;
 import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.WebPushSubscription;
 import com.coachera.backend.entity.enums.NotificationStatus;
 import com.coachera.backend.repository.DeviceTokenRepository;
 import com.coachera.backend.repository.NotificationRepository;
 import com.coachera.backend.repository.UserRepository;
+import com.coachera.backend.repository.WebPushSubscriptionRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NotificationService {
 
+    private final WebPushSubscriptionRepository webPushSubscriptionRepository;
     private final DeviceTokenRepository deviceTokenRepository;
     private NotificationRepository notificationRepository;
     private FirebaseMessaging firebaseMessaging;
@@ -139,22 +142,31 @@ public class NotificationService {
                     .build();
 
                 deviceTokenRepository.save(deviceToken);
+
                 log.info("Registered new device token for user {}: {}", userId, token);
             }
         );
     }
 
 
-    // /**
-    //  * Register web push subscription
-    //  */
-    // public void registerWebPushSubscription(int userId, String subscriptionJson) {
-    //     User user = userRepository.findById(userId)
-    //         .orElseThrow(() -> new RuntimeException("User not found"));
+    /**
+     * Register web push subscription
+     */
+    public void registerWebPushSubscription(int userId, String subscriptionJson, String userAgent) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-    //     // Store web push subscription (you might want a separate entity for this)
-    //     log.info("Registered web push subscription for user {}", userId);
-    // }
+        WebPushSubscription subscription = WebPushSubscription.builder()
+            .subscriptionJson(subscriptionJson)
+            .userAgent(userAgent)
+            .user(user)
+            .build();
+
+        webPushSubscriptionRepository.save(subscription);
+
+        log.info("Registered new web push subscription for user {}", userId);
+    }
+
 
     /**
      * Retry failed notifications
@@ -245,26 +257,36 @@ public class NotificationService {
 
     private void sendWebPushNotification(Notification notification) {
         try {
-            if (notification.getWebPushSubscriptionJson() == null) {
-                log.warn("No web push subscription for notification {}", notification.getId());
+            List<WebPushSubscription> subscriptions =
+                webPushSubscriptionRepository.findByUser(notification.getRecipient());
+
+            if (subscriptions.isEmpty()) {
+                log.warn("No web push subscriptions for user {}", notification.getRecipient().getId());
                 return;
             }
 
-            webPushService.sendNotification(
-                notification.getWebPushSubscriptionJson(),
-                notification.getTitle(),
-                notification.getContent(),
-                notification.getActionUrl(),
-                notification.getMetadata()
-            );
+            for (WebPushSubscription sub : subscriptions) {
+                try {
+                    webPushService.sendNotification(
+                        sub.getSubscriptionJson(),
+                        notification.getTitle(),
+                        notification.getContent(),
+                        notification.getActionUrl(),
+                        notification.getMetadata()
+                    );
+                } catch (Exception ex) {
+                    log.error("Failed to send to subscription ID {}: {}", sub.getId(), ex.getMessage());
+                }
+            }
 
-            log.info("Successfully sent web push notification for notification {}", notification.getId());
+            log.info("Successfully sent web push notifications for user {}", notification.getRecipient().getId());
 
         } catch (Exception e) {
             log.error("Error sending web push notification", e);
             notification.setStatus(NotificationStatus.FAILED);
         }
     }
+
 
     private void sendEmailNotification(Notification notification) {
         try {
