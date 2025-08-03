@@ -2,7 +2,6 @@ package com.coachera.backend.service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -24,8 +23,6 @@ import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
