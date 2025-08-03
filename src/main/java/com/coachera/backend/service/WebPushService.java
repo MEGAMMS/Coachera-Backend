@@ -1,8 +1,12 @@
 package com.coachera.backend.service;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.Security;
+import java.security.spec.ECGenParameterSpec;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.Base64;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,10 +97,26 @@ public class WebPushService {
      */
     public VapidKeys generateVapidKeys() {
         try {
+            // Ensure Bouncy Castle is available
+            if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
+
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
+            generator.initialize(new ECGenParameterSpec("secp256r1"));
+            KeyPair keyPair = generator.generateKeyPair();
+
+            String publicKey = Base64.getUrlEncoder().withoutPadding().encodeToString(
+                    keyPair.getPublic().getEncoded()
+            );
+            String privateKey = Base64.getUrlEncoder().withoutPadding().encodeToString(
+                    keyPair.getPrivate().getEncoded()
+            );
+
             return VapidKeys.builder()
-                .publicKey(pushService.getPublicKey().toString())
-                .privateKey(pushService.getPrivateKey().toString())
-                .build();
+                    .publicKey(publicKey)
+                    .privateKey(privateKey)
+                    .build();
         } catch (Exception e) {
             log.error("Error generating VAPID keys", e);
             throw new RuntimeException("Failed to generate VAPID keys", e);

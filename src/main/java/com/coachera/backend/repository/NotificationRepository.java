@@ -34,10 +34,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("UPDATE Notification n SET n.read = true, n.readAt = CURRENT_TIMESTAMP WHERE n.id IN :ids AND n.recipient = :user")
     int markAsRead(@Param("ids") List<Long> notificationIds, @Param("user") User user);
 
-    // Find web push subscriptions by user
-    @Query("SELECT n.webPushSubscriptionJson FROM Notification n WHERE n.recipient = :user AND n.webPushSubscriptionJson IS NOT NULL")
-    List<String> findWebPushSubscriptionsByUser(@Param("user") User user);
-
     // Find notifications by recipient and type
     Page<Notification> findByRecipientAndTypeOrderByCreatedAtDesc(User recipient, com.coachera.backend.entity.enums.NotificationType type, Pageable pageable);
 
@@ -56,8 +52,4 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Modifying
     @Query("DELETE FROM Notification n WHERE n.createdAt < :cutoff")
     int deleteOldNotifications(@Param("cutoff") LocalDateTime cutoff);
-
-    // Find notifications with device tokens for bulk operations
-    @Query("SELECT n FROM Notification n WHERE n.deviceToken IS NOT NULL AND n.status = :status")
-    List<Notification> findNotificationsWithDeviceTokenByStatus(@Param("status") NotificationStatus status);
 }
