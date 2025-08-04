@@ -39,11 +39,11 @@ public class NotificationService {
 
     private final WebPushSubscriptionRepository webPushSubscriptionRepository;
     private final DeviceTokenRepository deviceTokenRepository;
-    private NotificationRepository notificationRepository;
-    private FirebaseMessaging firebaseMessaging;
-    private UserRepository userRepository;
-    private WebPushService webPushService;
-    private EmailService emailService;
+    private final NotificationRepository notificationRepository;
+    private final FirebaseMessaging firebaseMessaging;
+    private final UserRepository userRepository;
+    private final WebPushService webPushService;
+    private final EmailService emailService;
 
     /**
      * Send notification to a single user across all their devices/channels

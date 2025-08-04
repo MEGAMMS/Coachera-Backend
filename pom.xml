@@ -73,7 +73,12 @@
 			<artifactId>modelmapper</artifactId>
 			<version>3.1.1</version>
 		</dependency>
-		
+		<!-- Testing DB -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>

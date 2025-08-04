@@ -20,12 +20,16 @@ import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.enums.NotificationStatus;
 import com.coachera.backend.entity.enums.NotificationType;
+import com.coachera.backend.repository.DeviceTokenRepository;
 import com.coachera.backend.repository.NotificationRepository;
 import com.coachera.backend.repository.UserRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
+
+    @Mock
+    private DeviceTokenRepository deviceTokenRepository;
 
     @Mock
     private NotificationRepository notificationRepository;
