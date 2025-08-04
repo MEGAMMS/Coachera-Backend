@@ -29,7 +29,7 @@ public class WebPushService {
     @Value("${webpush.private-key}")
     private String privateKey;
 
-    @Value("${webpush.subject:mailto:admin@coachera.com}")
+    @Value("${webpush.subject}")
     private String subject;
 
     private final PushService pushService;
