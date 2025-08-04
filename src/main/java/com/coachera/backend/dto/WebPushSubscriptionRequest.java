@@ -3,6 +3,7 @@ package com.coachera.backend.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Request object for registering a web push subscription")
 public class WebPushSubscriptionRequest {
