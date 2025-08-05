@@ -41,9 +41,6 @@ class NotificationServiceTest {
     private FirebaseMessaging firebaseMessaging;
 
     @Mock
-    private WebPushService webPushService;
-
-    @Mock
     private EmailService emailService;
 
     @InjectMocks

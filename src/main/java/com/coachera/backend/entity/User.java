@@ -53,12 +53,6 @@ public class User extends Auditable {
     @Builder.Default
     private Set<DeviceToken> deviceTokens = new HashSet<>();
 
-    // Bidirectional relationship with Web Push Subscription
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<WebPushSubscription> webPushSubscriptions = new HashSet<>();
-
-
     // Helper methods for managing relationships
     public void setOrganization(Organization organization) {
         if (organization == null) {

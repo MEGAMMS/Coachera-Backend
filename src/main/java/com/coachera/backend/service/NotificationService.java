@@ -18,12 +18,10 @@ import com.coachera.backend.dto.SendNotificationRequest;
 import com.coachera.backend.entity.DeviceToken;
 import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
-import com.coachera.backend.entity.WebPushSubscription;
 import com.coachera.backend.entity.enums.NotificationStatus;
 import com.coachera.backend.repository.DeviceTokenRepository;
 import com.coachera.backend.repository.NotificationRepository;
 import com.coachera.backend.repository.UserRepository;
-import com.coachera.backend.repository.WebPushSubscriptionRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -37,12 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final WebPushSubscriptionRepository webPushSubscriptionRepository;
     private final DeviceTokenRepository deviceTokenRepository;
     private final NotificationRepository notificationRepository;
     private final FirebaseMessaging firebaseMessaging;
     private final UserRepository userRepository;
-    private final WebPushService webPushService;
     private final EmailService emailService;
 
     /**
@@ -148,26 +144,6 @@ public class NotificationService {
         );
     }
 
-
-    /**
-     * Register web push subscription
-     */
-    public void registerWebPushSubscription(int userId, String subscriptionJson, String userAgent) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-        WebPushSubscription subscription = WebPushSubscription.builder()
-            .subscriptionJson(subscriptionJson)
-            .userAgent(userAgent)
-            .user(user)
-            .build();
-
-        webPushSubscriptionRepository.save(subscription);
-
-        log.info("Registered new web push subscription for user {}", userId);
-    }
-
-
     /**
      * Retry failed notifications
      */
@@ -202,14 +178,9 @@ public class NotificationService {
     private void sendToAllChannels(Notification notification) {
         List<String> channels = getChannelsFromMetadata(notification);
 
-        // Send to mobile (FCM)
-        if (channels.contains("mobile") || channels.contains("push")) {
-            sendMobilePushNotification(notification);
-        }
-
-        // Send to web (Web Push API)
-        if (channels.contains("web") || channels.contains("browser")) {
-            sendWebPushNotification(notification);
+        // Send to Mobile or Web (FCM)
+        if (channels.contains("mobile") || channels.contains("push")|| channels.contains("web") || channels.contains("browser")) {
+            sendPushNotification(notification);
         }
 
         // Send email
@@ -222,7 +193,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    private void sendMobilePushNotification(Notification notification) {
+    private void sendPushNotification(Notification notification) {
         List<DeviceToken> tokens = deviceTokenRepository.findByUser(notification.getRecipient());
 
         if (tokens.isEmpty()) {
@@ -254,39 +225,6 @@ public class NotificationService {
             }
         }
     }
-
-    private void sendWebPushNotification(Notification notification) {
-        try {
-            List<WebPushSubscription> subscriptions =
-                webPushSubscriptionRepository.findByUser(notification.getRecipient());
-
-            if (subscriptions.isEmpty()) {
-                log.warn("No web push subscriptions for user {}", notification.getRecipient().getId());
-                return;
-            }
-
-            for (WebPushSubscription sub : subscriptions) {
-                try {
-                    webPushService.sendNotification(
-                        sub.getSubscriptionJson(),
-                        notification.getTitle(),
-                        notification.getContent(),
-                        notification.getActionUrl(),
-                        notification.getMetadata()
-                    );
-                } catch (Exception ex) {
-                    log.error("Failed to send to subscription ID {}: {}", sub.getId(), ex.getMessage());
-                }
-            }
-
-            log.info("Successfully sent web push notifications for user {}", notification.getRecipient().getId());
-
-        } catch (Exception e) {
-            log.error("Error sending web push notification", e);
-            notification.setStatus(NotificationStatus.FAILED);
-        }
-    }
-
 
     private void sendEmailNotification(Notification notification) {
         try {
