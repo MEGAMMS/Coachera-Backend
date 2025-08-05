@@ -88,7 +88,8 @@ public class DatabaseSeeder {
         
         // Seed entities by role
         List<Student> students = seedStudents(users);
-        List<Instructor> instructors = seedInstructors(users);
+        // List<Instructor> instructors = 
+        seedInstructors(users);
         List<Organization> orgs = seedOrganizations(users);
         
         // Seed course-related entities
