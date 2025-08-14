@@ -1,8 +1,5 @@
 package com.coachera.backend.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,11 +44,6 @@ public class User extends Auditable {
     // Bidirectional relationship with Instructor
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Instructor instructor;
-
-    // Bidirectional relationship with Device Token
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<DeviceToken> deviceTokens = new HashSet<>();
 
     // Helper methods for managing relationships
     public void setOrganization(Organization organization) {

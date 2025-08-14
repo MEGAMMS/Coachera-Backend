@@ -3,6 +3,7 @@ package com.coachera.backend.seeder;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,10 +11,7 @@ import com.coachera.backend.entity.*;
 import com.coachera.backend.generator.*;
 import com.coachera.backend.repository.*;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class DatabaseSeeder {
 
     private final UserRepository userRepo;
@@ -37,6 +35,49 @@ public class DatabaseSeeder {
     private final CourseCompletionRepository courseCompletionRepo;
     private final ImageSeeder imageSeeder;
 
+    public DatabaseSeeder(
+            UserRepository userRepo,
+            StudentRepository studentRepo,
+            InstructorRepository instructorRepo,
+            OrganizationRepository orgRepo,
+            CourseRepository courseRepo,
+            CategoryRepository categoryRepo,
+            EnrollmentRepository enrollmentRepo,
+            CertificateRepository certificateRepo,
+            ModuleRepository moduleRepo,
+            SectionRepository sectionRepo,
+            MaterialRepository materialRepo,
+            QuizRepository quizRepo,
+            QuestionRepository questionRepo,
+            ReviewRepository reviewRepo,
+            LearningPathRepository learningPathRepo,
+            SkillRepository skillRepo,
+            UserGenerator userGenerator,
+            MaterialCompletionRepository materialCompletionRepo,
+            CourseCompletionRepository courseCompletionRepo,
+            ImageSeeder imageSeeder) {
+        this.userGenerator = userGenerator;
+        this.userRepo = userRepo;
+        this.studentRepo = studentRepo;
+        this.instructorRepo = instructorRepo;
+        this.orgRepo = orgRepo;
+        this.courseRepo = courseRepo;
+        this.categoryRepo = categoryRepo;
+        this.enrollmentRepo = enrollmentRepo;
+        this.certificateRepo = certificateRepo;
+        this.moduleRepo = moduleRepo;
+        this.sectionRepo = sectionRepo;
+        this.materialRepo = materialRepo;
+        this.quizRepo = quizRepo;
+        this.questionRepo = questionRepo;
+        this.reviewRepo = reviewRepo;
+        this.learningPathRepo = learningPathRepo;
+        this.skillRepo = skillRepo;
+        this.materialCompletionRepo = materialCompletionRepo;
+        this.courseCompletionRepo = courseCompletionRepo;
+        this.imageSeeder = imageSeeder;
+    }
+
     @Transactional
     public void run() {
         // Seed images first
@@ -47,8 +88,7 @@ public class DatabaseSeeder {
         
         // Seed entities by role
         List<Student> students = seedStudents(users);
-        // List<Instructor> instructors = 
-        seedInstructors(users);
+        List<Instructor> instructors = seedInstructors(users);
         List<Organization> orgs = seedOrganizations(users);
         
         // Seed course-related entities
