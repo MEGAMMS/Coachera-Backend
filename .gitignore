@@ -12,7 +12,6 @@ src/main/resources/seeder-images/*
 
 # shell files
 coachera.log
-spring-shell.log
 
 # MG3MZ-specific files
 .project
