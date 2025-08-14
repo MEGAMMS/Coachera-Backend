@@ -1,8 +1,5 @@
 package com.coachera.backend.dto;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.coachera.backend.entity.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

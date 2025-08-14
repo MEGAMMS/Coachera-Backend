@@ -7,7 +7,6 @@ import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.StudentRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +20,14 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final CourseRepository courseRepository;
     private final StudentRepository studentRepository;
-    private final ModelMapper modelMapper;
 
     public ReviewService(ReviewRepository reviewRepository,
                         CourseRepository courseRepository,
-                        StudentRepository studentRepository,
-                        ModelMapper modelMapper) {
+                        StudentRepository studentRepository
+                        ) {
         this.reviewRepository = reviewRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
-        this.modelMapper = modelMapper;
     }
 
     public ReviewDTO createReview(ReviewDTO reviewDTO) {

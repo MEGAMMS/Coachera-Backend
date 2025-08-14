@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Course;
 
 import io.swagger.v3.oas.annotations.media.Schema;
