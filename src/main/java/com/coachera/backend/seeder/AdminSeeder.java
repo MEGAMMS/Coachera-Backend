@@ -48,6 +48,7 @@ public class AdminSeeder {
                 .ignore(Select.field(User::getOrganization))
                 .ignore(Select.field(User::getStudent))
                 .ignore(Select.field(User::getInstructor))
+                .ignore(Select.field(User::getDeviceTokens))
                 .create();
 
         userRepo.save(user);
