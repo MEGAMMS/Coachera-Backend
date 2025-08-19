@@ -1,5 +1,6 @@
 package com.coachera.backend.service;
 
+import com.coachera.backend.dto.EnrolledCourseDTO;
 import com.coachera.backend.dto.EnrollmentDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.CourseCompletion;
@@ -26,11 +27,11 @@ public class EnrollmentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
 
-    public List<EnrollmentDTO> getEnrollmentsByStudent(User user) {
+    public List<EnrolledCourseDTO> getEnrollmentsByStudent(User user) {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         return enrollmentRepository.findByStudentId(studentId)
                 .stream()
-                .map(EnrollmentDTO::new)
+                .map(EnrolledCourseDTO::new)
                 .collect(Collectors.toList());
     }
 
