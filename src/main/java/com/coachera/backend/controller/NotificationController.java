@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     /**
      * Send notification to a single user
