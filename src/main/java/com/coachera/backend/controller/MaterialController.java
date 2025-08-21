@@ -7,6 +7,7 @@ import com.coachera.backend.entity.User;
 import com.coachera.backend.service.MaterialService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,14 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sections/{sectionId}/materials")
+@RequiredArgsConstructor
+@RequestMapping("/api/materials")
 public class MaterialController {
 
     private final MaterialService materialService;
-
-    public MaterialController(MaterialService materialService) {
-        this.materialService = materialService;
-    }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping
