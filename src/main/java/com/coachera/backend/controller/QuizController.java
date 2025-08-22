@@ -36,7 +36,7 @@ public class QuizController {
         return ApiResponse.success(quizDTO);
     }
 
-    @GetMapping
+    @GetMapping("/materials/{materialId}")
     public ApiResponse<List<QuizDTO>> getAllQuizzesByMaterialId(
             @PathVariable Integer materialId) {
         List<QuizDTO> quizzes = quizService.getAllQuizzesByMaterialId(materialId);
