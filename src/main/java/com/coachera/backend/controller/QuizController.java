@@ -6,6 +6,7 @@ import com.coachera.backend.service.QuizService;
 
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -14,18 +15,11 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/materials/{materialId}/quizzes")
+@RequiredArgsConstructor
+@RequestMapping("/api/quizzes")
 public class QuizController {
 
     private final QuizService quizService;
-    
-    
-    public QuizController(QuizService quizService) {
-        this.quizService = quizService;
-       
-        
-    }
-   
 
     @PostMapping
     public ApiResponse<QuizDTO> createQuiz(
