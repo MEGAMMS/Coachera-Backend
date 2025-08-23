@@ -36,7 +36,7 @@ public class Student extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true) 
     private User user;
 

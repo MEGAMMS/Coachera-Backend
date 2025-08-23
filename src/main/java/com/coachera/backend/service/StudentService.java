@@ -16,7 +16,10 @@ import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.AccessTokenRepository;
 import com.coachera.backend.repository.EnrollmentRepository;
+import com.coachera.backend.repository.FavoriteRepository;
+import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
@@ -28,15 +31,24 @@ public class StudentService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final EnrollmentRepository enrollmentRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final ReviewRepository reviewRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
     public StudentService(StudentRepository studentRepository, 
                         UserRepository userRepository,
                         ModelMapper modelMapper,
-                        EnrollmentRepository enrollmentRepository) {
+                        EnrollmentRepository enrollmentRepository,
+                        FavoriteRepository favoriteRepository,
+                        ReviewRepository reviewRepository,
+                        AccessTokenRepository accessTokenRepository) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.enrollmentRepository = enrollmentRepository;
+        this.favoriteRepository = favoriteRepository;
+        this.reviewRepository = reviewRepository;
+        this.accessTokenRepository =accessTokenRepository;
     }
 
      public StudentDTO createStudent(StudentDTO studentDTO, User user) {
@@ -115,11 +127,39 @@ public class StudentService {
 
     
     public void deleteStudent(Integer id) {
-        if (!studentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Student not found with id: " + id);
+        
+       Student student = studentRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+
+            // Delete all student-related entities
+        favoriteRepository.deleteAll(favoriteRepository.findByStudentId(id));
+        enrollmentRepository.deleteAll(enrollmentRepository.findByStudentId(id));
+        reviewRepository.deleteAll(reviewRepository.findByStudentId(id));
+        // Clear certificates and skills
+        student.getStudentCertificates().clear();
+        student.getStudentSkills().clear();
+        studentRepository.save(student);
+        if (student.getUser() != null) {
+        User user = student.getUser();
+           
+        // Delete access tokens first
+        accessTokenRepository.deleteByUserId(user.getId());
+
+        
+        
+        // Break the bidirectional relationship
+        user.setStudent(null);
+        userRepository.save(user);
         }
-        studentRepository.deleteById(id);
+        // Delete the student
+        studentRepository.delete(student);
+        if (student.getUser() != null) {
+            // Delete the user (now that access tokens are removed)
+            userRepository.delete(student.getUser());
+        }
+
     }
+    
     
     public Page<CourseDTO> getEnrolledCoursesByUser(User user, Pageable pageable) {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
