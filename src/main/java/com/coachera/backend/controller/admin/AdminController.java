@@ -26,7 +26,7 @@ public class AdminController {
         // Set the page title
         model.addAttribute("pageTitle", "Dashboard"); 
         
-        
+        model.addAttribute("activePage", "home");
         
         Map<String, Object> statistics = dashboardService.getDashboardStatistics();
         

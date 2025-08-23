@@ -101,6 +101,7 @@ public class StudentService {
         return new StudentDTO(updatedStudent);
     }
 
+    
     public void deleteStudent(Integer id) {
         if (!studentRepository.existsById(id)) {
             throw new ResourceNotFoundException("Student not found with id: " + id);

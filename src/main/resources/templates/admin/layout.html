@@ -31,13 +31,12 @@
                 <img th:src="@{/images/logo.png}" alt="Logo" class="h-12 w-auto">
             </div>
             
-            <nav class="mt-6">
-                <!-- Added 'active' class example for the home link -->
-                <a th:href="@{/admin/home}" class="sidebar-link active flex items-center py-3 px-6"><i data-lucide="home" class="w-5 h-5 mr-3"></i>Home</a>
-                <a th:href="@{/admin/students}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="users" class="w-5 h-5 mr-3"></i>Students</a>
-                <a th:href="@{/admin/organizations}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="building-2" class="w-5 h-5 mr-3"></i>Organizations</a>
-                <a th:href="@{/admin/instructors}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i>Instructors</a>
-                <a th:href="@{/admin/course-requests}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i>Course Requests</a>
+             <nav class="mt-6">
+                <a th:href="@{/admin/home}" class="sidebar-link flex items-center py-3 px-6" th:classappend="${activePage == 'home'} ? 'active'"><i data-lucide="home" class="w-5 h-5 mr-3"></i>Home</a>
+                <a th:href="@{/admin/students}" class="sidebar-link flex items-center py-3 px-6" th:classappend="${activePage == 'students'} ? 'active'"><i data-lucide="users" class="w-5 h-5 mr-3"></i>Students</a>
+                <a th:href="@{/admin/organizations}" class="sidebar-link flex items-center py-3 px-6" th:classappend="${activePage == 'organizations'} ? 'active'"><i data-lucide="building-2" class="w-5 h-5 mr-3"></i>Organizations</a>
+                <a th:href="@{/admin/instructors}" class="sidebar-link flex items-center py-3 px-6" th:classappend="${activePage == 'instructors'} ? 'active'"><i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i>Instructors</a>
+                <a th:href="@{/admin/course-requests}" class="sidebar-link flex items-center py-3 px-6" th:classappend="${activePage == 'course-requests'} ? 'active'"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i>Course Requests</a>
             </nav>
         </aside>
 
