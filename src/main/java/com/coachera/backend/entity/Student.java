@@ -124,4 +124,5 @@ public class Student extends Auditable {
             user.setStudent(this);
         }
     }
+
 }

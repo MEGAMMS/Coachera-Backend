@@ -50,7 +50,7 @@ public class MaterialController {
         return ApiResponse.success(materialDTO);
     }
 
-    @GetMapping
+    @GetMapping("/sections/{sectionId}")
     public ApiResponse<?> getAllMaterialsBySectionId(
             @PathVariable Integer sectionId) {
         List<MaterialDTO> materials = materialService.getAllMaterialsBySectionId(sectionId);

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Instructor Data Transfer Object")
-public class InstructorDTO extends AuditableDTO {
+public class InstructorDTO extends AuditableDTO implements RoleDTO{
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3", description = "Unique identifier of the user")
     private Integer id;
 

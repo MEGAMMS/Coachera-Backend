@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Organization Data Transfer Object")
-public class OrganizationDTO extends AuditableDTO {
+public class OrganizationDTO extends AuditableDTO implements RoleDTO{
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "3")
     private Integer id;
 
