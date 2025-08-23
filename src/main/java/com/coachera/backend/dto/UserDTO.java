@@ -1,6 +1,8 @@
 package com.coachera.backend.dto;
 
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.enums.RoleType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,7 +26,7 @@ public class UserDTO extends AuditableDTO {
 
     @Schema(example = "STUDENT", description = "User role", 
              allowableValues = {"ADMIN", "INSTRUCTOR", "STUDENT","ORGANIZATION"}, required = true)
-    private String role;
+    private RoleType role;
 
     @Schema(description = "Profile image details")
     private String profileImage;

@@ -7,6 +7,7 @@ import com.coachera.backend.dto.InstructorDTO;
 import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.dto.RoleDTO;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.entity.enums.RoleType;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +34,8 @@ public class User extends Auditable {
     private String username;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     @OneToOne
     @JoinColumn

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.entity.*;
+import com.coachera.backend.entity.enums.RoleType;
 import com.coachera.backend.generator.*;
 import com.coachera.backend.repository.*;
 
@@ -76,23 +77,23 @@ public class DatabaseSeeder {
         List<User> users = userGenerator.generate(15);
         
         // Set specific users
-        users.get(0).setRole("STUDENT");
+        users.get(0).setRole(RoleType.STUDENT);
         users.get(0).setEmail("student@gmail.com");
-        users.get(1).setRole("INSTRUCTOR");
+        users.get(1).setRole(RoleType.INSTRUCTOR);
         users.get(1).setEmail("instructer@gmail.com");
-        users.get(2).setRole("ORGANIZATION");
+        users.get(2).setRole(RoleType.ORGANIZATION);
         users.get(2).setEmail("organization@gmail.com");
         
         // Set remaining users
         for (int i = 3; i < users.size(); i++) {
             if (i < 5) {
-                users.get(i).setRole("STUDENT");
+                users.get(i).setRole(RoleType.STUDENT);
                 users.get(i).setEmail("student" + i + "@gmail.com");
             } else if (i < 10) {
-                users.get(i).setRole("INSTRUCTOR");
+                users.get(i).setRole(RoleType.INSTRUCTOR);
                 users.get(i).setEmail("instructer" + i + "@gmail.com");
             } else {
-                users.get(i).setRole("ORGANIZATION");
+                users.get(i).setRole(RoleType.ORGANIZATION);
                 users.get(i).setEmail("organization" + i + "@gmail.com");
             }
         }
@@ -101,19 +102,19 @@ public class DatabaseSeeder {
     }
 
     private List<Student> seedStudents(List<User> users) {
-        List<User> studentUsers = filterUsersByRole(users, "STUDENT");
+        List<User> studentUsers = filterUsersByRole(users, RoleType.STUDENT);
         List<Student> students = StudentGenerator.fromUsers(studentUsers);
         return studentRepo.saveAll(students);
     }
 
     private List<Instructor> seedInstructors(List<User> users) {
-        List<User> instructorUsers = filterUsersByRole(users, "INSTRUCTOR");
+        List<User> instructorUsers = filterUsersByRole(users, RoleType.INSTRUCTOR);
         List<Instructor> instructors = InstructorGenerator.fromUsers(instructorUsers);
         return instructorRepo.saveAll(instructors);
     }
 
     private List<Organization> seedOrganizations(List<User> users) {
-        List<User> orgUsers = filterUsersByRole(users, "ORGANIZATION");
+        List<User> orgUsers = filterUsersByRole(users, RoleType.ORGANIZATION);
         List<Organization> orgs = OrganizationGenerator.fromUsers(orgUsers);
         return orgRepo.saveAll(orgs);
     }
@@ -191,9 +192,9 @@ public class DatabaseSeeder {
         skillRepo.saveAll(skills);
     }
 
-    private List<User> filterUsersByRole(List<User> users, String role) {
+    private List<User> filterUsersByRole(List<User> users, RoleType role) {
         return users.stream()
-                .filter(user -> role.equalsIgnoreCase(user.getRole()))
+                .filter(user -> role.equals(user.getRole()))
                 .collect(Collectors.toList());
     }
 

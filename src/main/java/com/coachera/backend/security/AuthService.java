@@ -6,6 +6,7 @@ import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.enums.RoleType;
 import com.coachera.backend.repository.UserRepository;
 import com.coachera.backend.service.ImageService;
 
@@ -42,7 +43,7 @@ public class AuthService {
          * @throws IllegalArgumentException if username or email is already taken.
          */
         public User register(RegisterRequest registerRequest) {
-                if (registerRequest.getRole().equalsIgnoreCase("ADMIN")) {
+                if (registerRequest.getRole().equals(RoleType.ADMIN)) {
                         throw new IllegalArgumentException("Admin role cannot be self-assigned");
                 }
                 if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
@@ -55,7 +56,7 @@ public class AuthService {
                                 .username(registerRequest.getUsername())
                                 .email(registerRequest.getEmail())
                                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                                .role(registerRequest.getRole().toUpperCase())
+                                .role(registerRequest.getRole())
                                 .isVerified(false) // Default to false, can be changed based on verification flow
                                 .build();
                 if (registerRequest.getProfileImageUrl() != null) {

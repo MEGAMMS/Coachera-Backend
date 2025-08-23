@@ -42,8 +42,7 @@ public class StudentService {
         if (studentRepository.existsByUserId(studentDTO.getUserId())) {
             throw new ConflictException("User already has a student profile");
         }
-    
-        
+
         Student student = new Student();
         student.setUser(user);
         student.setFirstName(studentDTO.getFirstName());

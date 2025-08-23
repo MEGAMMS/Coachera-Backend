@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.entity.Admin;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.enums.RoleType;
 import com.coachera.backend.repository.AdminRepository;
 import com.coachera.backend.repository.UserRepository;
 
@@ -42,7 +43,7 @@ public class AdminSeeder {
                 .set(Select.field(User::getEmail), "admin@gmail.com")
                 .set(Select.field(User::getUsername), "admin")
                 .supply(Select.field(User::getPassword), () -> passwordEncoder.encode("password"))
-                .set(Select.field(User::getRole), "ADMIN")
+                .set(Select.field(User::getRole), RoleType.ADMIN)
                 .set(Select.field(User::getIsVerified), true)
                 .ignore(Select.field(User::getProfileImage))
                 .ignore(Select.field(User::getOrganization))

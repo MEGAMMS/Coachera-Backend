@@ -34,6 +34,7 @@ import com.coachera.backend.entity.Notification;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.enums.NotificationStatus;
 import com.coachera.backend.entity.enums.NotificationType;
+import com.coachera.backend.entity.enums.RoleType;
 import com.coachera.backend.repository.AccessTokenRepository;
 import com.coachera.backend.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,14 +70,14 @@ class NotificationControllerTest {
             .id(1)
             .email("test@example.com")
             .username("Teto")
-            .role("STUDENT")
+            .role(RoleType.STUDENT)
             .build();
 
         adminUser = User.builder()
             .id(2)
             .email("admin@example.com")
             .username("MG3MZ")
-            .role("ADMIN")
+            .role(RoleType.ADMIN)
             .build();
 
         Map<String, String> metadata = new HashMap<>();
