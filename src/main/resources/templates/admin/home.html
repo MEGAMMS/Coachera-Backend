@@ -8,13 +8,11 @@
 <body>
 
     <div layout:fragment="content">
-        <!-- قسم العنوان -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
             <p class="text-gray-600">Welcome back! Here's a summary of your application's activity.</p>
         </div>
         
-        <!-- قسم بطاقات الإحصائيات -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
                 <div>
@@ -32,32 +30,29 @@
             </div>
             <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
                 <div>
+                    <div class="text-sm font-medium text-gray-500">Total Organizations</div>
+                    <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('totalorganizations')} ?: '0'">0</div>
+                </div>
+                <div class="bg-indigo-100 rounded-full p-3"><i data-lucide="building-2" class="w-6 h-6 text-indigo-600"></i></div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
+                <div>
                     <div class="text-sm font-medium text-gray-500">Active Subscriptions</div>
                     <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('activeSubscriptions')} ?: '0'">0</div>
                 </div>
                 <div class="bg-yellow-100 rounded-full p-3"><i data-lucide="gem" class="w-6 h-6 text-yellow-600"></i></div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
-                <div>
-                    <div class="text-sm font-medium text-gray-500">Monthly Sales</div>
-                    <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('monthlySales')} ?: '$0'">$0</div>
-                </div>
-                <div class="bg-red-100 rounded-full p-3"><i data-lucide="dollar-sign" class="w-6 h-6 text-red-600"></i></div>
-            </div>
         </div>
 
-        <!-- قسم المخطط البياني -->
         <div class="bg-white p-6 rounded-xl shadow-lg">
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Sales Analytics (Last 6 Months)</h2>
             <div><canvas id="salesChart"></canvas></div>
         </div>
     </div>
 
-    <!-- هذا السكريبت سيتم إدراجه في نهاية الصفحة داخل layout.html -->
     <th:block layout:fragment="scripts">
         <script th:inline="javascript">
         /*<![CDATA[*/
-            // هذا الكود لن يعمل إلا بعد تحميل الصفحة بالكامل
             const ctx = document.getElementById('salesChart').getContext('2d');
             const salesChart = new Chart(ctx, {
                 type: 'bar',

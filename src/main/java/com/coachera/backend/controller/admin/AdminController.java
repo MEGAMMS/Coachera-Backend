@@ -4,11 +4,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.coachera.backend.service.DashboardService;
+
 import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    
+    private final DashboardService dashboardService;
+
+   
+    public AdminController(DashboardService dashboardService) {
+        this.dashboardService = dashboardService;
+    }
 
     @GetMapping("/home")
     public String adminHomePage(Model model) {
@@ -16,12 +27,8 @@ public class AdminController {
         model.addAttribute("pageTitle", "Dashboard"); 
         
         
-        Map<String, Object> statistics = Map.of(
-            "totalStudents", "1,250",
-            "totalInstructors", 150,
-            "activeSubscriptions", 840,
-            "monthlySales", "$15,750"
-        );
+        
+        Map<String, Object> statistics = dashboardService.getDashboardStatistics();
         
         // Add the statistics map to the model
         model.addAttribute("stats", statistics);

@@ -167,7 +167,7 @@ public class InstructorService {
                 .collect(Collectors.toList());
     }
 
-    public long countStudents() {
+    public long countInstructors() {
         return instructorRepository.count();
     }
 }
