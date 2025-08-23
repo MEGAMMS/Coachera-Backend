@@ -10,7 +10,11 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Link to our new custom theme CSS file -->
+    <link rel="stylesheet" th:href="@{/css/dashboard-theme.css}">
+    
     <style>
+        /* These styles remain for the sidebar toggle functionality */
         #sidebar, #main-content { transition: all 0.3s ease-in-out; }
         .sidebar-collapsed #sidebar { transform: translateX(-100%); }
         @media (min-width: 768px) {
@@ -21,25 +25,30 @@
 <body class="bg-gray-100">
     <div id="app-container" class="relative min-h-screen">
         
-        <aside id="sidebar" class="w-64 bg-gray-800 text-white fixed inset-y-0 left-0 z-30 transform">
-            <div class="p-6 text-2xl font-semibold border-b border-gray-700">Admin Panel</div>
+        <aside id="sidebar" class="w-64 fixed inset-y-0 left-0 z-30 transform">
+            <!-- Logo Section -->
+            <div class="flex items-center justify-center p-6 border-b border-gray-700">
+                <img th:src="@{/images/logo.png}" alt="Logo" class="h-12 w-auto">
+            </div>
+            
             <nav class="mt-6">
-                <a th:href="@{/admin/home}" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 transition duration-200"><i data-lucide="home" class="w-5 h-5 mr-3"></i>Home</a>
-                <a th:href="@{/admin/students}" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 transition duration-200"><i data-lucide="users" class="w-5 h-5 mr-3"></i>Students</a>
-                <a th:href="@{/admin/organizations}" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 transition duration-200"><i data-lucide="building-2" class="w-5 h-5 mr-3"></i>Organizations</a>
-                <a th:href="@{/admin/instructors}" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 transition duration-200"><i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i>Instructors</a>
-                <a th:href="@{/admin/course-requests}" class="sidebar-link flex items-center py-3 px-6 hover:bg-gray-700 transition duration-200"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i>Course Requests</a>
+                <!-- Added 'active' class example for the home link -->
+                <a th:href="@{/admin/home}" class="sidebar-link active flex items-center py-3 px-6"><i data-lucide="home" class="w-5 h-5 mr-3"></i>Home</a>
+                <a th:href="@{/admin/students}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="users" class="w-5 h-5 mr-3"></i>Students</a>
+                <a th:href="@{/admin/organizations}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="building-2" class="w-5 h-5 mr-3"></i>Organizations</a>
+                <a th:href="@{/admin/instructors}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="graduation-cap" class="w-5 h-5 mr-3"></i>Instructors</a>
+                <a th:href="@{/admin/course-requests}" class="sidebar-link flex items-center py-3 px-6"><i data-lucide="check-square" class="w-5 h-5 mr-3"></i>Course Requests</a>
             </nav>
         </aside>
 
         <div id="main-content" class="flex-1 flex flex-col overflow-hidden md:ml-64">
-            <header class="bg-white shadow-md p-4 flex justify-between items-center">
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
                 <button id="sidebar-toggle" class="text-gray-500"><i data-lucide="menu" class="w-6 h-6"></i></button>
-                <h1 class="text-2xl font-bold text-gray-800" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</h1>
+                <h1 class="text-xl font-bold text-gray-800" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</h1>
                 <div><!-- User profile dropdown can go here --></div>
             </header>
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-6" layout:fragment="content">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-6" layout:fragment="content">
                 <!-- Content from other pages will be inserted here -->
             </main>
         </div>
