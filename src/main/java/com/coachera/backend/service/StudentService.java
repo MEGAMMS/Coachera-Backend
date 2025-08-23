@@ -113,4 +113,8 @@ public class StudentService {
         return enrollmentRepository.findByStudentId(studentId, pageable)
                 .map(enrollment -> new CourseDTO(enrollment.getCourse()));
     }
+
+     public long countStudents() {
+        return studentRepository.count();
+    }
 }

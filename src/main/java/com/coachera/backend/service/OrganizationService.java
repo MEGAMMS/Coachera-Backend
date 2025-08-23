@@ -94,4 +94,7 @@ public class OrganizationService {
                 .map(OrganizationDTO::new);
     }
 
+    public long countStudents() {
+        return organizationRepository.count();
+    }
 }
