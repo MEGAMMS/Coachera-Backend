@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Student Data Transfer Object")
-public class StudentDTO extends AuditableDTO {
+public class StudentDTO extends AuditableDTO implements RoleDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "1")
     private Integer id;
 

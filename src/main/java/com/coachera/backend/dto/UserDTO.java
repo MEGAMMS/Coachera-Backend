@@ -32,6 +32,9 @@ public class UserDTO extends AuditableDTO {
     @Schema(example = "true", description = "Whether the user is verified")
     private Boolean isVerified;
 
+    @Schema(description = "Role-specific details (Student, Instructor, Organization, etc.)")
+    private RoleDTO details;  // <-- New polymorphic field
+
     public UserDTO(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
@@ -41,6 +44,7 @@ public class UserDTO extends AuditableDTO {
         if (user.getProfileImage() != null) {
             this.profileImage = user.getProfileImage().getUrl();
         }
+        this.details = user.getRoleDetails();
         this.setCreatedAt(user.getCreatedAt());
         this.setUpdatedAt(user.getUpdatedAt());
     }

@@ -3,6 +3,11 @@ package com.coachera.backend.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.RoleDTO;
+import com.coachera.backend.dto.StudentDTO;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -98,5 +103,19 @@ public class User extends Auditable {
 
     public boolean isInstructor() {
         return this.instructor != null;
+    }
+
+
+    public RoleDTO getRoleDetails(){
+        RoleDTO roleDetails = null;
+        if (this.isStudent()) {
+            roleDetails = new StudentDTO(this.getStudent());
+        } else if (this.isInstructor()) {
+            roleDetails = new InstructorDTO(this.getInstructor());
+        } else if (this.isOrganization()) {
+            roleDetails = new OrganizationDTO(this.getOrganization());
+        }
+        
+        return roleDetails;
     }
 }
