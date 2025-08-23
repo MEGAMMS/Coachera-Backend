@@ -5,6 +5,7 @@ import com.coachera.backend.dto.SectionDTO;
 import com.coachera.backend.service.SectionService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/modules/{moduleId}/sections")
+@RequiredArgsConstructor
+@RequestMapping("/api/sections")
 public class SectionController {
 
     private final SectionService sectionService;
-
-    public SectionController(SectionService sectionService) {
-        this.sectionService = sectionService;
-    }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @PostMapping

@@ -1,6 +1,7 @@
 package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
+import com.coachera.backend.dto.EnrolledCourseDTO;
 import com.coachera.backend.dto.EnrollmentDTO;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.EnrollmentService;
@@ -27,7 +28,7 @@ public class EnrollmentController {
     @Operation(summary = "Get all enrollments for a student")
     public ApiResponse<?> getEnrollmentsByStudent(@AuthenticationPrincipal User user) {
 
-        List<EnrollmentDTO> enrollments = enrollmentService.getEnrollmentsByStudent(user);
+        List<EnrolledCourseDTO> enrollments = enrollmentService.getEnrollmentsByStudent(user);
         return ApiResponse.success(enrollments);
 
     }
