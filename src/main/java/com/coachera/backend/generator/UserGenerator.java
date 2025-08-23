@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.enums.RoleType;
 
 @Component
 public class UserGenerator {
@@ -33,7 +34,7 @@ public class UserGenerator {
                         () -> "user" + usernameCounter.getAndIncrement())
                  .supply(Select.field(User::getPassword), 
                         () -> passwordEncoder.encode("password")) 
-                .set(Select.field(User::getRole), "ADMIN")
+                .set(Select.field(User::getRole), RoleType.ADMIN)
                 .supply(Select.field(User::getIsVerified), () -> true)
                 .ignore(Select.field(User::getProfileImage))
                 .ignore(Select.field(User::getOrganization))

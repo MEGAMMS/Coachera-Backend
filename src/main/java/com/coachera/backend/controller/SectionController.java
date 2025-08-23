@@ -46,7 +46,7 @@ public class SectionController {
         return ApiResponse.success(sectionDTO);
     }
 
-    @GetMapping
+    @GetMapping("/modules/{moduleId}")
     public ApiResponse<List<SectionDTO>> getAllSectionsByModuleId(
             @PathVariable Integer moduleId) {
         List<SectionDTO> sections = sectionService.getAllSectionsByModuleId(moduleId);

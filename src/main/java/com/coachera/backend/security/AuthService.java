@@ -1,13 +1,21 @@
 package com.coachera.backend.security;
 
 import com.coachera.backend.dto.AuthResponse;
+import com.coachera.backend.dto.InstructorDTO;
 import com.coachera.backend.dto.LoginRequest;
+import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.dto.RegisterRequest;
+import com.coachera.backend.dto.RoleDTO;
+import com.coachera.backend.dto.StudentDTO;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.enums.RoleType;
 import com.coachera.backend.repository.UserRepository;
 import com.coachera.backend.service.ImageService;
+import com.coachera.backend.service.InstructorService;
+import com.coachera.backend.service.OrganizationService;
+import com.coachera.backend.service.StudentService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +37,11 @@ public class AuthService {
         private final AuthenticationManager authenticationManager;
         private final TokenService tokenService;
         private final ImageService imageService;
+
+        private final StudentService studentService;
+        private final OrganizationService orgService;
+        private final InstructorService instructorService;
+
         // CustomUserDetailsService is not directly needed here for login if
         // AuthenticationManager is used correctly.
         // It is used by DaoAuthenticationProvider which is configured in
@@ -42,7 +55,7 @@ public class AuthService {
          * @throws IllegalArgumentException if username or email is already taken.
          */
         public User register(RegisterRequest registerRequest) {
-                if (registerRequest.getRole().equalsIgnoreCase("ADMIN")) {
+                if (registerRequest.getRole().equals(RoleType.ADMIN)) {
                         throw new IllegalArgumentException("Admin role cannot be self-assigned");
                 }
                 if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
@@ -55,14 +68,47 @@ public class AuthService {
                                 .username(registerRequest.getUsername())
                                 .email(registerRequest.getEmail())
                                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                                .role(registerRequest.getRole().toUpperCase())
+                                .role(registerRequest.getRole())
                                 .isVerified(false) // Default to false, can be changed based on verification flow
                                 .build();
                 if (registerRequest.getProfileImageUrl() != null) {
                         Image image = imageService.getImageFromUrl(registerRequest.getProfileImageUrl());
                         user.setProfileImage(image);
                 }
-                return userRepository.save(user);
+
+                User savedUser = userRepository.save(user);
+
+                // Handle role-specific profile creation with proper type checking
+                RoleDTO details = registerRequest.getDetails();
+                if (details != null) {
+                        switch (registerRequest.getRole()) {
+                        case STUDENT:
+                                if (!(details instanceof StudentDTO)) {
+                                throw new IllegalArgumentException("Invalid details type for STUDENT role. Expected StudentDTO.");
+                                }
+                                studentService.createStudent((StudentDTO) details, savedUser);
+                                break;
+                                
+                        case INSTRUCTOR:
+                                if (!(details instanceof InstructorDTO)) {
+                                throw new IllegalArgumentException("Invalid details type for INSTRUCTOR role. Expected InstructorDTO.");
+                                }
+                                instructorService.createInstructor((InstructorDTO) details, savedUser);
+                                break;
+                        case ORGANIZATION:
+                                if(!(details instanceof OrganizationDTO)){
+                                        throw new IllegalArgumentException("Invalid details type for ORGNIZATION role. Expected OrganizationDTO.");
+                                }
+                                orgService.createOrganization((OrganizationDTO)details);
+                        default:
+                                // For roles that don't require additional details
+                                break;
+                        }
+                } else{
+                        throw new IllegalArgumentException("Student registration requires additional details");
+                }
+                
+                return savedUser;
         }
 
         /**
@@ -105,10 +151,15 @@ public class AuthService {
         public boolean logout(String authorizationHeader) {
                 if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                         String token = authorizationHeader.substring(7);
-                        if (tokenService.validateToken(token)) { // Optional: check if token is valid before
-                                                                 // invalidating
+                        
+                       try {
+                                // Try to invalidate regardless of expiration
                                 tokenService.invalidateToken(token);
                                 return true;
+
+                        } catch (Exception e) {
+                                // Could not parse token (e.g., malformed, not JWT)
+                                return false;
                         }
                 }
                 return false;

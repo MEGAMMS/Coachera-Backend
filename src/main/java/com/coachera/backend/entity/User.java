@@ -3,6 +3,12 @@ package com.coachera.backend.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.RoleDTO;
+import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.entity.enums.RoleType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +34,8 @@ public class User extends Auditable {
     private String username;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     @OneToOne
     @JoinColumn
@@ -65,16 +72,14 @@ public class User extends Auditable {
         this.organization = organization;
     }
 
+    // User.java
     public void setStudent(Student student) {
-        if (student == null) {
-            if (this.student != null) {
-                this.student.setUser(null);
-            }
-        } else {
+        this.student = student;
+        if (student != null && student.getUser() != this) {
             student.setUser(this);
         }
-        this.student = student;
     }
+
 
     public void setInstructor(Instructor instructor) {
         if (instructor == null) {
@@ -98,5 +103,19 @@ public class User extends Auditable {
 
     public boolean isInstructor() {
         return this.instructor != null;
+    }
+
+
+    public RoleDTO getRoleDetails(){
+        RoleDTO roleDetails = null;
+        if (this.isStudent()) {
+            roleDetails = new StudentDTO(this.getStudent());
+        } else if (this.isInstructor()) {
+            roleDetails = new InstructorDTO(this.getInstructor());
+        } else if (this.isOrganization()) {
+            roleDetails = new OrganizationDTO(this.getOrganization());
+        }
+        
+        return roleDetails;
     }
 }
