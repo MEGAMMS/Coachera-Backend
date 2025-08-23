@@ -105,10 +105,15 @@ public class AuthService {
         public boolean logout(String authorizationHeader) {
                 if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                         String token = authorizationHeader.substring(7);
-                        if (tokenService.validateToken(token)) { // Optional: check if token is valid before
-                                                                 // invalidating
+                        
+                       try {
+                                // Try to invalidate regardless of expiration
                                 tokenService.invalidateToken(token);
                                 return true;
+
+                        } catch (Exception e) {
+                                // Could not parse token (e.g., malformed, not JWT)
+                                return false;
                         }
                 }
                 return false;
