@@ -16,7 +16,6 @@ import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.CourseInstructor;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Organization;
-import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
@@ -108,7 +107,7 @@ public class InstructorService {
         // accessTokenRepository.deleteByUserId(user.getId());
                
         // Break the bidirectional relationship
-        user.setStudent(null);
+        user.setInstructor(null);
         userRepository.save(user);
         }
         // Delete the student

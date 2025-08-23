@@ -5,6 +5,7 @@ import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final CourseRepository courseRepository;
 
     public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
 
@@ -76,10 +78,22 @@ public class OrganizationService {
     }
 
     public void deleteOrganization(Integer id) {
-        if (!organizationRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Organization not found");
+        Organization organization = organizationRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        if (organization.getUser() != null) {
+        User user = organization.getUser();
+        
+        courseRepository.deleteAll(courseRepository.findByOrgId(id));
+        // Break the bidirectional relationship
+        user.setOrganization(null);
+        userRepository.save(user);
         }
-        organizationRepository.deleteById(id);
+        // Delete the student
+        organizationRepository.delete(organization);
+        if (organization.getUser() != null) {
+            // Delete the user (now that access tokens are removed)
+            userRepository.delete(organization.getUser());
+        }
     }
 
     public List<OrganizationDTO> getAllOrganizations() {
