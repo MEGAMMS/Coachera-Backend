@@ -16,6 +16,7 @@ import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.CourseInstructor;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Organization;
+import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
@@ -98,10 +99,24 @@ public class InstructorService {
     }
 
     public void deleteInstructor(Integer id) {
-        if (!instructorRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Instructor not found with id: " + id);
+        Instructor instructor = instructorRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        if (instructor.getUser() != null) {
+        User user = instructor.getUser();
+           
+        // Delete access tokens first
+        // accessTokenRepository.deleteByUserId(user.getId());
+               
+        // Break the bidirectional relationship
+        user.setStudent(null);
+        userRepository.save(user);
         }
-        instructorRepository.deleteById(id);
+        // Delete the student
+        instructorRepository.delete(instructor);
+        if (instructor.getUser() != null) {
+            // Delete the user (now that access tokens are removed)
+            userRepository.delete(instructor.getUser());
+        }
     }
     
     // Additional methods specific to Instructor if needed
