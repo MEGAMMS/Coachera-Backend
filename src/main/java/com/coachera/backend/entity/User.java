@@ -72,16 +72,14 @@ public class User extends Auditable {
         this.organization = organization;
     }
 
+    // User.java
     public void setStudent(Student student) {
-        if (student == null) {
-            if (this.student != null) {
-                this.student.setUser(null);
-            }
-        } else {
+        this.student = student;
+        if (student != null && student.getUser() != this) {
             student.setUser(this);
         }
-        this.student = student;
     }
+
 
     public void setInstructor(Instructor instructor) {
         if (instructor == null) {

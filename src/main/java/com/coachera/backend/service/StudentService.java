@@ -1,5 +1,6 @@
 package com.coachera.backend.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,13 @@ public class StudentService {
         this.enrollmentRepository = enrollmentRepository;
     }
 
-    public StudentDTO createStudent(StudentDTO studentDTO,User user) {
-        if (studentRepository.existsByUserId(studentDTO.getUserId())) {
+     public StudentDTO createStudent(StudentDTO studentDTO, User user) {
+        // Ensure user is persisted
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        
+        if (studentRepository.existsByUserId(user.getId())) {
             throw new ConflictException("User already has a student profile");
         }
 
@@ -50,10 +56,17 @@ public class StudentService {
         student.setBirthDate(studentDTO.getBirthDate());
         student.setGender(studentDTO.getGender());
         student.setEducation(studentDTO.getEducation());
-        student.setWallet(studentDTO.getWallet());
-    
+        
+        // Handle wallet - set to 0 if not provided
+        student.setWallet(studentDTO.getWallet() != null ? studentDTO.getWallet() : BigDecimal.ZERO);
+        
+        // Set other optional fields
+        student.setPhoneNumber(studentDTO.getPhoneNumber());
+        student.setAddress(studentDTO.getAddress());
         
         Student savedStudent = studentRepository.save(student);
+        
+        // Use the basic constructor that doesn't load collections
         return new StudentDTO(savedStudent);
     }
 
