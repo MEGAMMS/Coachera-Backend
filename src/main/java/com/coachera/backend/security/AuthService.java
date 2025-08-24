@@ -99,7 +99,8 @@ public class AuthService {
                                 if(!(details instanceof OrganizationDTO)){
                                         throw new IllegalArgumentException("Invalid details type for ORGNIZATION role. Expected OrganizationDTO.");
                                 }
-                                orgService.createOrganization((OrganizationDTO)details);
+                                orgService.createOrganization((OrganizationDTO)details,savedUser);
+                                break;
                         default:
                                 // For roles that don't require additional details
                                 break;

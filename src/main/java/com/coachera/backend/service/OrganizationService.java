@@ -25,11 +25,11 @@ public class OrganizationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
+    public OrganizationDTO createOrganization(OrganizationDTO organizationDTO,User user) {
 
-        User user = userRepository.findById(organizationDTO.getUserId())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User not found with id: " + organizationDTO.getUserId()));
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
 
         if (organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
             throw new ConflictException("Organization with name '" + organizationDTO.getOrgName() + "' already exists");

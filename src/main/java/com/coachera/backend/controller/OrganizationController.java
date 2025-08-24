@@ -21,9 +21,10 @@ public class OrganizationController {
         @PreAuthorize("hasRole('ADMIN')")
         @PostMapping
         public ApiResponse<?> createOrganization(
-                        @Valid @RequestBody OrganizationDTO organizationDTO) {
+                        @Valid @RequestBody OrganizationDTO organizationDTO,
+                        @AuthenticationPrincipal User user) {
 
-                OrganizationDTO createdOrg = organizationService.createOrganization(organizationDTO);
+                OrganizationDTO createdOrg = organizationService.createOrganization(organizationDTO,user);
                 return ApiResponse.created("Organization was created", createdOrg);
 
         }
