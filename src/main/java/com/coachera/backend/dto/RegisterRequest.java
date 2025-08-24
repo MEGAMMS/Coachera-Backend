@@ -1,7 +1,7 @@
 package com.coachera.backend.dto;
 
 import com.coachera.backend.deserializer.RegisterRequestDeserializer;
-import com.coachera.backend.deserializer.RoleDTODeserializer;
+// import com.coachera.backend.deserializer.RoleDTODeserializer;
 import com.coachera.backend.entity.enums.RoleType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

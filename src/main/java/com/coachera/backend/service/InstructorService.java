@@ -50,7 +50,7 @@ public class InstructorService {
 
     public InstructorDTO createInstructor(InstructorRequestDTO requestDTO, User user) {
         if (!userRepository.findById(user.getId()).isPresent()) {
-            throw new IllegalArgumentException("User must be saved before creating student profile");
+            throw new IllegalArgumentException("User must be saved before creating instructor profile");
         }
         if (instructorRepository.existsByUserId(user.getId())) {
             throw new ConflictException("User already has an instructor profile");

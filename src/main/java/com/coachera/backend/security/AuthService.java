@@ -4,7 +4,8 @@ import com.coachera.backend.dto.AuthResponse;
 // import com.coachera.backend.dto.InstructorDTO;
 import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.LoginRequest;
-import com.coachera.backend.dto.OrganizationDTO;
+// import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.RoleDTO;
 import com.coachera.backend.dto.StudentDTO;
@@ -97,10 +98,10 @@ public class AuthService {
                                 instructorService.createInstructor((InstructorRequestDTO) details, savedUser);
                                 break;
                         case ORGANIZATION:
-                                if(!(details instanceof OrganizationDTO)){
+                                if(!(details instanceof OrganizationRequestDTO)){
                                         throw new IllegalArgumentException("Invalid details type for ORGNIZATION role. Expected OrganizationDTO.");
                                 }
-                                orgService.createOrganization((OrganizationDTO)details,savedUser);
+                                orgService.createOrganization((OrganizationRequestDTO)details,savedUser);
                                 break;
                         default:
                                 // For roles that don't require additional details
