@@ -8,7 +8,8 @@ import com.coachera.backend.dto.LoginRequest;
 import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.RoleDTO;
-import com.coachera.backend.dto.StudentDTO;
+// import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
@@ -85,10 +86,10 @@ public class AuthService {
                 if (details != null) {
                         switch (registerRequest.getRole()) {
                         case STUDENT:
-                                if (!(details instanceof StudentDTO)) {
+                                if (!(details instanceof StudentRequestDTO)) {
                                 throw new IllegalArgumentException("Invalid details type for STUDENT role. Expected StudentDTO.");
                                 }
-                                studentService.createStudent((StudentDTO) details, savedUser);
+                                studentService.createStudent((StudentRequestDTO) details, savedUser);
                                 break;
                                 
                         case INSTRUCTOR:

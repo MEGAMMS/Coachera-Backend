@@ -7,7 +7,8 @@ import com.coachera.backend.dto.InstructorRequestDTO;
 // import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.dto.RegisterRequest;
-import com.coachera.backend.dto.StudentDTO;
+// import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.entity.enums.RoleType;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -37,7 +38,7 @@ public class RegisterRequestDeserializer extends JsonDeserializer<RegisterReques
         if (detailsNode != null) {
             switch (request.getRole()) {
                 case STUDENT:
-                    request.setDetails(mapper.treeToValue(detailsNode, StudentDTO.class));
+                    request.setDetails(mapper.treeToValue(detailsNode, StudentRequestDTO.class));
                     break;
                 case INSTRUCTOR:
                     request.setDetails(mapper.treeToValue(detailsNode, InstructorRequestDTO.class));
