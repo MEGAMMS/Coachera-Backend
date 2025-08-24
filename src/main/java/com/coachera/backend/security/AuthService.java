@@ -1,7 +1,8 @@
 package com.coachera.backend.security;
 
 import com.coachera.backend.dto.AuthResponse;
-import com.coachera.backend.dto.InstructorDTO;
+// import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.LoginRequest;
 import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.dto.RegisterRequest;
@@ -90,10 +91,10 @@ public class AuthService {
                                 break;
                                 
                         case INSTRUCTOR:
-                                if (!(details instanceof InstructorDTO)) {
+                                if (!(details instanceof InstructorRequestDTO)) {
                                 throw new IllegalArgumentException("Invalid details type for INSTRUCTOR role. Expected InstructorDTO.");
                                 }
-                                instructorService.createInstructor((InstructorDTO) details, savedUser);
+                                instructorService.createInstructor((InstructorRequestDTO) details, savedUser);
                                 break;
                         case ORGANIZATION:
                                 if(!(details instanceof OrganizationDTO)){

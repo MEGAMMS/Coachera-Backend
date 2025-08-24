@@ -2,7 +2,8 @@ package com.coachera.backend.deserializer;
 
 import java.io.IOException;
 
-import com.coachera.backend.dto.InstructorDTO;
+// import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.StudentDTO;
@@ -38,7 +39,7 @@ public class RegisterRequestDeserializer extends JsonDeserializer<RegisterReques
                     request.setDetails(mapper.treeToValue(detailsNode, StudentDTO.class));
                     break;
                 case INSTRUCTOR:
-                    request.setDetails(mapper.treeToValue(detailsNode, InstructorDTO.class));
+                    request.setDetails(mapper.treeToValue(detailsNode, InstructorRequestDTO.class));
                     break;
                 case ORGANIZATION:
                     request.setDetails(mapper.treeToValue(detailsNode, OrganizationDTO.class));
