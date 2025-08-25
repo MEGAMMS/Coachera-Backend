@@ -1,6 +1,7 @@
 package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
+import com.coachera.backend.dto.CourseCreationDTO;
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.CourseInstructorDTO;
 import com.coachera.backend.dto.CourseWithModulesDTO;
@@ -37,7 +38,7 @@ public class CourseController {
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZATION')")
-    public ApiResponse<?> createCourse(@Valid @RequestBody CourseDTO courseDTO, @AuthenticationPrincipal User user) {
+    public ApiResponse<?> createCourse(@Valid @RequestBody CourseCreationDTO courseDTO, @AuthenticationPrincipal User user) {
         CourseDTO createdCourse = courseService.createCourse(courseDTO, user);
         return ApiResponse.created("Course was created", createdCourse);
     }
@@ -83,7 +84,7 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION') or hasRole('INSTRUCTOR')")
     public ApiResponse<?> updateCourse(
             @PathVariable Integer id,
             @Valid @RequestBody CourseDTO courseDTO) {

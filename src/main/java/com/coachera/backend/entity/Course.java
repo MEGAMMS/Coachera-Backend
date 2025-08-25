@@ -104,25 +104,51 @@ public class Course extends Auditable {
     }
 
     
-public void addInstructor(Instructor instructor) {
-    CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
-    if (instructors == null) {
-        instructors = new HashSet<>();
+    public void addInstructor(Instructor instructor) {
+        if (instructors == null) {
+            instructors = new HashSet<>();
+        }
+
+        // check if relationship already exists
+        boolean exists = instructors.stream()
+                .anyMatch(ci -> ci.getInstructor().equals(instructor));
+
+        if (!exists) {
+            CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
+            instructors.add(courseInstructor);
+
+            // also update instructor side if not already present
+            if (instructor.getCourses() == null) {
+                instructor.setCourses(new HashSet<>());
+            }
+            instructor.getCourses().add(courseInstructor);
+        }
     }
-    instructors.add(courseInstructor);
-    instructor.getCourses().add(courseInstructor);
-}
 
 
 
-public void removeInstructor(Instructor instructor) {
-    CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
-    instructors.remove(courseInstructor);
-    instructor.getCourses().remove(courseInstructor);
-    courseInstructor.setInstructor(null);
-    courseInstructor.setCourse(null);
-}
 
-    
+    public void removeInstructor(Instructor instructor) {
+        if (instructors == null || instructors.isEmpty()) {
+            return;
+        }
 
+        // find existing join entity
+        CourseInstructor toRemove = instructors.stream()
+                .filter(ci -> ci.getInstructor().equals(instructor))
+                .findFirst()
+                .orElse(null);
+
+        if (toRemove != null) {
+            instructors.remove(toRemove);
+
+            if (instructor.getCourses() != null) {
+                instructor.getCourses().remove(toRemove);
+            }
+
+            // break association explicitly if needed
+            toRemove.setInstructor(null);
+            toRemove.setCourse(null);
+        }
+    }
 }

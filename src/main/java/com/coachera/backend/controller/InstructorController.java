@@ -3,6 +3,7 @@ package com.coachera.backend.controller;
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.InstructorService;
@@ -15,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/instructors")
 public class InstructorController {
@@ -26,9 +26,9 @@ public class InstructorController {
         this.instructorService = instructorService;
     }
 
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    // @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
-    public ApiResponse<?> createInstructor(@RequestBody @Valid InstructorDTO instructorDTO,
+    public ApiResponse<?> createInstructor(@RequestBody @Valid InstructorRequestDTO instructorDTO,
             @AuthenticationPrincipal User user) {
         InstructorDTO createdInstructor = instructorService.createInstructor(instructorDTO, user);
         return ApiResponse.created("Instructor was created successfully", createdInstructor);
@@ -55,10 +55,10 @@ public class InstructorController {
     @PutMapping
     @PreAuthorize("hasRole('INSTRUCTOR')")
     public ApiResponse<?> updateInstructor(
-            @RequestBody @Valid InstructorDTO instructorDTO,
+            @RequestBody @Valid InstructorRequestDTO requestDTO,
             @AuthenticationPrincipal User user) {
-        InstructorDTO updatedInstructor = instructorService.updateInstructor(user, instructorDTO);
-        return ApiResponse.success("Instructor was updated successfully",updatedInstructor);
+        InstructorDTO updatedInstructor = instructorService.updateInstructor(user, requestDTO);
+        return ApiResponse.success("Instructor was updated successfully", updatedInstructor);
     }
 
     @DeleteMapping("/{id}")
@@ -67,10 +67,19 @@ public class InstructorController {
         return ApiResponse.noContentResponse();
     }
 
-      @GetMapping("/{instructorId}/courses")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{instructorId}/courses")
     public ApiResponse<?> getCoursesByInstructorId(
             @PathVariable Integer instructorId) {
         List<CourseDTO> courses = instructorService.getCoursesByInstructorId(instructorId);
+        return ApiResponse.success(courses);
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/courses")
+    public ApiResponse<?> getMyCourses(
+            @AuthenticationPrincipal User user) {
+        List<CourseDTO> courses = instructorService.getMyCourses(user);
         return ApiResponse.success(courses);
     }
 
@@ -80,6 +89,5 @@ public class InstructorController {
         List<InstructorDTO> instructors = instructorService.getInstructorsByCourseId(courseId);
         return ApiResponse.success(instructors);
     }
-
 
 }

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
@@ -39,12 +40,11 @@ public class StudentService {
         this.enrollmentRepository = enrollmentRepository;
     }
 
-     public StudentDTO createStudent(StudentDTO studentDTO, User user) {
-        // Ensure user is persisted
-        if (user.getId() == null) {
+    public StudentDTO createStudent(StudentRequestDTO studentDTO, User user) {
+
+        if (!userRepository.findById(user.getId()).isPresent()) {
             throw new IllegalArgumentException("User must be saved before creating student profile");
         }
-        
         if (studentRepository.existsByUserId(user.getId())) {
             throw new ConflictException("User already has a student profile");
         }
@@ -57,8 +57,8 @@ public class StudentService {
         student.setGender(studentDTO.getGender());
         student.setEducation(studentDTO.getEducation());
         
-        // Handle wallet - set to 0 if not provided
-        student.setWallet(studentDTO.getWallet() != null ? studentDTO.getWallet() : BigDecimal.ZERO);
+        // Handle wallet - set to 0 
+        student.setWallet(BigDecimal.ZERO);
         
         // Set other optional fields
         student.setPhoneNumber(studentDTO.getPhoneNumber());
@@ -94,20 +94,12 @@ public class StudentService {
                 .map(StudentDTO::new);
     }
 
-    public StudentDTO updateStudent(User userA , StudentDTO studentDTO) {
-        Integer studentId = studentRepository.findByUserId(userA.getId()).getId();
+    public StudentDTO updateStudent(User user , StudentRequestDTO studentDTO) {
+        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         Student existingStudent = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
 
         modelMapper.map(studentDTO, existingStudent);
-        
-        
-        if (studentDTO.getUserId() != null && 
-            !studentDTO.getUserId().equals(existingStudent.getUser().getId())) {
-            User user = userRepository.findById(studentDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + studentDTO.getUserId()));
-            existingStudent.setUser(user);
-        }
 
         Student updatedStudent = studentRepository.save(existingStudent);
         return new StudentDTO(updatedStudent);
