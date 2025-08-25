@@ -67,6 +67,7 @@ public class InstructorController {
         return ApiResponse.noContentResponse();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{instructorId}/courses")
     public ApiResponse<?> getCoursesByInstructorId(
             @PathVariable Integer instructorId) {
@@ -74,8 +75,8 @@ public class InstructorController {
         return ApiResponse.success(courses);
     }
 
-    @GetMapping
     @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/courses")
     public ApiResponse<?> getMyCourses(
             @AuthenticationPrincipal User user) {
         List<CourseDTO> courses = instructorService.getMyCourses(user);
