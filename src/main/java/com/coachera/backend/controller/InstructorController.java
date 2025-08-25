@@ -74,6 +74,14 @@ public class InstructorController {
         return ApiResponse.success(courses);
     }
 
+    @GetMapping
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public ApiResponse<?> getMyCourses(
+            @AuthenticationPrincipal User user) {
+        List<CourseDTO> courses = instructorService.getMyCourses(user);
+        return ApiResponse.success(courses);
+    }
+
     @GetMapping("/courses/{courseId}")
     public ApiResponse<?> getInstructorsByCourseId(
             @PathVariable Integer courseId) {

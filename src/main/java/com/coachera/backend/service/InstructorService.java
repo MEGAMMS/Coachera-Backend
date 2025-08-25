@@ -145,9 +145,20 @@ public class InstructorService {
         return new CourseDTO(updatedCourse);
     }
 
-     public List<CourseDTO> getCoursesByInstructorId(Integer instructorId) {
+    public List<CourseDTO> getCoursesByInstructorId(Integer instructorId) {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
+           
+
+        return instructor.getCourses().stream()
+                .map(CourseInstructor::getCourse)
+                .map(course -> new CourseDTO(course))
+                .collect(Collectors.toList());
+    }
+
+    public List<CourseDTO> getMyCourses(User user) {
+        Instructor instructor = instructorRepository.findById(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getId()));
            
 
         return instructor.getCourses().stream()
