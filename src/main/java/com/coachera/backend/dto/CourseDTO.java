@@ -37,6 +37,9 @@ public class CourseDTO extends AuditableDTO {
     @Schema(example = "3.2")
     private BigDecimal rating;
 
+    @Schema(description = "Whether the course is published and visible to the public", example = "false")
+    private boolean isPublished;
+
     @Schema(description = "Associated org information", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer orgId;
 
@@ -74,6 +77,7 @@ public class CourseDTO extends AuditableDTO {
         if (course.getImage() != null) {
             this.image = course.getImage().getUrl();
         }
+        this.isPublished = course.getIsPublished();
         this.setCreatedAt(course.getCreatedAt());
         this.setUpdatedAt(course.getUpdatedAt());
     }

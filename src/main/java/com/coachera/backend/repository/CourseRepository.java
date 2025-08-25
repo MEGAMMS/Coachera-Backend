@@ -15,4 +15,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     List<Course> findByOrgId(Integer orgId);
     boolean existsByTitleAndOrgId(String title, Integer orgId);
     Page<Course> findByOrgId(Integer orgId, Pageable pageable);
+    Page<Course> findByOrgIdAndIsPublishedTrue(Integer orgId, Pageable pageable);
+    List<Course> findByIsPublishedTrue();
+    Page<Course> findByIsPublishedTrue(Pageable pageable);
 }

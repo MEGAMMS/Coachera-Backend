@@ -51,6 +51,9 @@ public class CourseRecommendationService {
         List<Course> recommendedCourses = getCoursesByPreferencesAndSkills(
                 preferredCategoryIds, userSkillIds, userEnrollments);
 
+        // Only published courses
+        recommendedCourses = recommendedCourses.stream().filter(Course::getIsPublished).collect(Collectors.toList());
+
         // Apply pagination manually since we're doing custom scoring
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), recommendedCourses.size());
@@ -71,7 +74,7 @@ public class CourseRecommendationService {
      * Get popular courses based on ratings and enrollment count
      */
     public Page<CourseDTO> getPopularCourses(Pageable pageable) {
-        List<Course> allCourses = courseRepository.findAll();
+        List<Course> allCourses = courseRepository.findByIsPublishedTrue();
 
         List<Course> sortedCourses = allCourses.stream()
                 .sorted((c1, c2) -> {
@@ -108,6 +111,7 @@ public class CourseRecommendationService {
 
         for (Enrollment enrollment : enrollments) {
             Course course = enrollment.getCourse();
+            if (!course.getIsPublished()) continue;
             List<CourseCategory> courseCategories = courseCategoryRepository.findByCourseId(course.getId());
 
             for (CourseCategory courseCategory : courseCategories) {
@@ -135,8 +139,8 @@ public class CourseRecommendationService {
             Set<Integer> userSkillIds,
             List<Enrollment> userEnrollments) {
 
-        // Get all courses
-        List<Course> allCourses = courseRepository.findAll();
+        // Get all published courses
+        List<Course> allCourses = courseRepository.findByIsPublishedTrue();
 
         // Filter out courses user is already enrolled in
         Set<Integer> enrolledCourseIds = userEnrollments.stream()
@@ -194,6 +198,7 @@ public class CourseRecommendationService {
 
         List<Course> sortedCourses = courseCategories.stream()
                 .map(CourseCategory::getCourse)
+                .filter(Course::getIsPublished)
                 .sorted((c1, c2) -> c2.getRating().compareTo(c1.getRating()))
                 .collect(Collectors.toList());
 
@@ -217,7 +222,7 @@ public class CourseRecommendationService {
      * Get trending courses (courses with high recent activity)
      */
     public Page<CourseDTO> getTrendingCourses(Pageable pageable) {
-        List<Course> allCourses = courseRepository.findAll();
+        List<Course> allCourses = courseRepository.findByIsPublishedTrue();
 
         List<Course> sortedCourses = allCourses.stream()
                 .sorted((c1, c2) -> {
@@ -264,7 +269,7 @@ public class CourseRecommendationService {
                 .collect(Collectors.toSet());
 
         // Find courses with similar categories
-        List<Course> allCourses = courseRepository.findAll();
+        List<Course> allCourses = courseRepository.findByIsPublishedTrue();
         List<CourseScore> similarCourses = allCourses.stream()
                 .filter(course -> !course.getId().equals(courseId))
                 .map(course -> {
