@@ -1,12 +1,15 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.ReviewDTO;
+import com.coachera.backend.dto.ReviewRequestDTO;
 import com.coachera.backend.entity.*;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.StudentRepository;
+
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,17 +33,17 @@ public class ReviewService {
         this.studentRepository = studentRepository;
     }
 
-    public ReviewDTO createReview(ReviewDTO reviewDTO) {
+    public ReviewDTO createReview(ReviewRequestDTO reviewDTO,User user) {
         // Check if student already reviewed this course
-        if (reviewRepository.existsByCourseIdAndStudentId(reviewDTO.getCourseId(), reviewDTO.getStudentId())) {
+        if (reviewRepository.existsByCourseIdAndStudentId(reviewDTO.getCourseId(), user.getStudent().getId())) {
             throw new ConflictException("Student has already reviewed this course");
         }
 
         Course course = courseRepository.findById(reviewDTO.getCourseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + reviewDTO.getCourseId()));
 
-        Student student = studentRepository.findById(reviewDTO.getStudentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + reviewDTO.getStudentId()));
+        Student student = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
 
         Review review = new Review();
         review.setCourse(course);
@@ -64,19 +67,19 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReviewDTO> getReviewsByStudent(Integer studentId) {
-        return reviewRepository.findByStudentId(studentId).stream()
+    public List<ReviewDTO> getReviewsByStudent(User user) {
+        return reviewRepository.findByStudentId(user.getStudent().getId()).stream()
                 .map(ReviewDTO::new)
                 .collect(Collectors.toList());
     }
 
-    public ReviewDTO updateReview(Integer id, ReviewDTO reviewDTO) {
+    public ReviewDTO updateReview(Integer id, ReviewRequestDTO reviewDTO,User user) {
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + id));
 
         // Verify the course and student haven't changed
         if (!existingReview.getCourse().getId().equals(reviewDTO.getCourseId()) || 
-            !existingReview.getStudent().getId().equals(reviewDTO.getStudentId())) {
+            !existingReview.getStudent().getId().equals(user.getStudent().getId())) {
             throw new IllegalArgumentException("Cannot change course or student for an existing review");
         }
 
@@ -87,9 +90,10 @@ public class ReviewService {
         return new ReviewDTO(updatedReview);
     }
 
-    public void deleteReview(Integer id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Review not found with id: " + id);
+    public void deleteReview(Integer id,User user) {
+        Review review = reviewRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("Review not found with id: " + id));
+        if(!review.getStudent().getId().equals(user.getStudent().getId())){
+             throw new AccessDeniedException("You are not authorized to delete this review"); 
         }
         reviewRepository.deleteById(id);
     }

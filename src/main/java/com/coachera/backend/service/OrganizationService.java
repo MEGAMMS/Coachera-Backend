@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
@@ -25,11 +26,11 @@ public class OrganizationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
+    public OrganizationDTO createOrganization(OrganizationRequestDTO organizationDTO,User user) {
 
-        User user = userRepository.findById(organizationDTO.getUserId())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User not found with id: " + organizationDTO.getUserId()));
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating Org profile");
+        }
 
         if (organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
             throw new ConflictException("Organization with name '" + organizationDTO.getOrgName() + "' already exists");
@@ -53,23 +54,20 @@ public class OrganizationService {
         return new OrganizationDTO(organizationRepository.findByUserId(userId));
     }
 
-    public OrganizationDTO updateOrganization(Integer id, OrganizationDTO organizationDTO) {
-        Organization existingOrg = organizationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + id));
-
-        if (!existingOrg.getOrgName().equals(organizationDTO.getOrgName()) &&
-                organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
-            throw new ConflictException("Organization name already exists");
+    public OrganizationDTO updateOrganization(User user, OrganizationRequestDTO organizationDTO) {
+        
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating Org profile");
         }
+        Organization existingOrg = organizationRepository.findById(user.getOrganization().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + user.getId()));
+
+        // if (!existingOrg.getOrgName().equals(organizationDTO.getOrgName()) &&
+        //         organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
+        //     throw new ConflictException("Organization name already exists");
+        // }
 
         modelMapper.map(organizationDTO, existingOrg);
-
-        if (organizationDTO.getUserId() != null &&
-                !organizationDTO.getUserId().equals(existingOrg.getUser().getId())) {
-            User user = userRepository.findById(organizationDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            existingOrg.setUser(user);
-        }
 
         Organization updatedOrg = organizationRepository.save(existingOrg);
         return new OrganizationDTO(updatedOrg);

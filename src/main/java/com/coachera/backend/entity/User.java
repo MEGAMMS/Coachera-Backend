@@ -62,17 +62,12 @@ public class User extends Auditable {
 
     // Helper methods for managing relationships
     public void setOrganization(Organization organization) {
-        if (organization == null) {
-            if (this.organization != null) {
-                this.organization.setUser(null);
-            }
-        } else {
+        this.organization = organization;
+        if (organization != null && organization.getUser()!= this) {
             organization.setUser(this);
         }
-        this.organization = organization;
     }
 
-    // User.java
     public void setStudent(Student student) {
         this.student = student;
         if (student != null && student.getUser() != this) {
@@ -80,16 +75,11 @@ public class User extends Auditable {
         }
     }
 
-
     public void setInstructor(Instructor instructor) {
-        if (instructor == null) {
-            if (this.instructor != null) {
-                this.instructor.setUser(null);
-            }
-        } else {
+        this.instructor = instructor;
+        if (instructor != null && instructor.getUser()!=this) {
             instructor.setUser(this);
         }
-        this.instructor = instructor;
     }
 
     // Convenience method to check user type

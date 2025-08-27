@@ -2,6 +2,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.OrganizationService;
@@ -21,9 +22,10 @@ public class OrganizationController {
         @PreAuthorize("hasRole('ADMIN')")
         @PostMapping
         public ApiResponse<?> createOrganization(
-                        @Valid @RequestBody OrganizationDTO organizationDTO) {
+                        @Valid @RequestBody OrganizationRequestDTO requestDTO,
+                        @AuthenticationPrincipal User user) {
 
-                OrganizationDTO createdOrg = organizationService.createOrganization(organizationDTO);
+                OrganizationDTO createdOrg = organizationService.createOrganization(requestDTO,user);
                 return ApiResponse.created("Organization was created", createdOrg);
 
         }
@@ -52,13 +54,13 @@ public class OrganizationController {
 
         }
 
-        @PreAuthorize("hasRole('ADMIN')")
-        @PutMapping("/{id}")
+        // @PreAuthorize("hasRole('ADMIN')")
+        @PutMapping
         public ApiResponse<?> updateOrganization(
-                        @PathVariable Integer id,
-                        @Valid @RequestBody OrganizationDTO organizationDTO) {
+                        @AuthenticationPrincipal User user,
+                        @Valid @RequestBody OrganizationRequestDTO organizationDTO) {
 
-                OrganizationDTO updateOrganization = organizationService.updateOrganization(id, organizationDTO);
+                OrganizationDTO updateOrganization = organizationService.updateOrganization(user, organizationDTO);
                 return ApiResponse.success("Organization was updated", updateOrganization);
 
         }
