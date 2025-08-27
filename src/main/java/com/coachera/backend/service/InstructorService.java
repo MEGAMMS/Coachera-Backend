@@ -58,6 +58,7 @@ public class InstructorService {
         
         Instructor instructor = new Instructor();
         instructor.setUser(user);
+        instructor.setFullname(requestDTO.getFullname());
         instructor.setBio(requestDTO.getBio());
         
         Instructor savedInstructor = instructorRepository.save(instructor);
@@ -82,7 +83,11 @@ public class InstructorService {
                 map(InstructorDTO::new);
     }
 
-    public InstructorDTO updateInstructor(User user, InstructorRequestDTO instructorDTO) {
+    public InstructorDTO updateInstructor(User user, InstructorRequestDTO 
+                                         
+                                         
+                                         
+                                         ) {
         Integer instructorId = instructorRepository.findByUserId(user.getId()).get().getId();
         Instructor existingInstructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
@@ -96,10 +101,24 @@ public class InstructorService {
     }
 
     public void deleteInstructor(Integer id) {
-        if (!instructorRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Instructor not found with id: " + id);
+        Instructor instructor = instructorRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        if (instructor.getUser() != null) {
+        User user = instructor.getUser();
+           
+        // Delete access tokens first
+        // accessTokenRepository.deleteByUserId(user.getId());
+               
+        // Break the bidirectional relationship
+        user.setInstructor(null);
+        userRepository.save(user);
         }
-        instructorRepository.deleteById(id);
+        // Delete the student
+        instructorRepository.delete(instructor);
+        if (instructor.getUser() != null) {
+            // Delete the user (now that access tokens are removed)
+            userRepository.delete(instructor.getUser());
+        }
     }
     
     // Additional methods specific to Instructor if needed
@@ -177,4 +196,7 @@ public class InstructorService {
                 .collect(Collectors.toList());
     }
 
+    public long countInstructors() {
+        return instructorRepository.count();
+    }
 }

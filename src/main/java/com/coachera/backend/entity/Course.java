@@ -53,6 +53,9 @@ public class Course extends Auditable {
     @Column(nullable = false)
     private BigDecimal rating;
 
+    @Column(nullable = false)
+    private boolean isPublished = false;
+
     @OneToOne
     @JoinColumn
     private Image image;
@@ -128,6 +131,12 @@ public class Course extends Auditable {
 
 
 
+    public boolean getIsPublished() {
+        return isPublished;
+    }
+    public void setIsPublished(boolean isPublished) {
+        this.isPublished = isPublished;
+    }
     public void removeInstructor(Instructor instructor) {
         if (instructors == null || instructors.isEmpty()) {
             return;

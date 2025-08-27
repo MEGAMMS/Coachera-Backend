@@ -76,6 +76,7 @@ public class CourseService {
     }
 
 
+    course.setIsPublished(false);
     course.setOrg(org);
 
     Course savedCourse = courseRepository.save(course);
@@ -91,7 +92,7 @@ public class CourseService {
     }
 
     public Page<CourseDTO> getCoursesByOrganization(Integer orgId, Pageable pageable) {
-        return courseRepository.findByOrgId(orgId, pageable)
+        return courseRepository.findByOrgIdAndIsPublishedTrue(orgId, pageable)
                 .map(CourseDTO::new);
     }
 
@@ -112,6 +113,7 @@ public class CourseService {
         }
 
         modelMapper.map(courseDTO, existingCourse);
+        existingCourse.setIsPublished(false);
         Course updatedCourse = courseRepository.save(existingCourse);
         return new CourseDTO(updatedCourse);
     }
@@ -124,7 +126,7 @@ public class CourseService {
     }
 
     public Page<CourseDTO> getCourses(Pageable pageable) {
-        return courseRepository.findAll(pageable)
+        return courseRepository.findByIsPublishedTrue(pageable)
                 .map(CourseDTO::new);
     }
 }
