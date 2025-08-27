@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.CourseInstructor;
 import com.coachera.backend.entity.Instructor;
@@ -47,15 +48,18 @@ public class InstructorService {
         this.organizationRepository = organizationRepository;
     }
 
-    public InstructorDTO createInstructor(InstructorDTO instructorDTO, User user) {
-        if (instructorRepository.existsByUserId(instructorDTO.getUserId())) {
+    public InstructorDTO createInstructor(InstructorRequestDTO requestDTO, User user) {
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating instructor profile");
+        }
+        if (instructorRepository.existsByUserId(user.getId())) {
             throw new ConflictException("User already has an instructor profile");
         }
         
         Instructor instructor = new Instructor();
         instructor.setUser(user);
-        instructor.setFullname(instructorDTO.getFullname());
-        instructor.setBio(instructorDTO.getBio());
+        instructor.setFullname(requestDTO.getFullname());
+        instructor.setBio(requestDTO.getBio());
         
         Instructor savedInstructor = instructorRepository.save(instructor);
         return new InstructorDTO(savedInstructor);
@@ -79,19 +83,18 @@ public class InstructorService {
                 map(InstructorDTO::new);
     }
 
-    public InstructorDTO updateInstructor(User user, InstructorDTO instructorDTO) {
+    public InstructorDTO updateInstructor(User user, InstructorRequestDTO 
+                                         
+                                         
+                                         
+                                         ) {
         Integer instructorId = instructorRepository.findByUserId(user.getId()).get().getId();
         Instructor existingInstructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
 
         modelMapper.map(instructorDTO, existingInstructor);
         
-        if (instructorDTO.getUserId() != null && 
-            !instructorDTO.getUserId().equals(existingInstructor.getUser().getId())) {
-            User newUser = userRepository.findById(instructorDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + instructorDTO.getUserId()));
-            existingInstructor.setUser(newUser);
-        }
+        existingInstructor.setUser(user);
 
         Instructor updatedInstructor = instructorRepository.save(existingInstructor);
         return new InstructorDTO(updatedInstructor);
@@ -161,9 +164,20 @@ public class InstructorService {
         return new CourseDTO(updatedCourse);
     }
 
-     public List<CourseDTO> getCoursesByInstructorId(Integer instructorId) {
+    public List<CourseDTO> getCoursesByInstructorId(Integer instructorId) {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
+           
+
+        return instructor.getCourses().stream()
+                .map(CourseInstructor::getCourse)
+                .map(course -> new CourseDTO(course))
+                .collect(Collectors.toList());
+    }
+
+    public List<CourseDTO> getMyCourses(User user) {
+        Instructor instructor = instructorRepository.findById(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getId()));
            
 
         return instructor.getCourses().stream()

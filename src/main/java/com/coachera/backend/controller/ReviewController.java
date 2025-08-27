@@ -2,27 +2,31 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.ReviewDTO;
+import com.coachera.backend.dto.ReviewRequestDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.ReviewService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
-
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
-    public ApiResponse<ReviewDTO> createReview(@RequestBody @Valid ReviewDTO reviewDTO) {
-        ReviewDTO createdReview = reviewService.createReview(reviewDTO);
+    public ApiResponse<ReviewDTO> createReview(
+            @RequestBody @Valid ReviewRequestDTO reviewDTO,
+            @AuthenticationPrincipal User user) {
+        ReviewDTO createdReview = reviewService.createReview(reviewDTO,user);
         return ApiResponse.created("Review created successfully", createdReview);
     }
 
@@ -38,10 +42,10 @@ public class ReviewController {
         return ApiResponse.success(reviews);
     }
 
-    @GetMapping("/student/{studentId}")
-    @PreAuthorize("hasRole('STUDENT') and #studentId == principal.id")
-    public ApiResponse<List<ReviewDTO>> getReviewsByStudent(@PathVariable Integer studentId) {
-        List<ReviewDTO> reviews = reviewService.getReviewsByStudent(studentId);
+    @GetMapping("/my-reviews")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ApiResponse<List<ReviewDTO>> getReviewsByStudent(@AuthenticationPrincipal User user) {
+        List<ReviewDTO> reviews = reviewService.getReviewsByStudent(user);
         return ApiResponse.success(reviews);
     }
 
@@ -55,15 +59,16 @@ public class ReviewController {
     @PreAuthorize("@reviewSecurity.canModifyReview(#id, authentication)")
     public ApiResponse<ReviewDTO> updateReview(
             @PathVariable Integer id,
-            @RequestBody @Valid ReviewDTO reviewDTO) {
-        ReviewDTO updatedReview = reviewService.updateReview(id, reviewDTO);
+            @RequestBody @Valid ReviewRequestDTO reviewDTO,
+            @AuthenticationPrincipal User user) {
+        ReviewDTO updatedReview = reviewService.updateReview(id, reviewDTO,user);
         return ApiResponse.success("Review updated successfully", updatedReview);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@reviewSecurity.canModifyReview(#id, authentication)")
-    public ApiResponse<Void> deleteReview(@PathVariable Integer id) {
-        reviewService.deleteReview(id);
+    public ApiResponse<Void> deleteReview(@PathVariable Integer id, @AuthenticationPrincipal User user) {
+        reviewService.deleteReview(id,user);
         return ApiResponse.noContentResponse();
     }
 }

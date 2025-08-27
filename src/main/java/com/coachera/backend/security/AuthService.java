@@ -1,12 +1,15 @@
 package com.coachera.backend.security;
 
 import com.coachera.backend.dto.AuthResponse;
-import com.coachera.backend.dto.InstructorDTO;
+// import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.LoginRequest;
-import com.coachera.backend.dto.OrganizationDTO;
+// import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.RoleDTO;
-import com.coachera.backend.dto.StudentDTO;
+// import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
@@ -83,23 +86,24 @@ public class AuthService {
                 if (details != null) {
                         switch (registerRequest.getRole()) {
                         case STUDENT:
-                                if (!(details instanceof StudentDTO)) {
+                                if (!(details instanceof StudentRequestDTO)) {
                                 throw new IllegalArgumentException("Invalid details type for STUDENT role. Expected StudentDTO.");
                                 }
-                                studentService.createStudent((StudentDTO) details, savedUser);
+                                studentService.createStudent((StudentRequestDTO) details, savedUser);
                                 break;
                                 
                         case INSTRUCTOR:
-                                if (!(details instanceof InstructorDTO)) {
+                                if (!(details instanceof InstructorRequestDTO)) {
                                 throw new IllegalArgumentException("Invalid details type for INSTRUCTOR role. Expected InstructorDTO.");
                                 }
-                                instructorService.createInstructor((InstructorDTO) details, savedUser);
+                                instructorService.createInstructor((InstructorRequestDTO) details, savedUser);
                                 break;
                         case ORGANIZATION:
-                                if(!(details instanceof OrganizationDTO)){
+                                if(!(details instanceof OrganizationRequestDTO)){
                                         throw new IllegalArgumentException("Invalid details type for ORGNIZATION role. Expected OrganizationDTO.");
                                 }
-                                orgService.createOrganization((OrganizationDTO)details);
+                                orgService.createOrganization((OrganizationRequestDTO)details,savedUser);
+                                break;
                         default:
                                 // For roles that don't require additional details
                                 break;
