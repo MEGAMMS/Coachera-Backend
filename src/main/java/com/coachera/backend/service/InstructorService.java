@@ -34,13 +34,12 @@ public class InstructorService {
     private final ModelMapper modelMapper;
     private final CourseRepository courseRepository;
     private final OrganizationRepository organizationRepository;
-    
 
-    public InstructorService(InstructorRepository instructorRepository, 
-                           UserRepository userRepository,
-                           ModelMapper modelMapper,
-                           CourseRepository courseRepository,
-                           OrganizationRepository organizationRepository) {
+    public InstructorService(InstructorRepository instructorRepository,
+            UserRepository userRepository,
+            ModelMapper modelMapper,
+            CourseRepository courseRepository,
+            OrganizationRepository organizationRepository) {
         this.instructorRepository = instructorRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
@@ -55,12 +54,12 @@ public class InstructorService {
         if (instructorRepository.existsByUserId(user.getId())) {
             throw new ConflictException("User already has an instructor profile");
         }
-        
+
         Instructor instructor = new Instructor();
         instructor.setUser(user);
         instructor.setFullname(requestDTO.getFullname());
         instructor.setBio(requestDTO.getBio());
-        
+
         Instructor savedInstructor = instructorRepository.save(instructor);
         return new InstructorDTO(savedInstructor);
     }
@@ -79,21 +78,16 @@ public class InstructorService {
     }
 
     public Page<InstructorDTO> getInstructors(Pageable pageable) {
-        return instructorRepository.findAll(pageable).
-                map(InstructorDTO::new);
+        return instructorRepository.findAll(pageable).map(InstructorDTO::new);
     }
 
-    public InstructorDTO updateInstructor(User user, InstructorRequestDTO 
-                                         
-                                         
-                                         
-                                         ) {
+    public InstructorDTO updateInstructor(User user, InstructorRequestDTO instructorDTO) {
         Integer instructorId = instructorRepository.findByUserId(user.getId()).get().getId();
         Instructor existingInstructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
 
         modelMapper.map(instructorDTO, existingInstructor);
-        
+
         existingInstructor.setUser(user);
 
         Instructor updatedInstructor = instructorRepository.save(existingInstructor);
@@ -102,16 +96,16 @@ public class InstructorService {
 
     public void deleteInstructor(Integer id) {
         Instructor instructor = instructorRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
         if (instructor.getUser() != null) {
-        User user = instructor.getUser();
-           
-        // Delete access tokens first
-        // accessTokenRepository.deleteByUserId(user.getId());
-               
-        // Break the bidirectional relationship
-        user.setInstructor(null);
-        userRepository.save(user);
+            User user = instructor.getUser();
+
+            // Delete access tokens first
+            // accessTokenRepository.deleteByUserId(user.getId());
+
+            // Break the bidirectional relationship
+            user.setInstructor(null);
+            userRepository.save(user);
         }
         // Delete the student
         instructorRepository.delete(instructor);
@@ -120,7 +114,7 @@ public class InstructorService {
             userRepository.delete(instructor.getUser());
         }
     }
-    
+
     // Additional methods specific to Instructor if needed
     public InstructorDTO getInstructorById(Integer id) {
         Instructor instructor = instructorRepository.findById(id)
@@ -128,11 +122,12 @@ public class InstructorService {
         return new InstructorDTO(instructor);
     }
 
-    public CourseDTO addInstructorToCourse(Integer courseId, Integer instructorId, User user) throws AccessDeniedException {
+    public CourseDTO addInstructorToCourse(Integer courseId, Integer instructorId, User user)
+            throws AccessDeniedException {
         Organization organization = organizationRepository.findByUserId(user.getId());
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
-        
+
         // Verify the requesting organization owns the course
         if (!organization.getId().equals(course.getOrg().getId())) {
             throw new AccessDeniedException("Your organization doesn't own this course");
@@ -146,11 +141,12 @@ public class InstructorService {
         return new CourseDTO(updatedCourse);
     }
 
-    public CourseDTO removeInstructorFromCourse(Integer courseId, Integer instructorId, User user) throws AccessDeniedException {
+    public CourseDTO removeInstructorFromCourse(Integer courseId, Integer instructorId, User user)
+            throws AccessDeniedException {
         Organization organization = organizationRepository.findByUserId(user.getId());
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
-        
+
         // Verify the requesting organization owns the course
         if (!organization.getId().equals(course.getOrg().getId())) {
             throw new AccessDeniedException("Your organization doesn't own this course");
@@ -167,7 +163,6 @@ public class InstructorService {
     public List<CourseDTO> getCoursesByInstructorId(Integer instructorId) {
         Instructor instructor = instructorRepository.findById(instructorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + instructorId));
-           
 
         return instructor.getCourses().stream()
                 .map(CourseInstructor::getCourse)
@@ -178,7 +173,6 @@ public class InstructorService {
     public List<CourseDTO> getMyCourses(User user) {
         Instructor instructor = instructorRepository.findById(user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getId()));
-           
 
         return instructor.getCourses().stream()
                 .map(CourseInstructor::getCourse)
