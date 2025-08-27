@@ -145,6 +145,11 @@
 			<artifactId>spring-shell-starter</artifactId>
 			<version>3.1.5</version>
 		</dependency>
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>24.8.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
