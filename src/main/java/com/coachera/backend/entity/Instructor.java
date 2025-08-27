@@ -29,7 +29,7 @@ public class Instructor extends Auditable {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(columnDefinition = "fullname")
+    @Column(columnDefinition = "TEXT")
     private String fullname;
 
     @Column(columnDefinition = "TEXT")
