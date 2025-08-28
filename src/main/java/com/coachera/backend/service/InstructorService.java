@@ -157,8 +157,8 @@ public class InstructorService {
     }
 
     public List<CourseDTO> getMyCourses(User user) {
-        Instructor instructor = instructorRepository.findById(user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getId()));
+        Instructor instructor = instructorRepository.findById(user.getInstructor().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getInstructor().getId()));
            
 
         return instructor.getCourses().stream()
