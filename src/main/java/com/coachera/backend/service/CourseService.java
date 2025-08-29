@@ -18,6 +18,7 @@ import com.coachera.backend.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,12 +47,19 @@ public class CourseService {
             throw new ConflictException("Course with this title already exists in the organization");
         }
 
+        System.out.println("------------------org------------------");
+        
         Course course = new Course();
         course.setTitle(courseDTO.getTitle());
+        System.out.println("------------------title------------------");
         course.setDescription(courseDTO.getDescription());
+        System.out.println("------------------descreption------------------");
         course.setDurationHours(courseDTO.getDurationHours());
+        System.out.println("------------------dh------------------");
         course.setPrice(courseDTO.getPrice());
+        System.out.println("------------------price------------------");
         course.setRating(BigDecimal.valueOf(0));
+        System.out.println("------------------rating------------------");
         
         if(courseDTO.getImageUrl()!=null){
             Image image = imageService.getImageFromUrl(courseDTO.getImageUrl());
@@ -67,9 +75,10 @@ public class CourseService {
                         return category;
                     })
                     .collect(Collectors.toSet());
-            categoryRepository.saveAll(categoryEntities);
-            course.addCategories(categoryEntities);
+            List<Category> savedCategories = categoryRepository.saveAll(categoryEntities);
+            course.addCategories(savedCategories);
         }
+        System.out.println("------------------cat------------------");
 
         // if instructors is a list of user IDs, you must fetch them
         if (courseDTO.getInstructors() != null) {
@@ -80,12 +89,17 @@ public class CourseService {
             });
         }
 
+        System.out.println("------------------inst------------------");
 
         course.setIsPublished(false);
         course.setOrg(org);
 
         Course savedCourse = courseRepository.save(course);
-        return new CourseDTO(savedCourse);
+        
+        CourseDTO payload =new CourseDTO(savedCourse);
+
+        // System.out.println(payload);
+        return payload;
     }
 
 

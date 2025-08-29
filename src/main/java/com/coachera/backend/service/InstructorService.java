@@ -25,7 +25,10 @@ import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 @Transactional
 public class InstructorService {
 
@@ -34,18 +37,6 @@ public class InstructorService {
     private final ModelMapper modelMapper;
     private final CourseRepository courseRepository;
     private final OrganizationRepository organizationRepository;
-
-    public InstructorService(InstructorRepository instructorRepository,
-            UserRepository userRepository,
-            ModelMapper modelMapper,
-            CourseRepository courseRepository,
-            OrganizationRepository organizationRepository) {
-        this.instructorRepository = instructorRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.courseRepository = courseRepository;
-        this.organizationRepository = organizationRepository;
-    }
 
     public InstructorDTO createInstructor(InstructorRequestDTO requestDTO, User user) {
         if (!userRepository.findById(user.getId()).isPresent()) {
