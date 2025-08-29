@@ -40,6 +40,10 @@ public class CourseDTO extends AuditableDTO {
     @Schema(description = "Associated org information", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer orgId;
 
+    @Schema(example = "Meta")
+    private String orgTitle;
+
+
     @Schema(example = "[2,3]", description = "Course's categories")
     private Set<CategoryDTO> categories;
 
@@ -60,6 +64,7 @@ public class CourseDTO extends AuditableDTO {
         this.title = course.getTitle();
         this.description = course.getDescription();
         this.orgId = course.getOrg().getId();
+        this.orgTitle =course.getOrg().getOrgName();
         this.durationHours = course.getDurationHours();
         this.price = course.getPrice();
         this.rating = course.getRating();

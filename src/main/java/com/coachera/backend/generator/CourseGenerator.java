@@ -17,6 +17,36 @@ import com.coachera.backend.entity.Organization;
 import com.coachera.backend.seeder.ImageSeeder;
 
 public class CourseGenerator {
+
+    private static final Random random = new Random();
+
+    private static final String[] COURSE_TOPICS = {
+        "Java Programming", "Web Development", "Data Science", "Machine Learning",
+        "Cybersecurity", "Cloud Computing", "Graphic Design", "Business Analytics",
+        "Digital Marketing", "Mobile App Development", "Artificial Intelligence"
+    };
+
+    private static final String[] COURSE_LEVELS = {
+        "Introduction to", "Advanced", "Masterclass in", "Practical Guide to",
+        "Fundamentals of", "Comprehensive", "Crash Course in"
+    };
+
+    private static final String[] DESCRIPTION_INTROS = {
+        "This course provides a deep dive into",
+        "Learn the fundamentals and practical skills for",
+        "Gain hands-on experience in",
+        "Master the essential concepts of",
+        "An engaging journey through",
+        "Develop advanced expertise in"
+    };
+
+    private static final String[] DESCRIPTION_OUTROS = {
+        "with real-world projects and case studies.",
+        "to prepare you for industry challenges.",
+        "designed for beginners and professionals alike.",
+        "through interactive lessons and assessments.",
+        "taught by experienced instructors."
+    };
     public static List<Course> fromOrg(List<Organization> organizations, ImageSeeder imageSeeder) {
 
         if (organizations == null || organizations.isEmpty()) {
@@ -79,6 +109,19 @@ public class CourseGenerator {
         return durations[(int) (Math.random() * durations.length)];
     }
 
+     private static String generateCourseTitle() {
+        String level = COURSE_LEVELS[random.nextInt(COURSE_LEVELS.length)];
+        String topic = COURSE_TOPICS[random.nextInt(COURSE_TOPICS.length)];
+        return level + " " + topic;
+    }
+
+    private static String generateCourseDescription() {
+        String intro = DESCRIPTION_INTROS[random.nextInt(DESCRIPTION_INTROS.length)];
+        String topic = COURSE_TOPICS[random.nextInt(COURSE_TOPICS.length)].toLowerCase();
+        String outro = DESCRIPTION_OUTROS[random.nextInt(DESCRIPTION_OUTROS.length)];
+        return intro + " " + topic + " " + outro;
+    }
+
     public static List<Course> fromOrgAndInst(List<Organization> organizations, List<Instructor> instructors, ImageSeeder imageSeeder) {
 
         if (organizations == null || organizations.isEmpty()) {
@@ -93,7 +136,7 @@ public class CourseGenerator {
                         throw new IllegalStateException("Organization must be persisted first (id cannot be null)");
                     }
 
-                    AtomicInteger courseOrderCounter = new AtomicInteger(0);
+                    // AtomicInteger courseOrderCounter = new AtomicInteger(0);
                     int courseCount =random.nextInt(8) + 3; // 3-10 courses per org
                     List<Course> courses = new ArrayList<>();
 
@@ -103,9 +146,9 @@ public class CourseGenerator {
                                     .ignore(Select.field(Course::getId))
                                     .supply(Select.field(Course::getOrg), () -> org)
                                     .supply(Select.field(Course::getTitle),
-                                            () -> "Course" + courseOrderCounter.incrementAndGet())
+                                            () -> generateCourseTitle())
                                     .supply(Select.field(Course::getDescription),
-                                            () -> "Comprehensive course on " + org.getOrgName() + " topics")
+                                            () -> generateCourseDescription())
                                     .supply(Select.field(Course::getDurationHours),
                                             () -> getRandomDuration())
                                     .supply(Select.field(Course::getPrice),
