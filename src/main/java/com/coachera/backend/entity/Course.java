@@ -83,6 +83,12 @@ public class Course extends Auditable {
         categories.add(courseCategory);
         category.getCourses().add(courseCategory);
     }
+    
+    public void addCategories(Set<Category> categories){
+        for (Category Category : categories) {
+            this.addCategory(Category);
+        }
+    }
 
     public void removeCategory(Category category) {
         CourseCategory courseCategory = new CourseCategory(this, category);
