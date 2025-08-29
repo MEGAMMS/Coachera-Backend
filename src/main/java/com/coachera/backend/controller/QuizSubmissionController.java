@@ -20,7 +20,8 @@ public class QuizSubmissionController {
     }
 
     @PostMapping("/verify")
-    public ApiResponse<?> verifyQuizAnswers(@RequestBody QuizSubmissionDTO request,
+    public ApiResponse<?> verifyQuizAnswers(
+        @RequestBody QuizSubmissionDTO request,
             @AuthenticationPrincipal User user) {
         QuizResultDTO result = quizVerificationService.verifyAnswers(request, user);
 

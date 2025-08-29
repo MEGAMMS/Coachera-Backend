@@ -17,6 +17,7 @@ import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.MaterialCompletion;
 import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
+import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.enums.CompletionState;
 import com.coachera.backend.entity.enums.CompletionTriggerType;
@@ -25,6 +26,7 @@ import com.coachera.backend.repository.EnrollmentRepository;
 import com.coachera.backend.repository.MaterialCompletionRepository;
 import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.QuizRepository;
+import com.coachera.backend.repository.StudentRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,11 +38,15 @@ public class QuizVerificationService {
     private final EnrollmentRepository enrollmentRepository;
     private final MaterialRepository materialRepository;
     private final MaterialCompletionRepository materialCompletionRepository;
+    private final StudentRepository studentRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public QuizResultDTO verifyAnswers(QuizSubmissionDTO request, User user) {
         Quiz quiz = quizRepository.findById(request.getQuizId().intValue())
                 .orElseThrow(() -> new IllegalArgumentException("Quiz not found"));
+
+        Student testTaker = studentRepository.findByUserId(user.getId());
+                
 
         Set<Question> quizQuestions = quiz.getQuestions();
         Map<Long, Question> questionMap = quizQuestions.stream()
@@ -72,7 +78,7 @@ public class QuizVerificationService {
         double percentage = total == 0 ? 0 : (correctCount * 100.0 / total);
 
         // Storing score
-        Integer studentId = user.getStudent().getId();
+        Integer studentId = testTaker.getId();
         Integer materialId = quiz.getMaterial().getId();
         Integer courseId = quiz.getMaterial().getSection().getModule().getCourse().getId();
         markMaterialComplete(studentId, courseId, materialId, percentage);
