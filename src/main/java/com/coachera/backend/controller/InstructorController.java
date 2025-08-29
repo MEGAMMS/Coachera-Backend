@@ -9,6 +9,7 @@ import com.coachera.backend.entity.User;
 import com.coachera.backend.service.InstructorService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
@@ -17,14 +18,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/instructors")
 public class InstructorController {
 
     private final InstructorService instructorService;
-
-    public InstructorController(InstructorService instructorService) {
-        this.instructorService = instructorService;
-    }
 
     // @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
@@ -42,8 +40,13 @@ public class InstructorController {
 
     @GetMapping
     // @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<?> getAllInstructors(@Valid PaginationRequest paginationRequest) {
+    public ApiResponse<?> getInstructors(@Valid PaginationRequest paginationRequest) {
         return ApiResponse.paginated(instructorService.getInstructors(paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/no-page")
+    public ApiResponse<?> getAllInstructors() {
+        return ApiResponse.success(instructorService.getAllInstructors());
     }
 
     @GetMapping("/{id}")
