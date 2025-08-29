@@ -156,15 +156,17 @@ public class InstructorService {
                 .collect(Collectors.toList());
     }
 
-    public List<CourseDTO> getMyCourses(User user) {
+    public Page<CourseDTO> getMyCourses(User user, Pageable pageable) {
         Instructor instructor = instructorRepository.findById(user.getInstructor().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getInstructor().getId()));
-           
+        
+        return courseRepository.findByInstructorId(instructor.getId(), pageable)
+                .map(CourseDTO::new);
 
-        return instructor.getCourses().stream()
-                .map(CourseInstructor::getCourse)
-                .map(course -> new CourseDTO(course))
-                .collect(Collectors.toList());
+        // return instructor.getCourses().stream()
+        //         .map(CourseInstructor::getCourse)
+        //         .map(course -> new CourseDTO(course))
+        //         .collect(Collectors.toList());
     }
 
     public List<InstructorDTO> getInstructorsByCourseId(Integer courseId) {

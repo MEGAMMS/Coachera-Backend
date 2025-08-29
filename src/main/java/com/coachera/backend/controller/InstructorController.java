@@ -78,9 +78,10 @@ public class InstructorController {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @GetMapping("/courses")
     public ApiResponse<?> getMyCourses(
-            @AuthenticationPrincipal User user) {
-        List<CourseDTO> courses = instructorService.getMyCourses(user);
-        return ApiResponse.success(courses);
+            @AuthenticationPrincipal User user,
+            @Valid PaginationRequest paginationRequest) {
+        // List<CourseDTO> courses = instructorService.getMyCourses(user);
+        return  ApiResponse.paginated(instructorService.getMyCourses(user,paginationRequest.toPageable()));
     }
 
     @GetMapping("/courses/{courseId}")
