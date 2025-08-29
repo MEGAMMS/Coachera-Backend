@@ -52,12 +52,15 @@ public class DatabaseSeeder {
         List<Organization> orgs = seedOrganizations(users);
         
         // Seed course-related entities
-        List<Course> courses = seedCourses(orgs);
+        // List<Course> courses = seedCourses(orgs);
+        List<Course> courses = seedCoursesWithInst(orgs,instructors);
         seedCategories(courses);
         List<Enrollment> enrollments = seedEnrollments(students, courses);
         seedCertificates(courses);
 
-        InstructorGenerator.assignCourses(instructors, courses, 4);
+        // InstructorGenerator.assignCourses(instructors, courses, 4);
+        // courseRepo.saveAll(courses); 
+        // instructorRepo.saveAll(instructors);
         
         // Seed course structure
         List<com.coachera.backend.entity.Module> modules = seedModules(courses);
@@ -122,6 +125,11 @@ public class DatabaseSeeder {
 
     private List<Course> seedCourses(List<Organization> orgs) {
         List<Course> courses = CourseGenerator.fromOrg(orgs, imageSeeder);
+        return courseRepo.saveAll(courses);
+    }
+
+    private List<Course> seedCoursesWithInst(List<Organization> orgs,List<Instructor> instructors) {
+        List<Course> courses = CourseGenerator.fromOrgAndInst(orgs,instructors, imageSeeder);
         return courseRepo.saveAll(courses);
     }
 

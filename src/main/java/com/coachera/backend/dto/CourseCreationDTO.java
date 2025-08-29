@@ -29,7 +29,7 @@ public class CourseCreationDTO {
     private BigDecimal price;
 
     @Schema(example = "[2,3]", description = "Course's categories")
-    private Set<CategoryDTO> categories;
+    private Set<String> categories;
 
     @Schema(example = "[2,3]", description = "Learning paths associated with this course")
     private Set<Integer> instructors;

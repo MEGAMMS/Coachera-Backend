@@ -3,6 +3,7 @@ package com.coachera.backend.service;
 import com.coachera.backend.dto.CourseCreationDTO;
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.CourseWithModulesDTO;
+import com.coachera.backend.entity.Category;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.Instructor;
@@ -10,11 +11,13 @@ import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,55 +35,57 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final OrganizationRepository organizationRepository;
     private final InstructorRepository instructorRepository;
+    private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
     private final ImageService imageService;
 
    public CourseDTO createCourse(CourseCreationDTO courseDTO, User user) {
-    Organization org = organizationRepository.findByUserId(user.getId());
-    if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), org.getId())) {
-        throw new ConflictException("Course with this title already exists in the organization");
-    }
+        Organization org = organizationRepository.findByUserId(user.getId());
+        if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), org.getId())) {
+            throw new ConflictException("Course with this title already exists in the organization");
+        }
 
-    Course course = new Course();
-    course.setTitle(courseDTO.getTitle());
-    course.setDescription(courseDTO.getDescription());
-    course.setDurationHours(courseDTO.getDurationHours());
-    course.setPrice(courseDTO.getPrice());
-    
-    if(courseDTO.getImageUrl()!=null){
-        Image image = imageService.getImageFromUrl(courseDTO.getImageUrl());
-        course.setImage(image);
-    }
+        Course course = new Course();
+        course.setTitle(courseDTO.getTitle());
+        course.setDescription(courseDTO.getDescription());
+        course.setDurationHours(courseDTO.getDurationHours());
+        course.setPrice(courseDTO.getPrice());
+        course.setRating(BigDecimal.valueOf(0));
+        
+        if(courseDTO.getImageUrl()!=null){
+            Image image = imageService.getImageFromUrl(courseDTO.getImageUrl());
+            course.setImage(image);
+        }
 
-    // if categories need conversion (DTO -> entity), you must map them
-    // if (courseDTO.getCategories() != null) {
-    //     Set<Category> categoryEntities = courseDTO.getCategories().stream()
-    //             .map(catDTO -> {
-    //                 Category category = new Category();
-    //                 category.setId(catDTO.getId());  // assuming CategoryDTO has `id`
-    //                 category.setName(catDTO.getName()); // optional if needed
-    //                 return category;
-    //             })
-    //             .collect(Collectors.toSet());
-    //     course.setCategories(categoryEntities);
-    // }
+        
+        if (courseDTO.getCategories() != null) {
+            Set<Category> categoryEntities = courseDTO.getCategories().stream()
+                    .map(catName -> {
+                        Category category = new Category();
+                        category.setName(catName);
+                        return category;
+                    })
+                    .collect(Collectors.toSet());
+            categoryRepository.saveAll(categoryEntities);
+            course.addCategories(categoryEntities);
+        }
 
-    // if instructors is a list of user IDs, you must fetch them
-    if (courseDTO.getInstructors() != null) {
-        courseDTO.getInstructors().forEach(instructorId -> {
-            Instructor instructor = instructorRepository.findById(instructorId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + instructorId));
-            course.addInstructor(instructor);
-        });
-    }
+        // if instructors is a list of user IDs, you must fetch them
+        if (courseDTO.getInstructors() != null) {
+            courseDTO.getInstructors().forEach(instructorId -> {
+                Instructor instructor = instructorRepository.findById(instructorId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + instructorId));
+                course.addInstructor(instructor);
+            });
+        }
 
 
-    course.setIsPublished(false);
-    course.setOrg(org);
+        course.setIsPublished(false);
+        course.setOrg(org);
 
-    Course savedCourse = courseRepository.save(course);
-    return new CourseDTO(savedCourse);
+        Course savedCourse = courseRepository.save(course);
+        return new CourseDTO(savedCourse);
     }
 
 

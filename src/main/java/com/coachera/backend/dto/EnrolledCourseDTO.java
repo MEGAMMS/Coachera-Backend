@@ -8,7 +8,16 @@ import java.util.stream.Collectors;
 import com.coachera.backend.entity.Enrollment;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@Schema(description = "Enrolled Course Data Transfer Object")
 public class EnrolledCourseDTO {
     
     @Schema(accessMode = Schema.AccessMode.READ_ONLY, example = "1", description = "Unique identifier of the enrollment")
