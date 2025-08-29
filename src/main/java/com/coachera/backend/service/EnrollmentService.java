@@ -105,4 +105,7 @@ public class EnrollmentService {
         return enrollmentRepository.findById(enrollmentId).orElse(null);
 
     }
+    public long countenrollments() {
+        return enrollmentRepository.count();
+    }
 }

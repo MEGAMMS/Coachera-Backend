@@ -83,6 +83,7 @@ public class CourseGenerator {
                                             () -> BigDecimal.valueOf(3 + random.nextDouble() * 2)
                                                     .setScale(1, RoundingMode.HALF_UP))
                                     .supply(Select.field(Course::getImage), () -> imageSeeder.getRandomImage())
+                                    .supply(Select.field(Course::getIsPublished), () -> true)
                                     .ignore(Select.field(Course::getCategories))
                                     .ignore(Select.field(Course::getLearningPaths))
                                     .ignore(Select.field(Course::getModules))

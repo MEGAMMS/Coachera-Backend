@@ -30,6 +30,9 @@ public class Instructor extends Auditable {
     private User user;
 
     @Column(columnDefinition = "TEXT")
+    private String fullname;
+
+    @Column(columnDefinition = "TEXT")
     private String bio;
 
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -21,4 +21,8 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     @Query("SELECT c FROM Course c JOIN c.instructors ci WHERE ci.instructor.id = :instructorId")
     Page<Course> findByInstructorId(@Param("instructorId") Integer instructorId, Pageable pageable);
 
+    Page<Course> findByOrgIdAndIsPublishedTrue(Integer orgId, Pageable pageable);
+    List<Course> findByIsPublishedTrue();
+    Page<Course> findByIsPublishedTrue(Pageable pageable);
+
 }

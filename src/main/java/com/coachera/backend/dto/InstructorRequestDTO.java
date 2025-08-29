@@ -19,5 +19,7 @@ public class InstructorRequestDTO implements RoleDTO{
             description = "Short biography or specialization details of the instructor",
             required = true)
     private String bio;
-
+    
+    @Schema(example = "Muhannad Wahbeh")
+    private String fullname;
 }

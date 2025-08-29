@@ -19,7 +19,7 @@ public class InstructorDTO extends AuditableDTO implements RoleDTO{
 
     @Schema(required = true, example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer userId;
-
+    @Schema(example = "Muhannad Wahbeh")
     private String name ;
 
     @Schema(example = "A Developer specialized in Java dev.....")
@@ -28,8 +28,8 @@ public class InstructorDTO extends AuditableDTO implements RoleDTO{
     public InstructorDTO(Instructor instructor) {
         this.id = instructor.getId();
         this.userId = instructor.getUser() != null ? instructor.getUser().getId() : null;
+        this.name = instructor.getFullname();
         this.bio = instructor.getBio();
-        this.name =instructor.getUser().getUsername();
         this.setCreatedAt(instructor.getCreatedAt());
         this.setUpdatedAt(instructor.getUpdatedAt());
     }
