@@ -51,7 +51,7 @@ public class InstructorGenerator {
             for (int i = 0; i < numCourses; i++) {
                 Course course = courses.get(RANDOM.nextInt(courses.size()));
                 instructor.addCourse(course);
-                course.addInstructor(instructor); // maintain bidirectional relationship
+                // course.addInstructor(instructor); // maintain bidirectional relationship
             }
         }
     }
