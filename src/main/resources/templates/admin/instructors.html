@@ -24,7 +24,7 @@
                 <tbody>
                     <tr th:each="instructor : ${instructorPage.content}" class="border-b">
                         <td class="px-6 py-4 font-medium" th:text="${instructor.id}">1</td>
-                        <td class="px-6 py-4" th:text="${instructor.fullname}">John Doe</td>
+                        <td class="px-6 py-4" th:text="${instructor.name}">John Doe</td>
                         <td class="px-6 py-4" th:text="${instructor.bio}">Instructor Bio...</td>
                         <td class="px-6 py-4 text-center">
                             <form th:action="@{/admin/instructors/delete/{id}(id=${instructor.id})}" method="post" class="inline-block">

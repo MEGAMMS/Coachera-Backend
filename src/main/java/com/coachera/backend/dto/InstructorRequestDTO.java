@@ -21,5 +21,5 @@ public class InstructorRequestDTO implements RoleDTO{
     private String bio;
     
     @Schema(example = "Muhannad Wahbeh")
-    private String fullname;
+    private String name;
 }

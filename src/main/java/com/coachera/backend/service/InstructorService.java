@@ -48,7 +48,7 @@ public class InstructorService {
 
         Instructor instructor = new Instructor();
         instructor.setUser(user);
-        instructor.setFullname(requestDTO.getFullname());
+        instructor.setName(requestDTO.getName());
         instructor.setBio(requestDTO.getBio());
 
         Instructor savedInstructor = instructorRepository.save(instructor);

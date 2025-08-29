@@ -23,7 +23,7 @@ public class InstructorGenerator {
                         .ignore(Select.field(Instructor::getId))
                         .supply(Select.field(Instructor::getUser), () -> user)
                         .supply(Select.field(Instructor::getBio), () -> "Experienced instructor with a passion for teaching.")
-                        .supply(Select.field(Instructor::getFullname), () -> user.getUsername())
+                        .supply(Select.field(Instructor::getName), () -> user.getUsername())
                         .ignore(Select.field(Instructor::getCourses))
                         .create();
                     
