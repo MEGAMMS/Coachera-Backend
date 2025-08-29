@@ -107,9 +107,11 @@ public class StudentService {
     }
 
     public StudentDTO updateStudent(User user , StudentRequestDTO studentDTO) {
-        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
-        Student existingStudent = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        Student existingStudent = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
 
         modelMapper.map(studentDTO, existingStudent);
 
