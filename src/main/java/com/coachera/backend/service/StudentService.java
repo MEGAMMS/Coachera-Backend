@@ -24,7 +24,10 @@ import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 @Transactional
 public class StudentService {
 
@@ -35,22 +38,6 @@ public class StudentService {
     private final FavoriteRepository favoriteRepository;
     private final ReviewRepository reviewRepository;
     private final AccessTokenRepository accessTokenRepository;
-
-    public StudentService(StudentRepository studentRepository, 
-                        UserRepository userRepository,
-                        ModelMapper modelMapper,
-                        EnrollmentRepository enrollmentRepository,
-                        FavoriteRepository favoriteRepository,
-                        ReviewRepository reviewRepository,
-                        AccessTokenRepository accessTokenRepository) {
-        this.studentRepository = studentRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.enrollmentRepository = enrollmentRepository;
-        this.favoriteRepository = favoriteRepository;
-        this.reviewRepository = reviewRepository;
-        this.accessTokenRepository =accessTokenRepository;
-    }
 
     public StudentDTO createStudent(StudentRequestDTO studentDTO, User user) {
 
@@ -83,9 +70,12 @@ public class StudentService {
     }
 
     public StudentDTO getStudentByUser(User user) {
-        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        Student student = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
+                
         return new StudentDTO(student);
     }
 
