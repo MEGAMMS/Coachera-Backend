@@ -71,9 +71,9 @@ public class StudentController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('STUDENT')")
-    public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
+    public ApiResponse<?> deleteStudent( @AuthenticationPrincipal User user) {
 
-        studentService.deleteStudent(id);
+        studentService.deleteStudent(user);
         return ApiResponse.noContentResponse();
 
     }
