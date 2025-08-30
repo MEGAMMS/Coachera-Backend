@@ -69,7 +69,7 @@ public class StudentController {
         return ApiResponse.success("Student was updated successfully", updatedStudent);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('STUDENT')")
     public ApiResponse<?> deleteStudent( @AuthenticationPrincipal User user) {
 
