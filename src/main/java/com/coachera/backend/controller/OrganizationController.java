@@ -73,4 +73,12 @@ public class OrganizationController {
                 return ApiResponse.noContentResponse();
 
         }
+
+        @DeleteMapping
+        public ApiResponse<?> deleteOrganization(@AuthenticationPrincipal User user) {
+
+                organizationService.deleteOrganization(user);
+                return ApiResponse.noContentResponse();
+
+        }
 }
