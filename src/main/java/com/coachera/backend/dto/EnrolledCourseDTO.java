@@ -1,5 +1,6 @@
 package com.coachera.backend.dto;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +33,9 @@ public class EnrolledCourseDTO {
     @Schema(required = true, description = "Info about course status")
     private Set<MaterialCompletionDTO> materialCompletions;
 
+    @Schema(required = true, description = "progress")
+    private BigDecimal progress;
+
     // Constructor from entity
     public EnrolledCourseDTO(Enrollment enrollment) {
         this.enrollmentId= enrollment.getId();
@@ -48,5 +52,7 @@ public class EnrolledCourseDTO {
         .stream()
         .map(MaterialCompletionDTO::new)
         .collect(Collectors.toSet());
+
+        this.progress = enrollment.getProgress();
     }
 }
