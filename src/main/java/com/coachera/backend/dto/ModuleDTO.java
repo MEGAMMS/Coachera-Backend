@@ -32,7 +32,7 @@ public class ModuleDTO extends AuditableDTO {
     private Integer orderIndex;
 
     @Schema(description = "Sections belonging to this module")
-    private Set<SectionDTO> sections;
+    private Set<Integer> sections;
 
     public ModuleDTO(Module module) {
         this.id = module.getId();
@@ -41,7 +41,7 @@ public class ModuleDTO extends AuditableDTO {
         this.title= module.getTitle();
         this.sections = module.getSections().stream()
                 .sorted(Comparator.comparingInt(Section::getOrderIndex))
-                .map(section -> new SectionDTO(section)) 
+                .map(section -> section.getId()) 
                 .collect(Collectors.toSet());
     }
 }
