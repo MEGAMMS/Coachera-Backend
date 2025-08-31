@@ -32,7 +32,7 @@ public class SectionDTO extends AuditableDTO {
     private Integer orderIndex;
 
     @Schema(description = "List of materials in this section")
-    private List<MaterialDTO> materials;
+    private List<Integer> materials;
 
     public SectionDTO(Section section) {
         this.id = section.getId();
@@ -41,7 +41,7 @@ public class SectionDTO extends AuditableDTO {
         this.orderIndex = section.getOrderIndex();
         this.materials = section.getMaterials().stream()
                 .sorted(Comparator.comparingInt(Material::getOrderIndex)) 
-                .map(material -> new MaterialDTO(material)) 
+                .map(material -> material.getId()) 
                 .collect(Collectors.toList());
         this.setCreatedAt(section.getCreatedAt());
         this.setUpdatedAt(section.getUpdatedAt());
