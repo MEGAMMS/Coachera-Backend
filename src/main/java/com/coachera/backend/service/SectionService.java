@@ -67,8 +67,8 @@ public class SectionService {
         section.setTitle(sectionDTO.getTitle());
         section.setOrderIndex(sectionDTO.getOrderIndex());
 
-        if (sectionDTO.getMaterials() != null) {
-           sectionDTO.getMaterials().forEach(materialId -> {
+        if (sectionDTO.getMaterialIds() != null) {
+           sectionDTO.getMaterialIds().forEach(materialId -> {
                 Material material = materialRepository.findById(materialId)
                         .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + sectionId));
                 section.addMaterial(material);

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class ModuleWithSectionsDTO extends ModuleDTO {
 
     @Schema(description = "Sections belonging to this module")
-    private Set<SectionDTO> sections;
+    private Set<SectionWithMaterialsDTO> sections;
 
     @Override
     @JsonIgnore
@@ -34,8 +34,7 @@ public class ModuleWithSectionsDTO extends ModuleDTO {
         super(module);
         this.sections = module.getSections().stream()
                 .sorted(Comparator.comparingInt(Section::getOrderIndex))
-                .map(section -> new SectionDTO(section))
+                .map(SectionWithMaterialsDTO::new)
                 .collect(Collectors.toSet());
-
     }
 }
