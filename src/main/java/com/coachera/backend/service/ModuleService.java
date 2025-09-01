@@ -57,8 +57,8 @@ public class ModuleService {
             throw new IllegalArgumentException("Instructor is not assigned to this course");
         }
 
-        if (moduleDTO.getSections() != null) {
-            moduleDTO.getSections().forEach(sectionId -> {
+        if (moduleDTO.getSectionIds() != null) {
+            moduleDTO.getSectionIds().forEach(sectionId -> {
                 Section section = sectionRepository.findById(sectionId)
                         .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + sectionId));
                 module.addSection(section);
