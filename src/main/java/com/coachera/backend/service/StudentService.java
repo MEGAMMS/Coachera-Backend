@@ -24,7 +24,10 @@ import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 @Transactional
 public class StudentService {
 
@@ -35,22 +38,6 @@ public class StudentService {
     private final FavoriteRepository favoriteRepository;
     private final ReviewRepository reviewRepository;
     private final AccessTokenRepository accessTokenRepository;
-
-    public StudentService(StudentRepository studentRepository, 
-                        UserRepository userRepository,
-                        ModelMapper modelMapper,
-                        EnrollmentRepository enrollmentRepository,
-                        FavoriteRepository favoriteRepository,
-                        ReviewRepository reviewRepository,
-                        AccessTokenRepository accessTokenRepository) {
-        this.studentRepository = studentRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.enrollmentRepository = enrollmentRepository;
-        this.favoriteRepository = favoriteRepository;
-        this.reviewRepository = reviewRepository;
-        this.accessTokenRepository =accessTokenRepository;
-    }
 
     public StudentDTO createStudent(StudentRequestDTO studentDTO, User user) {
 
@@ -68,24 +55,28 @@ public class StudentService {
         student.setBirthDate(studentDTO.getBirthDate());
         student.setGender(studentDTO.getGender());
         student.setEducation(studentDTO.getEducation());
-        
-        // Handle wallet - set to 0 
+
+        // Handle wallet - set to 0
         student.setWallet(BigDecimal.ZERO);
-        
+
         // Set other optional fields
         student.setPhoneNumber(studentDTO.getPhoneNumber());
         student.setAddress(studentDTO.getAddress());
-        
+
         Student savedStudent = studentRepository.save(student);
-        
+
         // Use the basic constructor that doesn't load collections
         return new StudentDTO(savedStudent);
     }
 
     public StudentDTO getStudentByUser(User user) {
-        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        Student student = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
+
         return new StudentDTO(student);
     }
 
@@ -106,10 +97,13 @@ public class StudentService {
                 .map(StudentDTO::new);
     }
 
-    public StudentDTO updateStudent(User user , StudentRequestDTO studentDTO) {
-        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
-        Student existingStudent = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+    public StudentDTO updateStudent(User user, StudentRequestDTO studentDTO) {
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        Student existingStudent = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
 
         modelMapper.map(studentDTO, existingStudent);
 
@@ -117,13 +111,46 @@ public class StudentService {
         return new StudentDTO(updatedStudent);
     }
 
-    
-    public void deleteStudent(Integer id) {
-        
-       Student student = studentRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+    public void deleteStudent(User user) {
 
-            // Delete all student-related entities
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        if (!studentRepository.existsByUserId(user.getId())) {
+            throw new ResourceNotFoundException("Student not found with id: " + user.getId());
+        }
+
+        Student student = studentRepository.findByUserId(user.getId());
+
+        // Delete all student-related entities
+        favoriteRepository.deleteAll(favoriteRepository.findByStudentId(student.getId()));
+        enrollmentRepository.deleteAll(enrollmentRepository.findByStudentId(student.getId()));
+        reviewRepository.deleteAll(reviewRepository.findByStudentId(student.getId()));
+
+        // Clear certificates and skills
+        student.getStudentCertificates().clear();
+        student.getStudentSkills().clear();
+        studentRepository.save(student);
+
+        // Delete access tokens first
+        accessTokenRepository.deleteByUserId(user.getId());
+
+        // Break the bidirectional relationship
+        user.setStudent(null);
+        userRepository.save(user);
+
+        // Delete the student
+        studentRepository.delete(student);
+        userRepository.delete(user);
+    }
+
+    public void deleteStudent(Integer id) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+
+        // Delete all student-related entities
         favoriteRepository.deleteAll(favoriteRepository.findByStudentId(id));
         enrollmentRepository.deleteAll(enrollmentRepository.findByStudentId(id));
         reviewRepository.deleteAll(reviewRepository.findByStudentId(id));
@@ -132,16 +159,14 @@ public class StudentService {
         student.getStudentSkills().clear();
         studentRepository.save(student);
         if (student.getUser() != null) {
-        User user = student.getUser();
-           
-        // Delete access tokens first
-        accessTokenRepository.deleteByUserId(user.getId());
+            User user = student.getUser();
 
-        
-        
-        // Break the bidirectional relationship
-        user.setStudent(null);
-        userRepository.save(user);
+            // Delete access tokens first
+            accessTokenRepository.deleteByUserId(user.getId());
+
+            // Break the bidirectional relationship
+            user.setStudent(null);
+            userRepository.save(user);
         }
         // Delete the student
         studentRepository.delete(student);
@@ -151,15 +176,14 @@ public class StudentService {
         }
 
     }
-    
-    
+
     public Page<CourseDTO> getEnrolledCoursesByUser(User user, Pageable pageable) {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         return enrollmentRepository.findByStudentId(studentId, pageable)
                 .map(enrollment -> new CourseDTO(enrollment.getCourse()));
     }
 
-     public long countStudents() {
+    public long countStudents() {
         return studentRepository.count();
     }
 }

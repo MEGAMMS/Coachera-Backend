@@ -20,12 +20,16 @@ import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.AccessTokenRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 @Transactional
 public class InstructorService {
 
@@ -34,18 +38,7 @@ public class InstructorService {
     private final ModelMapper modelMapper;
     private final CourseRepository courseRepository;
     private final OrganizationRepository organizationRepository;
-
-    public InstructorService(InstructorRepository instructorRepository,
-            UserRepository userRepository,
-            ModelMapper modelMapper,
-            CourseRepository courseRepository,
-            OrganizationRepository organizationRepository) {
-        this.instructorRepository = instructorRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.courseRepository = courseRepository;
-        this.organizationRepository = organizationRepository;
-    }
+    private final AccessTokenRepository accessTokenRepository;
 
     public InstructorDTO createInstructor(InstructorRequestDTO requestDTO, User user) {
         if (!userRepository.findById(user.getId()).isPresent()) {
@@ -57,7 +50,7 @@ public class InstructorService {
 
         Instructor instructor = new Instructor();
         instructor.setUser(user);
-        instructor.setFullname(requestDTO.getFullname());
+        instructor.setName(requestDTO.getName());
         instructor.setBio(requestDTO.getBio());
 
         Instructor savedInstructor = instructorRepository.save(instructor);
@@ -101,7 +94,7 @@ public class InstructorService {
             User user = instructor.getUser();
 
             // Delete access tokens first
-            // accessTokenRepository.deleteByUserId(user.getId());
+            accessTokenRepository.deleteByUserId(user.getId());
 
             // Break the bidirectional relationship
             user.setInstructor(null);
@@ -113,6 +106,26 @@ public class InstructorService {
             // Delete the user (now that access tokens are removed)
             userRepository.delete(instructor.getUser());
         }
+    }
+
+    public void deleteInstructor(User user) {
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating instructor profile");
+        }
+        Instructor instructor = instructorRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with user id: " + user.getId()));
+
+        // Delete access tokens first
+        accessTokenRepository.deleteByUserId(user.getId());
+
+        // Break the bidirectional relationship
+        user.setInstructor(null);
+        userRepository.save(user);
+
+        // Delete the student
+        instructorRepository.delete(instructor);
+
+        userRepository.delete(instructor.getUser());
     }
 
     // Additional methods specific to Instructor if needed
@@ -172,15 +185,16 @@ public class InstructorService {
 
     public Page<CourseDTO> getMyCourses(User user, Pageable pageable) {
         Instructor instructor = instructorRepository.findById(user.getInstructor().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with id: " + user.getInstructor().getId()));
-        
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Instructor not found with id: " + user.getInstructor().getId()));
+
         return courseRepository.findByInstructorId(instructor.getId(), pageable)
                 .map(CourseDTO::new);
 
         // return instructor.getCourses().stream()
-        //         .map(CourseInstructor::getCourse)
-        //         .map(course -> new CourseDTO(course))
-        //         .collect(Collectors.toList());
+        // .map(CourseInstructor::getCourse)
+        // .map(course -> new CourseDTO(course))
+        // .collect(Collectors.toList());
     }
 
     public List<InstructorDTO> getInstructorsByCourseId(Integer courseId) {

@@ -2,6 +2,7 @@ package com.coachera.backend.entity;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -54,6 +55,7 @@ public class Course extends Auditable {
     private BigDecimal rating;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean isPublished = false;
 
     @OneToOne
@@ -80,6 +82,8 @@ public class Course extends Auditable {
     @Builder.Default
     private Set<Module> modules = new HashSet<>();
 
+
+    
     // Helper methods for managing categories
     public void addCategory(Category category) {
         CourseCategory courseCategory = new CourseCategory(this, category);
@@ -87,7 +91,7 @@ public class Course extends Auditable {
         category.getCourses().add(courseCategory);
     }
     
-    public void addCategories(Set<Category> categories){
+    public void addCategories(List<Category> categories){
         for (Category Category : categories) {
             this.addCategory(Category);
         }

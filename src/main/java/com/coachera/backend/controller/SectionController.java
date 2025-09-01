@@ -2,12 +2,14 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.SectionDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.SectionService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -20,21 +22,23 @@ public class SectionController {
 
     private final SectionService sectionService;
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION') or hasRole('INSTRUCTOR')")
     @PostMapping
     public ApiResponse<SectionDTO> createSection(
             @PathVariable Integer moduleId,
-            @Valid @RequestBody SectionDTO sectionDTO) {
-        SectionDTO createdSection = sectionService.createSection(moduleId, sectionDTO);
+            @Valid @RequestBody SectionDTO sectionDTO,
+            @AuthenticationPrincipal User user) {
+        SectionDTO createdSection = sectionService.createSection(moduleId, sectionDTO,user);
         return ApiResponse.created("Section was created successfuly",createdSection);
     }
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION') or hasRole('INSTRUCTOR')")
     @PutMapping("/{sectionId}")
     public ApiResponse<SectionDTO> updateSection(
             @PathVariable Integer sectionId,
-            @Valid @RequestBody SectionDTO sectionDTO) {
-        SectionDTO updatedSection = sectionService.updateSection(sectionId, sectionDTO);
+            @Valid @RequestBody SectionDTO sectionDTO,
+            @AuthenticationPrincipal User user) {
+        SectionDTO updatedSection = sectionService.updateSection(sectionId, sectionDTO,user);
         return ApiResponse.success("Section was updated successfuly",updatedSection);
     }
 
@@ -53,11 +57,12 @@ public class SectionController {
         return ApiResponse.success(sections);
     }
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('ORGANIZATION') or hasRole('INSTRUCTOR')")
     @DeleteMapping("/{sectionId}")
     public ApiResponse<Void> deleteSection(
-            @PathVariable Integer sectionId) {
-        sectionService.deleteSection(sectionId);
+            @PathVariable Integer sectionId,
+            @AuthenticationPrincipal User user) {
+        sectionService.deleteSection(sectionId, user);
         return ApiResponse.noContentResponse();
     }
 }

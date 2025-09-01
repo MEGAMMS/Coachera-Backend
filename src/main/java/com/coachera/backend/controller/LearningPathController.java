@@ -7,6 +7,8 @@ import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.LearningPathService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/learning-paths")
 public class LearningPathController {
 
     private final LearningPathService learningPathService;
-
-    public LearningPathController(LearningPathService learningPathService) {
-        this.learningPathService = learningPathService;
-    }
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZATION')")
@@ -37,6 +36,11 @@ public class LearningPathController {
     public ApiResponse<?> getLearningPathById(@PathVariable Integer id) {
         LearningPathDTO learningPath = learningPathService.getLearningPathById(id);
         return ApiResponse.success(learningPath);
+    }
+
+    @GetMapping("/courses/{id}")
+    public ApiResponse<?> getCoursesByLearningPathId(@PathVariable Integer id) {
+        return ApiResponse.success(learningPathService.getCoursesBylearningPathId(id));
     }
 
     @GetMapping

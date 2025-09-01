@@ -7,19 +7,18 @@ import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.StudentService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentService studentService;
-
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
     
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping
@@ -70,11 +69,11 @@ public class StudentController {
         return ApiResponse.success("Student was updated successfully", updatedStudent);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('STUDENT')")
-    public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
+    public ApiResponse<?> deleteStudent( @AuthenticationPrincipal User user) {
 
-        studentService.deleteStudent(id);
+        studentService.deleteStudent(user);
         return ApiResponse.noContentResponse();
 
     }

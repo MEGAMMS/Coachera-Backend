@@ -64,9 +64,9 @@ public class InstructorController {
         return ApiResponse.success("Instructor was updated successfully", updatedInstructor);
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<?> deleteInstructor(@PathVariable Integer id) {
-        instructorService.deleteInstructor(id);
+    @DeleteMapping
+    public ApiResponse<?> deleteInstructor( @AuthenticationPrincipal User user) {
+        instructorService.deleteInstructor(user);
         return ApiResponse.noContentResponse();
     }
 

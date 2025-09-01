@@ -28,7 +28,7 @@ public class InstructorDTO extends AuditableDTO implements RoleDTO{
     public InstructorDTO(Instructor instructor) {
         this.id = instructor.getId();
         this.userId = instructor.getUser() != null ? instructor.getUser().getId() : null;
-        this.name = instructor.getFullname();
+        this.name = instructor.getName();
         this.bio = instructor.getBio();
         this.setCreatedAt(instructor.getCreatedAt());
         this.setUpdatedAt(instructor.getUpdatedAt());

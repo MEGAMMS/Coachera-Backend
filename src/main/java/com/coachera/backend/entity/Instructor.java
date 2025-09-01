@@ -30,7 +30,7 @@ public class Instructor extends Auditable {
     private User user;
 
     @Column(columnDefinition = "TEXT")
-    private String fullname;
+    private String name;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
