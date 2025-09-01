@@ -29,11 +29,6 @@ public class MaterialService {
     private final SectionRepository sectionRepository;
     private final VideoService videoService;
 
-    // public MaterialService(MaterialRepository materialRepository, SectionRepository sectionRepository) {
-    //     this.materialRepository = materialRepository;
-    //     this.sectionRepository = sectionRepository;
-    // }
-
     public MaterialDTO createMaterial(Integer sectionId, MaterialDTO materialDTO) {
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Section not found with id: " + sectionId));
