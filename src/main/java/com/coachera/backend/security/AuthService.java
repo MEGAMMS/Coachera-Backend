@@ -30,6 +30,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Import for @Transactional
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional // Ensures the operation is atomic
@@ -117,6 +119,7 @@ public class AuthService {
 
         /**
          * Authenticates a user and generates an access token.
+         * Multiple tokens per user are allowed for multiple sessions.
          * 
          * @param loginRequest DTO containing login credentials.
          * @return AuthResponse containing the access token and username.
@@ -139,7 +142,7 @@ public class AuthService {
                 User user = userRepository.findByUsername(userDetails.getUsername()).get();
                 String username = user.getUsername(); // This is the actual username stored in the User entity
 
-                // Generate our custom simple token
+                // Generate a new token (multiple tokens per user are allowed)
                 String token = tokenService.generateToken(username);
                 UserDTO userDTO = new UserDTO(user);
                 return new AuthResponse(token, userDTO);
@@ -167,5 +170,34 @@ public class AuthService {
                         }
                 }
                 return false;
+        }
+
+        /**
+         * Check if a user has any valid tokens.
+         * 
+         * @param username The username to check.
+         * @return true if user has any valid tokens, false otherwise.
+         */
+        public boolean hasValidToken(String username) {
+                return tokenService.hasValidToken(username);
+        }
+
+        /**
+         * Get all valid tokens for a user.
+         * 
+         * @param username The username to get tokens for.
+         * @return List of all valid tokens for the user.
+         */
+        public List<String> getValidTokens(String username) {
+                return tokenService.getValidTokens(username);
+        }
+
+        /**
+         * Force logout from all devices by invalidating all tokens for a user.
+         * 
+         * @param username The username to force logout from all devices.
+         */
+        public void forceLogoutAllDevices(String username) {
+                tokenService.forceLogoutAllDevices(username);
         }
 }
