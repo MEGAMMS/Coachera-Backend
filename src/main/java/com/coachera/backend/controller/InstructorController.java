@@ -70,7 +70,7 @@ public class InstructorController {
         return ApiResponse.noContentResponse();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{instructorId}/courses")
     public ApiResponse<?> getCoursesByInstructorId(
             @PathVariable Integer instructorId) {
