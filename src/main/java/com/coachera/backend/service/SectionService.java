@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.SectionDTO;
+import com.coachera.backend.dto.SectionWithMaterialsDTO;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.Course;
@@ -67,8 +68,8 @@ public class SectionService {
         section.setTitle(sectionDTO.getTitle());
         section.setOrderIndex(sectionDTO.getOrderIndex());
 
-        if (sectionDTO.getMaterials() != null) {
-           sectionDTO.getMaterials().forEach(materialId -> {
+        if (sectionDTO.getMaterialIds() != null) {
+           sectionDTO.getMaterialIds().forEach(materialId -> {
                 Material material = materialRepository.findById(materialId)
                         .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + sectionId));
                 section.addMaterial(material);
@@ -83,7 +84,7 @@ public class SectionService {
     public SectionDTO getSectionById(Integer sectionId) {
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Section not found with id: " + sectionId));
-        return new SectionDTO(section);
+        return new SectionWithMaterialsDTO(section);
     }
 
     @Transactional(readOnly = true)
@@ -93,7 +94,7 @@ public class SectionService {
         }
 
         return sectionRepository.findByModuleIdOrderByOrderIndexAsc(moduleId).stream()
-                .map(SectionDTO::new)
+                .map(SectionWithMaterialsDTO::new)
                 .collect(Collectors.toList());
     }
 

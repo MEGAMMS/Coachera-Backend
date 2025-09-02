@@ -65,7 +65,7 @@ public class InstructorController {
     }
 
     @DeleteMapping
-    public ApiResponse<?> deleteInstructor( @AuthenticationPrincipal User user) {
+    public ApiResponse<?> deleteInstructor(@AuthenticationPrincipal User user) {
         instructorService.deleteInstructor(user);
         return ApiResponse.noContentResponse();
     }
@@ -84,7 +84,7 @@ public class InstructorController {
             @AuthenticationPrincipal User user,
             @Valid PaginationRequest paginationRequest) {
         // List<CourseDTO> courses = instructorService.getMyCourses(user);
-        return  ApiResponse.paginated(instructorService.getMyCourses(user,paginationRequest.toPageable()));
+        return ApiResponse.paginated(instructorService.getMyCourses(user, paginationRequest.toPageable()));
     }
 
     @GetMapping("/courses/{courseId}")
@@ -92,6 +92,13 @@ public class InstructorController {
             @PathVariable Integer courseId) {
         List<InstructorDTO> instructors = instructorService.getInstructorsByCourseId(courseId);
         return ApiResponse.success(instructors);
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/courses/count")
+    public ApiResponse<?> getMyCoursesCount(@AuthenticationPrincipal User user) {
+        Long count = instructorService.getMyCoursesCount(user);
+        return ApiResponse.success(count);
     }
 
 }

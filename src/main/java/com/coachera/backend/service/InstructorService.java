@@ -210,4 +210,16 @@ public class InstructorService {
     public long countInstructors() {
         return instructorRepository.count();
     }
+
+    public Long getMyCoursesCount(User user) {
+        Instructor instructor = instructorRepository.findById(user.getInstructor().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Instructor not found with id: " + user.getInstructor().getId()));
+
+        return instructor.getCourses().stream()
+                .map(CourseInstructor::getCourse)
+                .distinct()
+                .count();
+    }
+
 }

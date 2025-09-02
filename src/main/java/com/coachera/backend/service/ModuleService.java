@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.ModuleDTO;
+import com.coachera.backend.dto.ModuleWithSectionsDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Module;
@@ -42,6 +43,9 @@ public class ModuleService {
         module.setCourse(course);
         module.setOrderIndex(moduleDTO.getOrderIndex());
 
+        course.addModule(module);
+        courseRepository.save(course);
+
         Module savedModule = moduleRepository.save(module);
         return new ModuleDTO(savedModule);
     }
@@ -57,8 +61,8 @@ public class ModuleService {
             throw new IllegalArgumentException("Instructor is not assigned to this course");
         }
 
-        if (moduleDTO.getSections() != null) {
-            moduleDTO.getSections().forEach(sectionId -> {
+        if (moduleDTO.getSectionIds() != null) {
+            moduleDTO.getSectionIds().forEach(sectionId -> {
                 Section section = sectionRepository.findById(sectionId)
                         .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + sectionId));
                 module.addSection(section);
@@ -72,7 +76,7 @@ public class ModuleService {
     public ModuleDTO getModuleById(Integer moduleId) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Module not found with id: " + moduleId));
-        return new ModuleDTO(module);
+        return new ModuleWithSectionsDTO(module);
     }
 
     public List<ModuleDTO> getAllModulesByCourseId(Integer courseId) {
@@ -81,7 +85,7 @@ public class ModuleService {
         }
         List<Module> modules = moduleRepository.findByCourseIdOrderByOrderIndexAsc(courseId);
         return modules.stream()
-                .map(ModuleDTO::new)
+                .map(ModuleWithSectionsDTO::new)
                 .collect(Collectors.toList());
     }
 
