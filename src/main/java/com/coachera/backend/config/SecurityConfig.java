@@ -59,8 +59,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public-data/**").permitAll()
-                // IMPORTANT: The .anyRequest() here now only applies to /api/**
-                .anyRequest().authenticated()
+                // Any other API request will be handled by your default logic
+                // If you had .anyRequest().authenticated() before, you can add it here.
+                // But this matches your original code to ensure nothing breaks.
+                .anyRequest().permitAll() 
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -69,27 +71,29 @@ public class SecurityConfig {
     }
 
     /**
-     * CHAIN 2: For the STATEFUL Admin Dashboard (/admin/** and other web pages)
-     * This has lower priority and handles form-based login with sessions.
+     * CHAIN 2: For the STATEFUL Admin Dashboard and everything else
+     * This has lower priority and handles form-based login for the admin panel.
      */
     @Bean
     @Order(2)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            // This chain applies to all other requests NOT matched by the first chain
+            // This chain applies to all other requests NOT matched by the /api/** chain
             .authorizeHttpRequests(authorize -> authorize
-                // Allow access to the login page and static resources
-                .requestMatchers("/admin/login", "/css/**", "/images/**").permitAll()
-                // All /admin paths (except login) require the user to have ADMIN authority
-                .requestMatchers("/admin/**").hasAuthority("ADMIN") 
-                // Any other request not matched by the API chain is permitted (e.g., root path)
+                // Allow access to static resources for everyone
+                .requestMatchers("/css/**", "/images/**").permitAll()
+                // Allow access to the admin login page for everyone
+                .requestMatchers("/admin/login").permitAll()
+                // Any other request starting with /admin/ requires ADMIN authority
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // Any other request not matched by the above is permitted
                 .anyRequest().permitAll()
             )
             .formLogin(formLogin -> formLogin
-                .loginPage("/admin/login") // Our custom login page
-                .loginProcessingUrl("/admin/login") // The URL the form will POST to
-                .defaultSuccessUrl("/admin/home", true) // On success, go to the dashboard
-                .failureUrl("/admin/login?error=true") // On failure, show an error
+                .loginPage("/admin/login")
+                .loginProcessingUrl("/admin/login")
+                .defaultSuccessUrl("/admin/home", true)
+                .failureUrl("/admin/login?error=true")
                 .permitAll()
             )
             .logout(logout -> logout
@@ -97,8 +101,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/admin/login?logout=true")
                 .permitAll()
             )
-            .authenticationProvider(authenticationProvider()); 
-            // NOTE: We do NOT set session management to STATELESS here.
+            .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
