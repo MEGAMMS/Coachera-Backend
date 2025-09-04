@@ -3,6 +3,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.ModuleDTO;
+import com.coachera.backend.dto.ModuleRequestDTO;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.ModuleService;
 
@@ -22,11 +23,11 @@ public class ModuleController {
 
     private final ModuleService moduleService;
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping("/courses/{courseId}")
     public ApiResponse<ModuleDTO> createModule(
             @PathVariable Integer courseId,
-            @Valid @RequestBody ModuleDTO moduleDTO) {
+            @Valid @RequestBody ModuleRequestDTO moduleDTO) {
         ModuleDTO createdModule = moduleService.createModule(courseId, moduleDTO);
         return ApiResponse.success("Module was created successfuly", createdModule);
     }
@@ -35,7 +36,7 @@ public class ModuleController {
     @PutMapping("/{moduleId}")
     public ApiResponse<ModuleDTO> updateModule(
             @PathVariable Integer moduleId,
-            @Valid @RequestBody ModuleDTO moduleDTO,
+            @Valid @RequestBody ModuleRequestDTO moduleDTO,
             @AuthenticationPrincipal User user) {
         ModuleDTO updatedModule = moduleService.updateModule(moduleId, moduleDTO,user);
         return ApiResponse.success("Module was updated successfuly", updatedModule);
