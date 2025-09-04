@@ -4,6 +4,7 @@ import com.coachera.backend.dto.CourseCreationDTO;
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.CourseWithModulesDTO;
 import com.coachera.backend.entity.Category;
+import com.coachera.backend.entity.Certificate;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.Instructor;
@@ -12,18 +13,23 @@ import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CategoryRepository;
+import com.coachera.backend.repository.CertificateRepository;
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
+import com.coachera.backend.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +42,9 @@ public class CourseService {
     private final OrganizationRepository organizationRepository;
     private final InstructorRepository instructorRepository;
     private final CategoryRepository categoryRepository;
+    private final CertificateRepository certificateRepository;
+    private final UserRepository userRepository;
+
     private final ModelMapper modelMapper;
 
     private final ImageService imageService;
@@ -49,16 +58,11 @@ public class CourseService {
         System.out.println("------------------org------------------");
 
         Course course = new Course();
-        course.setTitle(courseDTO.getTitle());
-        System.out.println("------------------title------------------");
-        course.setDescription(courseDTO.getDescription());
-        System.out.println("------------------descreption------------------");
-        course.setDurationHours(courseDTO.getDurationHours());
-        System.out.println("------------------dh------------------");
-        course.setPrice(courseDTO.getPrice());
-        System.out.println("------------------price------------------");
-        course.setRating(BigDecimal.valueOf(0));
-        System.out.println("------------------rating------------------");
+        course.setTitle(courseDTO.getTitle()); // System.out.println("------------------title------------------");
+        course.setDescription(courseDTO.getDescription()); // System.out.println("------------------descreption------------------");
+        course.setDurationHours(courseDTO.getDurationHours()); // System.out.println("------------------dh------------------");
+        course.setPrice(courseDTO.getPrice()); // System.out.println("------------------price------------------");
+        course.setRating(BigDecimal.valueOf(0)); // System.out.println("------------------rating------------------");
 
         if (courseDTO.getImageUrl() != null) {
             Image image = imageService.getImageFromUrl(courseDTO.getImageUrl());
@@ -137,15 +141,40 @@ public class CourseService {
         return new CourseDTO(updatedCourse);
     }
 
-    public void deleteCourse(Integer id) {
-        if (!courseRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Course not found");
+    public void deleteCourse(Integer id, User user) {
+        Organization org = validateOrg(user);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+
+        if(!course.getOrg().getId().equals(org.getId())){
+             throw new AccessDeniedException("You are not allowed to delete this course");
         }
+        
+        // Break relation with certificates
+        List<Certificate> certificates = certificateRepository.findByCourseId(id);
+        for (Certificate certificate : certificates) {
+            certificate.setCourse(null);
+            certificateRepository.save(certificate);
+        }
+
         courseRepository.deleteById(id);
     }
 
     public Page<CourseDTO> getCourses(Pageable pageable) {
         return courseRepository.findByIsPublishedTrue(pageable)
                 .map(CourseDTO::new);
+    }
+
+    // Helper method
+    private Organization validateOrg(User user) {
+        // Check if user exists
+        userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User must be saved before creating Org profile"));
+
+        // Check if organization exists
+        return organizationRepository.findById(user.getOrganization().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Organization not found with id: " + user.getOrganization().getId()));
     }
 }

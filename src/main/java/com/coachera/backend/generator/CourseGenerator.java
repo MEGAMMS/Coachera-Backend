@@ -21,32 +21,33 @@ public class CourseGenerator {
     private static final Random random = new Random();
 
     private static final String[] COURSE_TOPICS = {
-        "Java Programming", "Web Development", "Data Science", "Machine Learning",
-        "Cybersecurity", "Cloud Computing", "Graphic Design", "Business Analytics",
-        "Digital Marketing", "Mobile App Development", "Artificial Intelligence"
+            "Java Programming", "Web Development", "Data Science", "Machine Learning",
+            "Cybersecurity", "Cloud Computing", "Graphic Design", "Business Analytics",
+            "Digital Marketing", "Mobile App Development", "Artificial Intelligence"
     };
 
     private static final String[] COURSE_LEVELS = {
-        "Introduction to", "Advanced", "Masterclass in", "Practical Guide to",
-        "Fundamentals of", "Comprehensive", "Crash Course in"
+            "Introduction to", "Advanced", "Masterclass in", "Practical Guide to",
+            "Fundamentals of", "Comprehensive", "Crash Course in"
     };
 
     private static final String[] DESCRIPTION_INTROS = {
-        "This course provides a deep dive into",
-        "Learn the fundamentals and practical skills for",
-        "Gain hands-on experience in",
-        "Master the essential concepts of",
-        "An engaging journey through",
-        "Develop advanced expertise in"
+            "This course provides a deep dive into",
+            "Learn the fundamentals and practical skills for",
+            "Gain hands-on experience in",
+            "Master the essential concepts of",
+            "An engaging journey through",
+            "Develop advanced expertise in"
     };
 
     private static final String[] DESCRIPTION_OUTROS = {
-        "with real-world projects and case studies.",
-        "to prepare you for industry challenges.",
-        "designed for beginners and professionals alike.",
-        "through interactive lessons and assessments.",
-        "taught by experienced instructors."
+            "with real-world projects and case studies.",
+            "to prepare you for industry challenges.",
+            "designed for beginners and professionals alike.",
+            "through interactive lessons and assessments.",
+            "taught by experienced instructors."
     };
+
     public static List<Course> fromOrg(List<Organization> organizations, ImageSeeder imageSeeder) {
 
         if (organizations == null || organizations.isEmpty()) {
@@ -106,11 +107,11 @@ public class CourseGenerator {
     }
 
     private static String getRandomDuration() {
-        String[] durations = { "20 hours", "40 hours", "60 hours", "80 hours", "100 hours" };
+        String[] durations = { "20", "40", "60", "80", "100" };
         return durations[(int) (Math.random() * durations.length)];
     }
 
-     private static String generateCourseTitle() {
+    private static String generateCourseTitle() {
         String level = COURSE_LEVELS[random.nextInt(COURSE_LEVELS.length)];
         String topic = COURSE_TOPICS[random.nextInt(COURSE_TOPICS.length)];
         return level + " " + topic;
@@ -123,7 +124,8 @@ public class CourseGenerator {
         return intro + " " + topic + " " + outro;
     }
 
-    public static List<Course> fromOrgAndInst(List<Organization> organizations, List<Instructor> instructors, ImageSeeder imageSeeder) {
+    public static List<Course> fromOrgAndInst(List<Organization> organizations, List<Instructor> instructors,
+            ImageSeeder imageSeeder) {
 
         if (organizations == null || organizations.isEmpty()) {
             throw new IllegalArgumentException("Orgs list cannot be null or empty");
@@ -138,7 +140,7 @@ public class CourseGenerator {
                     }
 
                     // AtomicInteger courseOrderCounter = new AtomicInteger(0);
-                    int courseCount =random.nextInt(8) + 3; // 3-10 courses per org
+                    int courseCount = random.nextInt(8) + 3; // 3-10 courses per org
                     List<Course> courses = new ArrayList<>();
 
                     for (int i = 0; i < courseCount; i++) {
@@ -153,10 +155,10 @@ public class CourseGenerator {
                                     .supply(Select.field(Course::getDurationHours),
                                             () -> getRandomDuration())
                                     .supply(Select.field(Course::getPrice),
-                                            () -> BigDecimal.valueOf(10 +random.nextDouble() * 90)
+                                            () -> BigDecimal.valueOf(10 + random.nextDouble() * 90)
                                                     .setScale(2, RoundingMode.HALF_UP))
                                     .supply(Select.field(Course::getRating),
-                                            () -> BigDecimal.valueOf(3 +random.nextDouble() * 2)
+                                            () -> BigDecimal.valueOf(3 + random.nextDouble() * 2)
                                                     .setScale(1, RoundingMode.HALF_UP))
                                     .supply(Select.field(Course::getImage), () -> imageSeeder.getRandomImage())
                                     .ignore(Select.field(Course::getCategories))
@@ -167,7 +169,8 @@ public class CourseGenerator {
 
                             // Assign instructors directly
                             if (instructors != null && !instructors.isEmpty()) {
-                                int numInstructors = 1 +random.nextInt(Math.min(3, instructors.size())); // 1-3 instructors
+                                int numInstructors = 1 + random.nextInt(Math.min(3, instructors.size())); // 1-3
+                                                                                                          // instructors
                                 for (int j = 0; j < numInstructors; j++) {
                                     Instructor instructor = instructors.get(random.nextInt(instructors.size()));
                                     course.addInstructor(instructor); // owning side creates join entity
