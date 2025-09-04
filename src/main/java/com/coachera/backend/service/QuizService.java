@@ -6,6 +6,9 @@ import com.coachera.backend.entity.Quiz;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.MaterialRepository;
 import com.coachera.backend.repository.QuizRepository;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +16,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 @Transactional
 public class QuizService {
 
     private final QuizRepository quizRepository;
     private final MaterialRepository materialRepository;
-
-    public QuizService(QuizRepository quizRepository, MaterialRepository materialRepository) {
-        this.quizRepository = quizRepository;
-        this.materialRepository = materialRepository;
-    }
 
     public QuizDTO createQuiz(Integer materialId, QuizDTO quizDTO) {
         Material material = materialRepository.findById(materialId)
