@@ -190,11 +190,6 @@ public class InstructorService {
 
         return courseRepository.findByInstructorId(instructor.getId(), pageable)
                 .map(CourseDTO::new);
-
-        // return instructor.getCourses().stream()
-        // .map(CourseInstructor::getCourse)
-        // .map(course -> new CourseDTO(course))
-        // .collect(Collectors.toList());
     }
 
     public List<InstructorDTO> getInstructorsByCourseId(Integer courseId) {

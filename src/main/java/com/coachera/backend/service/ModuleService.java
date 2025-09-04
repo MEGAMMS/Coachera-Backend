@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.ModuleDTO;
+import com.coachera.backend.dto.ModuleRequestDTO;
 import com.coachera.backend.dto.ModuleWithSectionsDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
@@ -35,22 +36,24 @@ public class ModuleService {
     private final UserRepository userRepository;
     private final InstructorRepository instructorRepository;
 
-    public ModuleDTO createModule(Integer courseId, ModuleDTO moduleDTO) {
+    public ModuleDTO createModule(Integer courseId, ModuleRequestDTO moduleDTO) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
-        validateOrderIndexUniqueness(courseId, moduleDTO.getOrderIndex());
+        // validateOrderIndexUniqueness(courseId, moduleDTO.getOrderIndex());
         Module module = new Module();
+
+        module.setTitle(moduleDTO.getTitle());
         module.setCourse(course);
-        module.setOrderIndex(moduleDTO.getOrderIndex());
+        module.setOrderIndex(0);
 
         course.addModule(module);
         courseRepository.save(course);
 
-        Module savedModule = moduleRepository.save(module);
-        return new ModuleDTO(savedModule);
+        // Module savedModule = moduleRepository.save(module);
+        return new ModuleDTO(module);
     }
 
-    public ModuleDTO updateModule(Integer moduleId, ModuleDTO moduleDTO,User user) {
+    public ModuleDTO updateModule(Integer moduleId, ModuleRequestDTO moduleDTO,User user) {
         Module module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Module not found with id: " + moduleId));
 
@@ -69,6 +72,7 @@ public class ModuleService {
             });
         }
 
+        module.setTitle(moduleDTO.getTitle());
         Module updatedModule = moduleRepository.save(module);
         return new ModuleDTO(updatedModule);
     }
@@ -95,7 +99,7 @@ public class ModuleService {
 
         if (!isInstructorOfCourse(user, module.getCourse())) {
             throw new IllegalArgumentException("Instructor is not assigned to this course");
-        }
+        } 
 
         moduleRepository.delete(module);
     }
@@ -107,6 +111,7 @@ public class ModuleService {
         }
     }
 
+    // Helper method to check if the instructor is assigned to course 
     private boolean isInstructorOfCourse(User user, Course course) {
         if (!userRepository.findById(user.getId()).isPresent()) {
             throw new IllegalArgumentException("User not found");
