@@ -38,36 +38,75 @@
         </div>
     </div>
 
-    <!-- Course Curriculum Section (Accordion) -->
+    <!-- Course Curriculum Section (Nested Accordion) -->
     <div>
         <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Course Curriculum</h2>
         <div class="space-y-2">
+            <!-- Level 1: Modules -->
             <div th:each="module : ${modules}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
-                <!-- Module Header -->
-                <button class="accordion-header flex justify-between items-center w-full p-4 text-left font-semibold">
+                <button class="accordion-header flex justify-between items-center w-full p-4 text-left font-semibold text-lg">
                     <span th:text="${module.title}">Module Title</span>
                     <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
                 </button>
-                <!-- Module Content (Sections and Materials) -->
-                <div class="accordion-content hidden p-4 border-t border-gray-200 dark:border-gray-700">
-                    <div th:each="section : ${module.sections}" class="mb-4 last:mb-0">
-                        <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2" th:text="${section.title}">Section Title</h4>
-                        <ul class="space-y-2 list-disc list-inside">
-                            <li th:each="material : ${section.materials}" class="flex items-center text-gray-600 dark:text-gray-400 text-sm">
-                                <span th:switch="${material.type}" class="mr-2">
-                                    <i th:case="'VIDEO'" data-lucide="video" class="w-4 h-4 text-cyan-500"></i>
-                                    <i th:case="'ARTICLE'" data-lucide="file-text" class="w-4 h-4 text-cyan-500"></i>
-                                    <i th:case="'QUIZ'" data-lucide="help-circle" class="w-4 h-4 text-cyan-500"></i>
-                                </span>
-                                <span th:text="${material.title}">Material Title</span>
-                            </li>
-                        </ul>
+                <div class="accordion-content hidden px-4 pb-2 border-t border-gray-200 dark:border-gray-700">
+                    <!-- Level 2: Sections -->
+                    <div th:each="section : ${module.sections}" class="py-2">
+                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                           <button class="accordion-header flex justify-between items-center w-full p-3 text-left font-medium">
+                                <span th:text="${section.title}">Section Title</span>
+                                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+                            </button>
+                            <div class="accordion-content hidden px-3 pb-2 border-t border-gray-200 dark:border-gray-600">
+                                <!-- Level 3: Materials -->
+                                <div th:each="material : ${section.materials}" class="py-2">
+                                    <div class="bg-white dark:bg-gray-800 rounded-md border dark:border-gray-600">
+                                        <button class="accordion-header flex justify-between items-center w-full p-2 text-left text-sm font-medium">
+                                            <span class="flex items-center">
+                                                <span th:switch="${material.type}" class="mr-2">
+                                                    <i th:case="'VIDEO'" data-lucide="video" class="w-4 h-4 text-cyan-500"></i>
+                                                    <i th:case="'ARTICLE'" data-lucide="file-text" class="w-4 h-4 text-cyan-500"></i>
+                                                    <i th:case="'QUIZ'" data-lucide="help-circle" class="w-4 h-4 text-cyan-500"></i>
+                                                </span>
+                                                <span th:text="${material.title}">Material Title</span>
+                                            </span>
+                                            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+                                        </button>
+                                        <div class="accordion-content hidden p-3 border-t border-gray-200 dark:border-gray-700 text-xs">
+                                            <!-- Material Details -->
+                                            <div th:if="${material.article != null}">
+                                                <h5 class="font-bold mb-1">Article Content:</h5>
+                                                <p class="text-gray-600 dark:text-gray-400 whitespace-pre-wrap" th:text="${material.article}"></p>
+                                            </div>
+                                            <div th:if="${material.videoUrl != null}">
+                                                <h5 class="font-bold mb-1">Video Link:</h5>
+                                                <a th:href="${material.videoUrl}" target="_blank" class="text-blue-500 hover:underline" th:text="${material.videoUrl}"></a>
+                                            </div>
+                                            <!-- Quiz Details -->
+                                            <div th:if="${material.quiz != null}">
+                                                <h5 class="font-bold mb-2">Quiz Questions:</h5>
+                                                <ul class="space-y-3">
+                                                    <li th:each="question : ${material.quiz.questions}" class="p-2 bg-gray-50 dark:bg-gray-700/50 rounded">
+                                                        <p class="font-semibold" th:text="${question.content}"></p>
+                                                        <ul class="list-disc list-inside mt-1 pl-2 text-gray-600 dark:text-gray-400">
+                                                            <li th:if="${question.answer1 != null}" th:text="${question.answer1}"></li>
+                                                            <li th:if="${question.answer2 != null}" th:text="${question.answer2}"></li>
+                                                            <li th:if="${question.answer3 != null}" th:text="${question.answer3}"></li>
+                                                            <li th:if="${question.answer4 != null}" th:text="${question.answer4}"></li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Action Buttons -->
     <div class="mt-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex items-center justify-end space-x-4">
         <div th:if="${!course.published}">
@@ -85,12 +124,12 @@
 
 <th:block layout:fragment="scripts">
     <script>
-        // Simple Accordion Logic
+        // Simple Accordion Logic works for nested accordions as well
         document.querySelectorAll('.accordion-header').forEach(button => {
             button.addEventListener('click', () => {
                 const content = button.nextElementSibling;
                 const icon = button.querySelector('i[data-lucide]');
-                
+
                 content.classList.toggle('hidden');
                 icon.classList.toggle('rotate-180');
             });
