@@ -153,4 +153,18 @@ public class CourseService {
         return courseRepository.findAll(pageable)
                 .map(CourseDTO::new);
     }
+
+    public void publishCourse(Integer id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        course.setIsPublished(true); // Assumes your Course entity has a setIsPublished method
+        courseRepository.save(course);
+    }
+
+    public void unpublishCourse(Integer id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        course.setIsPublished(false); // Assumes your Course entity has a setIsPublished method
+        courseRepository.save(course);
+    }
 }

@@ -222,4 +222,11 @@ public class InstructorService {
                 .count();
     }
 
+    public List<InstructorDTO> getInstructorsByIds(List<Integer> ids) {
+        List<Instructor> instructors = instructorRepository.findAllById(ids);
+        return instructors.stream()
+                .map(InstructorDTO::new) // Assumes InstructorDTO has a constructor that accepts an Instructor entity
+                .collect(Collectors.toList());
+    }
+
 }
