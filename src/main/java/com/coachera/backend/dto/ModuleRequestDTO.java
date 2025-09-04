@@ -2,8 +2,6 @@ package com.coachera.backend.dto;
 
 import java.time.LocalDateTime;
 
-import com.coachera.backend.entity.Module;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ModuleRequestDTO extends ModuleDTO {
@@ -27,7 +25,7 @@ public class ModuleRequestDTO extends ModuleDTO {
 
     @Override
     @JsonIgnore
-    public Integer getCourseId()  {
+    public Integer getCourseId() {
         return super.getCourseId();
     }
 }
