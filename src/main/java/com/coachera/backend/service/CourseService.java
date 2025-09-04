@@ -144,8 +144,13 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
-    public Page<CourseDTO> getCourses(Pageable pageable) {
+    public Page<CourseDTO> getCoursesPublished(Pageable pageable) {
         return courseRepository.findByIsPublishedTrue(pageable)
+                .map(CourseDTO::new);
+    }
+
+    public Page<CourseDTO> getCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable)
                 .map(CourseDTO::new);
     }
 }
