@@ -1,8 +1,10 @@
 package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
+import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.OrganizationDTO;
 import com.coachera.backend.dto.OrganizationRequestDTO;
+import com.coachera.backend.dto.pagination.PaginatedResponse;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.OrganizationService;
@@ -25,7 +27,7 @@ public class OrganizationController {
                         @Valid @RequestBody OrganizationRequestDTO requestDTO,
                         @AuthenticationPrincipal User user) {
 
-                OrganizationDTO createdOrg = organizationService.createOrganization(requestDTO,user);
+                OrganizationDTO createdOrg = organizationService.createOrganization(requestDTO, user);
                 return ApiResponse.created("Organization was created", createdOrg);
 
         }
@@ -80,5 +82,13 @@ public class OrganizationController {
                 organizationService.deleteOrganization(user);
                 return ApiResponse.noContentResponse();
 
+        }
+
+        @GetMapping("/courses")
+        public ApiResponse<PaginatedResponse<CourseDTO>> getCoursesByOrganization(
+                        @AuthenticationPrincipal User user,
+                        @Valid PaginationRequest paginationRequest) {
+                return ApiResponse.paginated(
+                                organizationService.getMyCourses(user, paginationRequest.toPageable()));
         }
 }
