@@ -31,6 +31,11 @@ public class CourseController {
     private final CourseRecommendationService courseRecommendationService;
 
     @GetMapping
+    public ApiResponse<PaginatedResponse<CourseDTO>> getAllCoursesPublished(@Valid PaginationRequest paginationRequest) {
+        return ApiResponse.paginated(courseService.getCoursesPublished(paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/all")
     public ApiResponse<PaginatedResponse<CourseDTO>> getAllCourses(@Valid PaginationRequest paginationRequest) {
         return ApiResponse.paginated(courseService.getCourses(paginationRequest.toPageable()));
     }
