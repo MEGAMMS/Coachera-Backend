@@ -18,7 +18,6 @@ import com.coachera.backend.repository.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,14 +40,14 @@ public class CourseService {
 
     private final ImageService imageService;
 
-   public CourseDTO createCourse(CourseCreationDTO courseDTO, User user) {
+    public CourseDTO createCourse(CourseCreationDTO courseDTO, User user) {
         Organization org = organizationRepository.findByUserId(user.getId());
         if (courseRepository.existsByTitleAndOrgId(courseDTO.getTitle(), org.getId())) {
             throw new ConflictException("Course with this title already exists in the organization");
         }
 
         System.out.println("------------------org------------------");
-        
+
         Course course = new Course();
         course.setTitle(courseDTO.getTitle());
         System.out.println("------------------title------------------");
@@ -60,31 +59,33 @@ public class CourseService {
         System.out.println("------------------price------------------");
         course.setRating(BigDecimal.valueOf(0));
         System.out.println("------------------rating------------------");
-        
-        if(courseDTO.getImageUrl()!=null){
+
+        if (courseDTO.getImageUrl() != null) {
             Image image = imageService.getImageFromUrl(courseDTO.getImageUrl());
             course.setImage(image);
         }
 
-        
         if (courseDTO.getCategories() != null) {
             Set<Category> categoryEntities = courseDTO.getCategories().stream()
-                    .map(catName -> {
-                        Category category = new Category();
-                        category.setName(catName);
-                        return category;
-                    })
+                    .map(catName -> categoryRepository.findByName(catName) // check if it exists
+                            .orElseGet(() -> {
+                                Category newCategory = new Category();
+                                newCategory.setName(catName);
+                                return categoryRepository.save(newCategory);
+                            }))
                     .collect(Collectors.toSet());
-            List<Category> savedCategories = categoryRepository.saveAll(categoryEntities);
-            course.addCategories(savedCategories);
+
+            course.addCategories(categoryEntities);
         }
+
         System.out.println("------------------cat------------------");
 
         // if instructors is a list of user IDs, you must fetch them
         if (courseDTO.getInstructors() != null) {
             courseDTO.getInstructors().forEach(instructorId -> {
                 Instructor instructor = instructorRepository.findById(instructorId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Instructor not found with ID: " + instructorId));
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Instructor not found with ID: " + instructorId));
                 course.addInstructor(instructor);
             });
         }
@@ -95,13 +96,12 @@ public class CourseService {
         course.setOrg(org);
 
         Course savedCourse = courseRepository.save(course);
-        
-        CourseDTO payload =new CourseDTO(savedCourse);
+
+        CourseDTO payload = new CourseDTO(savedCourse);
 
         // System.out.println(payload);
         return payload;
     }
-
 
     public CourseWithModulesDTO getCourseById(Integer id) {
         Course course = courseRepository.findById(id)

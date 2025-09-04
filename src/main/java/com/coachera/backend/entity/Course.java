@@ -2,7 +2,6 @@ package com.coachera.backend.entity;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -91,7 +90,7 @@ public class Course extends Auditable {
         category.getCourses().add(courseCategory);
     }
     
-    public void addCategories(List<Category> categories){
+    public void addCategories(Set<Category> categories){
         for (Category Category : categories) {
             this.addCategory(Category);
         }
