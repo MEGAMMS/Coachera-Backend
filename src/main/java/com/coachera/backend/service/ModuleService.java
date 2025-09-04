@@ -107,6 +107,7 @@ public class ModuleService {
         }
     }
 
+    // Helper method to check if the instructor is assigned to course 
     private boolean isInstructorOfCourse(User user, Course course) {
         if (!userRepository.findById(user.getId()).isPresent()) {
             throw new IllegalArgumentException("User not found");

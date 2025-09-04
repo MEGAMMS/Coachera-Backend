@@ -137,15 +137,13 @@ public class Course extends Auditable {
         }
     }
 
-
-
-
     public boolean getIsPublished() {
         return isPublished;
     }
     public void setIsPublished(boolean isPublished) {
         this.isPublished = isPublished;
     }
+
     public void removeInstructor(Instructor instructor) {
         if (instructors == null || instructors.isEmpty()) {
             return;
