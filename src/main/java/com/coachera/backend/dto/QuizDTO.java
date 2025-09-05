@@ -24,7 +24,7 @@ public class QuizDTO extends AuditableDTO {
     private Integer materialId;
 
     @Schema(description = "List of questions in the quiz")
-    private Set<QuestionResponseDTO> questions;
+    private Set<QuestionRequestDTO> questions;
 
     public QuizDTO(Quiz quiz)
     {
@@ -32,7 +32,7 @@ public class QuizDTO extends AuditableDTO {
         this.materialId = quiz.getMaterial().getId();
         if (quiz.getQuestions() != null) {
             this.questions = quiz.getQuestions().stream()
-                .map(QuestionResponseDTO::new)
+                .map(QuestionRequestDTO::new)
                 .collect(Collectors.toSet());
         }
         this.setCreatedAt(quiz.getCreatedAt());

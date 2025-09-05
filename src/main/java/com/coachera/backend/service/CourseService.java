@@ -15,6 +15,7 @@ import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.CategoryRepository;
 import com.coachera.backend.repository.CertificateRepository;
 import com.coachera.backend.repository.CourseRepository;
+import com.coachera.backend.repository.EnrollmentRepository;
 import com.coachera.backend.repository.InstructorRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
@@ -44,6 +45,7 @@ public class CourseService {
     private final CategoryRepository categoryRepository;
     private final CertificateRepository certificateRepository;
     private final UserRepository userRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     private final ModelMapper modelMapper;
 
@@ -146,18 +148,28 @@ public class CourseService {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        if(!course.getOrg().getId().equals(org.getId())){
-             throw new AccessDeniedException("You are not allowed to delete this course");
-        }
-        
-        // Break relation with certificates
-        List<Certificate> certificates = certificateRepository.findByCourseId(id);
-        for (Certificate certificate : certificates) {
-            certificate.setCourse(null);
-            certificateRepository.save(certificate);
+        if (!course.getOrg().getId().equals(org.getId())) {
+            throw new AccessDeniedException("You are not allowed to delete this course");
         }
 
-        courseRepository.deleteById(id);
+        if (enrollmentRepository.existsByCourse(course)) {
+            Organization coachera = organizationRepository.findById(1)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Coachera not found with id"));
+            course.setOrg(coachera);
+            course.setIsPublished(false);
+        } else {
+
+            // Break relation with certificates
+            List<Certificate> certificates = certificateRepository.findByCourseId(id);
+            for (Certificate certificate : certificates) {
+                certificate.setCourse(null);
+                certificateRepository.save(certificate);
+            }
+
+            courseRepository.deleteById(id);
+        }
+
     }
 
     public Page<CourseDTO> getCoursesPublished(Pageable pageable) {
@@ -183,6 +195,7 @@ public class CourseService {
         course.setIsPublished(false); // Assumes your Course entity has a setIsPublished method
         courseRepository.save(course);
     }
+
     // Helper method
     private Organization validateOrg(User user) {
         // Check if user exists

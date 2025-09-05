@@ -34,7 +34,7 @@ public class Organization extends Auditable {
     @Column(nullable = false)
     private String orgName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String orgDescription;
 
     // Helper method to maintain bidirectional relationship
