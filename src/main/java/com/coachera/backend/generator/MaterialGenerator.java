@@ -102,10 +102,12 @@ public class MaterialGenerator {
             .supply(Select.field(Material::getOrderIndex), orderCounter::getAndIncrement)
             .supply(Select.field(Material::getType), () -> type)
             .ignore(Select.field(Material::getQuiz))
-            .ignore(Select.field(Material::getVideo))
+            .ignore(Select.field(Material::getVideoUrl))
             .create();
 
         // Explicitly set content fields based on type
+        material.setVideoUrl(type == MaterialType.VIDEO ? 
+            VIDEO_URLS[random.nextInt(VIDEO_URLS.length)] : null);
         material.setArticle(type == MaterialType.ARTICLE ? 
             ARTICLE_CONTENTS[random.nextInt(ARTICLE_CONTENTS.length)] : null);
 

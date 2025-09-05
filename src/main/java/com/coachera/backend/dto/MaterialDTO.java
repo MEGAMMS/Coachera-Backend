@@ -3,7 +3,6 @@ package com.coachera.backend.dto;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.entity.Quiz;
-import com.coachera.backend.entity.Video;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -49,10 +48,7 @@ public class MaterialDTO extends AuditableDTO {
         this.type = material.getType();
 
         // add video URL if exists
-        Video video = material.getVideo();
-        if (video != null) {
-            this.videoUrl = video.getUrl();
-        }
+        this.videoUrl = material.getVideoUrl();
         
         // add article (can be null)
         this.article = material.getArticle();

@@ -35,9 +35,8 @@ public class Material extends Auditable {
     @OneToOne(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     private Quiz quiz;
 
-    @OneToOne
-    @JoinColumn
-    private Video video;
+    @Column(name = "video_url")
+    private String videoUrl;
 
     @Column(columnDefinition = "TEXT",nullable = true)
     private String article;
