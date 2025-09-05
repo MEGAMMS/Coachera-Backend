@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.LearningPathDTO;
+import com.coachera.backend.dto.LearningPathWithCoursersDTO;
 import com.coachera.backend.entity.*;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.LearningPathRepository;
@@ -161,5 +162,11 @@ public class LearningPathService {
                 .map(LearningPathCourse::getCourse)
                 .map(course -> new CourseDTO(course))
                 .collect(Collectors.toList());
+    }
+
+    public LearningPathWithCoursersDTO getLearningPathWithCoursesById(Integer id) {
+        LearningPath learningPath = learningPathRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("LearningPath not found with id: " + id));
+        return new LearningPathWithCoursersDTO(learningPath);
     }
 }
