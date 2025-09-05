@@ -4,7 +4,6 @@ import com.coachera.backend.dto.QuizDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
-import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ResourceNotFoundException;
@@ -32,6 +31,8 @@ public class QuizService {
     private final UserRepository userRepository;
     private final InstructorRepository instructorRepository;
 
+    private final QuestionService questionService;
+
     public QuizDTO createQuiz(QuizDTO quizDTO, User user) {
         Material material = materialRepository.findById(quizDTO.getMaterialId())
                 .orElseThrow(
@@ -43,6 +44,11 @@ public class QuizService {
 
         Quiz quiz = new Quiz();
         quiz.setMaterial(material);
+
+        if (quizDTO.getQuestions() != null) {
+            quizDTO.getQuestions()
+                    .forEach(questionDTO -> questionService.createQuestion(quiz.getId(), questionDTO, user));
+        }
 
         Quiz savedQuiz = quizRepository.save(quiz);
         return new QuizDTO(savedQuiz);

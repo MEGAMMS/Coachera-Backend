@@ -36,7 +36,8 @@ public class MaterialService {
     private final UserRepository userRepository;
     private final InstructorRepository instructorRepository;
     // private final OrganizationRepository organizationRepository;
-
+    
+    // private final QuizService quizService;
     private final VideoService videoService;
 
     public MaterialDTO createMaterial(MaterialDTO materialDTO, User user) {
@@ -87,6 +88,18 @@ public class MaterialService {
 
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
+        material.setType(materialDTO.getType());
+
+        // if (material.getType().equals(MaterialType.VIDEO)) {
+
+        //     Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
+        //     material.setVideo(video);
+
+        // } else 
+        if (material.getType().equals(MaterialType.ARTICLE)) {
+
+            material.setArticle(materialDTO.getArticle());
+        }
 
         Material updatedMaterial = materialRepository.save(material);
         return new MaterialDTO(updatedMaterial);

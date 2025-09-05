@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.QuestionDTO;
+import com.coachera.backend.dto.QuestionRequestDTO;
 import com.coachera.backend.dto.QuestionResponseDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
@@ -33,7 +34,7 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final InstructorRepository instructorRepository;
 
-    public QuestionDTO createQuestion(Integer quizId, QuestionDTO questionDTO, User user) {
+    public QuestionDTO createQuestion(Integer quizId, QuestionRequestDTO questionDTO, User user) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with id: " + quizId));
 
@@ -56,7 +57,7 @@ public class QuestionService {
         return new QuestionDTO(savedQuestion);
     }
 
-    public QuestionDTO updateQuestion(Integer questionId, QuestionDTO questionDTO, User user) {
+    public QuestionDTO updateQuestion(Integer questionId, QuestionRequestDTO questionDTO, User user) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
 
@@ -104,7 +105,7 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
-    private void validateQuestion(QuestionDTO questionDTO) {
+    private void validateQuestion(QuestionRequestDTO questionDTO) {
 
         if (questionDTO.getContent() == null || questionDTO.getContent().trim().isEmpty()) {
             throw new InvalidQuestionException("Question content cannot be empty");
