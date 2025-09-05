@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #f3f4f6; /* Light gray background */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-xl">
+        <div class="text-center">
+            <img th:src="@{/images/logo.png}" alt="Logo" class="w-16 h-16 mx-auto mb-4">
+            <h2 class="text-3xl font-bold text-gray-900">Admin Panel Login</h2>
+            <p class="mt-2 text-sm text-gray-600">Please sign in to access the dashboard.</p>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${param.error}" class="p-4 text-sm text-red-800 bg-red-100 rounded-lg">
+            Invalid username or password. Please try again.
+        </div>
+
+        <!-- Logout Message -->
+        <div th:if="${param.logout}" class="p-4 text-sm text-green-800 bg-green-100 rounded-lg">
+            You have been logged out successfully.
+        </div>
+
+        <form th:action="@{/admin/login}" method="post" class="mt-8 space-y-6">
+            <div class="relative">
+                <label for="username" class="sr-only">Email address</label>
+                <input id="username" name="username" type="email" autocomplete="email" required
+                       class="w-full px-4 py-3 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                       placeholder="Email address">
+            </div>
+            <div class="relative">
+                <label for="password" class="sr-only">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required
+                       class="w-full px-4 py-3 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                       placeholder="Password">
+            </div>
+            
+            <!-- CSRF Token will be automatically included by Thymeleaf -->
+
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
+                    Sign in
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

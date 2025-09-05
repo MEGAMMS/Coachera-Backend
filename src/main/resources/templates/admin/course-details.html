@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout}">
+<head>
+    <title th:text="${course.title}">Course Details</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <!-- Page Header with Back Button -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200" th:text="${course.title}">Course Title</h1>
+            <p class="text-gray-600 dark:text-gray-400" th:text="${course.description}">Course short description.</p>
+        </div>
+        <a th:href="@{/admin/courses}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
+            &larr; Back to Courses
+        </a>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${successMessage}" class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+        <span class="font-medium">Success!</span> <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+        <span class="font-medium">Error!</span> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Instructors Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Instructors</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div th:each="instructor : ${instructors}" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white" th:text="${instructor.name}">Instructor Name</h3>
+                <p class="text-gray-600 dark:text-gray-400 mt-2 text-sm" th:text="${instructor.bio}">Instructor biography.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Curriculum Section (Nested Accordion) -->
+    <div>
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Course Curriculum</h2>
+        <div class="space-y-2">
+            <!-- Level 1: Modules -->
+            <div th:each="module : ${modules}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <button class="accordion-header flex justify-between items-center w-full p-4 text-left font-semibold text-lg">
+                    <span th:text="${module.title}">Module Title</span>
+                    <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+                </button>
+                <div class="accordion-content hidden px-4 pb-2 border-t border-gray-200 dark:border-gray-700">
+                    <!-- Level 2: Sections -->
+                    <div th:each="section : ${module.sections}" class="py-2">
+                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                           <button class="accordion-header flex justify-between items-center w-full p-3 text-left font-medium">
+                                <span th:text="${section.title}">Section Title</span>
+                                <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+                            </button>
+                            <div class="accordion-content hidden px-3 pb-2 border-t border-gray-200 dark:border-gray-600">
+                                <!-- Level 3: Materials -->
+                                <div th:each="material : ${section.materials}" class="py-2">
+                                    <div class="bg-white dark:bg-gray-800 rounded-md border dark:border-gray-600">
+                                        <button class="accordion-header flex justify-between items-center w-full p-2 text-left text-sm font-medium">
+                                            <span class="flex items-center">
+                                                <span th:switch="${material.type}" class="mr-2">
+                                                    <i th:case="'VIDEO'" data-lucide="video" class="w-4 h-4 text-cyan-500"></i>
+                                                    <i th:case="'ARTICLE'" data-lucide="file-text" class="w-4 h-4 text-cyan-500"></i>
+                                                    <i th:case="'QUIZ'" data-lucide="help-circle" class="w-4 h-4 text-cyan-500"></i>
+                                                </span>
+                                                <span th:text="${material.title}">Material Title</span>
+                                            </span>
+                                            <i data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+                                        </button>
+                                        <div class="accordion-content hidden p-3 border-t border-gray-200 dark:border-gray-700 text-xs">
+                                            <!-- Material Details -->
+                                            <div th:if="${material.article != null}">
+                                                <h5 class="font-bold mb-1">Article Content:</h5>
+                                                <p class="text-gray-600 dark:text-gray-400 whitespace-pre-wrap" th:text="${material.article}"></p>
+                                            </div>
+                                            <div th:if="${material.videoUrl != null}">
+                                                <h5 class="font-bold mb-1">Video Link:</h5>
+                                                <a th:href="${material.videoUrl}" target="_blank" class="text-blue-500 hover:underline" th:text="${material.videoUrl}"></a>
+                                            </div>
+                                            <!-- Quiz Details -->
+                                            <div th:if="${material.quiz != null}">
+                                                <h5 class="font-bold mb-2">Quiz Questions:</h5>
+                                                <ul class="space-y-3">
+                                                    <li th:each="question : ${material.quiz.questions}" class="p-2 bg-gray-50 dark:bg-gray-700/50 rounded">
+                                                        <p class="font-semibold" th:text="${question.content}"></p>
+                                                        <ul class="list-disc list-inside mt-1 pl-2 text-gray-600 dark:text-gray-400">
+                                                            <li th:if="${question.answer1 != null}" th:text="${question.answer1}"></li>
+                                                            <li th:if="${question.answer2 != null}" th:text="${question.answer2}"></li>
+                                                            <li th:if="${question.answer3 != null}" th:text="${question.answer3}"></li>
+                                                            <li th:if="${question.answer4 != null}" th:text="${question.answer4}"></li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex items-center justify-end space-x-4">
+        <div th:if="${!course.published}">
+            <form th:action="@{/admin/courses/{id}/publish(id=${course.id})}" method="post">
+                <button type="submit" class="px-6 py-2 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700">Publish Course</button>
+            </form>
+        </div>
+        <div th:if="${course.published}">
+             <form th:action="@{/admin/courses/{id}/unpublish(id=${course.id})}" method="post">
+                <button type="submit" class="px-6 py-2 font-semibold text-white bg-red-600 rounded-md hover:bg-red-700">Unpublish Course</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        // Simple Accordion Logic works for nested accordions as well
+        document.querySelectorAll('.accordion-header').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('i[data-lucide]');
+
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

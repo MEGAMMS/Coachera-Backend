@@ -85,14 +85,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		 <!-- Hot reloading and live reload for development -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-
 		<!-- Model mapping library for DTO and entity conversions -->
 		<dependency>
 			<groupId>org.modelmapper</groupId>

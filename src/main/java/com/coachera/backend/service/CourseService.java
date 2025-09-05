@@ -160,11 +160,29 @@ public class CourseService {
         courseRepository.deleteById(id);
     }
 
-    public Page<CourseDTO> getCourses(Pageable pageable) {
+    public Page<CourseDTO> getCoursesPublished(Pageable pageable) {
         return courseRepository.findByIsPublishedTrue(pageable)
                 .map(CourseDTO::new);
     }
 
+    public Page<CourseDTO> getCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable)
+                .map(CourseDTO::new);
+    }
+
+    public void publishCourse(Integer id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        course.setIsPublished(true); // Assumes your Course entity has a setIsPublished method
+        courseRepository.save(course);
+    }
+
+    public void unpublishCourse(Integer id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        course.setIsPublished(false); // Assumes your Course entity has a setIsPublished method
+        courseRepository.save(course);
+    }
     // Helper method
     private Organization validateOrg(User user) {
         // Check if user exists
