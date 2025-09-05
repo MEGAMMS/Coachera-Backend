@@ -13,20 +13,22 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:" + uploadDir + "/")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-
-        registry.addResourceHandler("/videos/**")
-                .addResourceLocations("file:" + uploadDir + "/")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-
+        // Static resources (CSS, JS, images from classpath)
         registry
-            .addResourceHandler("/css/**", "/js/**") 
-            .addResourceLocations("classpath:/static/css/", "classpath:/static/js/"); 
+            .addResourceHandler("/css/**", "/js/**", "/images/**") 
+            .addResourceLocations("classpath:/static/css/", "classpath:/static/js/", "classpath:/static/images/");
+
+        // Uploaded files (user uploaded images and videos)
+        registry.addResourceHandler("/uploads/images/**")
+                .addResourceLocations("file:" + uploadDir + "/")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+
+        registry.addResourceHandler("/uploads/videos/**")
+                .addResourceLocations("file:" + uploadDir + "/")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
     }
 }
