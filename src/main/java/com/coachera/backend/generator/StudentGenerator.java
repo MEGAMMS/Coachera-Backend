@@ -2,6 +2,7 @@ package com.coachera.backend.generator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,6 +16,16 @@ import com.coachera.backend.entity.User;
 
 public class StudentGenerator {
 
+    private static final List<String> FIRST_NAMES = Arrays.asList(
+            "Emma", "Liam", "Olivia", "Noah", "Sophia",
+            "Jackson", "Ava", "Lucas", "Isabella", "Mason",
+            "Mia", "Ethan", "Amelia", "James", "Harper", "Mg3mz", "Tareq", "3bd");
+
+    private static final List<String> LAST_NAMES = Arrays.asList(
+            "Smith", "Johnson", "Williams", "Brown", "Jones",
+            "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+            "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Wahbeh", "5oam");
+
     public static List<Student> fromUsers(List<User> users) {
         return users.stream()
                 .map(user -> {
@@ -22,8 +33,10 @@ public class StudentGenerator {
                         Student student = Instancio.of(Student.class)
                                 .ignore(Select.field(Student::getId))
                                 .supply(Select.field(Student::getUser), () -> user)
-                                .supply(Select.field(Student::getFirstName), () -> "Student")
-                                .supply(Select.field(Student::getLastName), () -> "User" + user.getId())
+                                .supply(Select.field(Student::getFirstName),
+                                        () -> FIRST_NAMES.get(ThreadLocalRandom.current().nextInt(FIRST_NAMES.size())))
+                                .supply(Select.field(Student::getLastName),
+                                        () -> LAST_NAMES.get(ThreadLocalRandom.current().nextInt(LAST_NAMES.size())))
                                 .supply(Select.field(Student::getBirthDate), () -> LocalDate.now().minusYears(20))
                                 .supply(Select.field(Student::getGender), () -> "male")
                                 .supply(Select.field(Student::getEducation), () -> "Bachelor")

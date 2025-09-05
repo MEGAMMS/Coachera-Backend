@@ -39,6 +39,9 @@ public class CertificateDTO extends AuditableDTO {
     @Schema(required = true, example = "https://coachera.com/certificates/123", description = "URL of the certificate")
     private String certificateUrl;
 
+    @Schema(example = "https://coachera.com/certificates/123/preview.png", description = "Preview image URL of the certificate")
+    private String certificatePreviewUrl;
+
     public CertificateDTO(Certificate certificate) {
         this.id = certificate.getId();
         this.courseId = certificate.getCourse().getId();
@@ -49,6 +52,9 @@ public class CertificateDTO extends AuditableDTO {
         this.validityYears = certificate.getValidityYears();
         this.issuedAt = certificate.getIssuedAt();
         this.certificateUrl = certificate.getCertificateUrl();
+
+        this.certificatePreviewUrl = certificate.getCertificatePreviewUrl();
+        
         this.setCreatedAt(certificate.getCreatedAt());
         this.setUpdatedAt(certificate.getUpdatedAt());
     }
