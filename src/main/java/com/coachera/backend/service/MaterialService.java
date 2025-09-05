@@ -7,7 +7,6 @@ import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.entity.Video;
-import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.exception.DuplicateOrderIndexException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.InstructorRepository;
@@ -56,23 +55,17 @@ public class MaterialService {
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
         material.setType(materialDTO.getType());
-        material.setVideoUrl(materialDTO.getVideoUrl());
-        material.setArticle(materialDTO.getArticle());
-
-        // if (material.getType().equals(MaterialType.VIDEO)) {
-
-        //     Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
-        //     material.setVideo(video);
-
-        // } else 
-        if (material.getType().equals(MaterialType.ARTICLE)) {
-
-            material.setArticle(materialDTO.getArticle());
+        
+        // Set video if videoUrl is provided
+        if (materialDTO.getVideoUrl() != null && !materialDTO.getVideoUrl().isEmpty()) {
+            Video video = videoService.createVideoFromUrl(materialDTO.getVideoUrl());
+            material.setVideo(video);
         }
+        
+        material.setArticle(materialDTO.getArticle());
 
         section.addMaterial(material);
         sectionRepository.save(section);
-        // Material savedMaterial = materialRepository.save(material);
         return new MaterialDTO(material);
     }
 
@@ -90,7 +83,15 @@ public class MaterialService {
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
         material.setType(materialDTO.getType());
-        material.setVideoUrl(materialDTO.getVideoUrl());
+        
+        // Set video if videoUrl is provided
+        if (materialDTO.getVideoUrl() != null && !materialDTO.getVideoUrl().isEmpty()) {
+            Video video = videoService.createVideoFromUrl(materialDTO.getVideoUrl());
+            material.setVideo(video);
+        } else {
+            material.setVideo(null);
+        }
+        
         material.setArticle(materialDTO.getArticle());
 
         Material updatedMaterial = materialRepository.save(material);
@@ -158,3 +159,4 @@ public class MaterialService {
         return course.getInstructors().stream()
                 .anyMatch(ci -> ci.getInstructor().equals(instructor));
     }
+}

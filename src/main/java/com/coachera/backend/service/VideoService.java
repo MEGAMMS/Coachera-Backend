@@ -32,6 +32,15 @@ public class VideoService {
                 .orElseThrow(() -> new IllegalArgumentException("Video not found"));
     }
 
+    public Video createVideoFromUrl(String videoUrl) {
+        Video video = new Video();
+        video.setExternalUrl(videoUrl);
+        video.setUuidName(UUID.randomUUID().toString()); // Still need a unique identifier
+        videoRepository.save(video);
+        
+        return video;
+    }
+
     public Video getVideoById(Long videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Video not found with id: " + videoId));
