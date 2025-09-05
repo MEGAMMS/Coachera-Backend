@@ -43,6 +43,7 @@ public class CertificateGenerator {
                         .supply(Select.field(Certificate::getIssuedAt), () -> baseIssueDate)
                         .supply(Select.field(Certificate::getCertificateUrl), () -> 
                             urlPrefix + course.getId() + "-" + System.currentTimeMillis())
+                        .supply(Select.field(Certificate::getCertificatePreviewUrl),()->  urlPrefix + course.getId() + "-" + System.currentTimeMillis()+"/preview.png")
                         .supply(Select.field(Certificate::getCertificateNumber), () -> 
                             certNumberPrefix + course.getId() + "-" + (int)(Math.random() * 10000))
                         .supply(Select.field(Certificate::getValidityYears), () -> defaultValidityYears)

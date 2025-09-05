@@ -25,10 +25,9 @@ public class SectionController {
     @PreAuthorize("hasRole('ORGANIZATION') or hasRole('INSTRUCTOR')")
     @PostMapping
     public ApiResponse<SectionDTO> createSection(
-            @PathVariable Integer moduleId,
             @Valid @RequestBody SectionDTO sectionDTO,
             @AuthenticationPrincipal User user) {
-        SectionDTO createdSection = sectionService.createSection(moduleId, sectionDTO,user);
+        SectionDTO createdSection = sectionService.createSection(sectionDTO,user);
         return ApiResponse.created("Section was created successfuly",createdSection);
     }
 

@@ -31,7 +31,7 @@ public class MaterialDTO extends AuditableDTO {
     @Schema(required = true, example = "VIDEO", description = "Type of material (VIDEO, ARTICLE, QUIZ, PDF, etc.)")
     private MaterialType type;
 
-    @Schema(description = "URL for video content", example = "https://example.com/video.mp4")
+    @Schema(description = "URL for video content", example = "https://example.com/video.mp4", nullable =true)
     private String videoUrl;
 
     @Schema(description = "Article content in text format", example = "This is a comprehensive article about...")

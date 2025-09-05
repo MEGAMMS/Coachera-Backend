@@ -36,7 +36,7 @@ public class Material extends Auditable {
     private Quiz quiz;
 
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT",nullable = true)
     private String article;
 
     @Column(name = "video_url")

@@ -6,6 +6,8 @@ import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.User;
+import com.coachera.backend.entity.Video;
+import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.exception.DuplicateOrderIndexException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.InstructorRepository;
@@ -35,17 +37,21 @@ public class MaterialService {
     private final InstructorRepository instructorRepository;
     // private final OrganizationRepository organizationRepository;
 
-    public MaterialDTO createMaterial(Integer sectionId, MaterialDTO materialDTO, User user) {
+    private final VideoService videoService;
 
-        Section section = sectionRepository.findById(sectionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Section not found with id: " + sectionId));
+    public MaterialDTO createMaterial(MaterialDTO materialDTO, User user) {
+
+        Section section = sectionRepository.findById(materialDTO.getSectionId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Section not found with id: " + materialDTO.getSectionId()));
 
         if (!isInstructorOfCourse(user, section.getModule().getCourse())) {
             throw new AccessDeniedException("You are not allowed to delete this course");
         }
-        validateMaterialOrderIndexUniqueness(sectionId, materialDTO.getOrderIndex(), null);
+        validateMaterialOrderIndexUniqueness(materialDTO.getSectionId(), materialDTO.getOrderIndex(), null);
 
         Material material = new Material();
+
         material.setSection(section);
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
@@ -53,8 +59,21 @@ public class MaterialService {
         material.setVideoUrl(materialDTO.getVideoUrl());
         material.setArticle(materialDTO.getArticle());
 
-        Material savedMaterial = materialRepository.save(material);
-        return new MaterialDTO(savedMaterial);
+        // if (material.getType().equals(MaterialType.VIDEO)) {
+
+        //     Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
+        //     material.setVideo(video);
+
+        // } else 
+        if (material.getType().equals(MaterialType.ARTICLE)) {
+
+            material.setArticle(materialDTO.getArticle());
+        }
+
+        section.addMaterial(material);
+        sectionRepository.save(section);
+        // Material savedMaterial = materialRepository.save(material);
+        return new MaterialDTO(material);
     }
 
     public MaterialDTO updateMaterial(Integer materialId, MaterialDTO materialDTO, User user) {
@@ -101,7 +120,7 @@ public class MaterialService {
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
 
         // Verify organization ownership
-        if (!isInstructorOfCourse(user,material.getSection().getModule().getCourse())) {
+        if (!isInstructorOfCourse(user, material.getSection().getModule().getCourse())) {
             throw new AuthorizationDeniedException("You don't have permission to modify this material");
         }
         materialRepository.delete(material);
@@ -139,4 +158,3 @@ public class MaterialService {
         return course.getInstructors().stream()
                 .anyMatch(ci -> ci.getInstructor().equals(instructor));
     }
-}
