@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ApiResponse<?> handleAutheriztionExceptions(AuthorizationDeniedException ex) {
-        return ApiResponse.error(HttpStatus.UNAUTHORIZED, "Forbidden: " + ex.getMessage());
+        return ApiResponse.error(HttpStatus.FORBIDDEN, "Forbidden: " + ex.getMessage());
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
