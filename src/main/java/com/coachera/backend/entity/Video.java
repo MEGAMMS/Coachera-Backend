@@ -20,10 +20,6 @@ public class Video extends Auditable {
 	@Column(unique = true)
 	private String uuidName;
 
-	@OneToOne
-	@JoinColumn(name = "material_id", nullable = false, unique = true)
-	private Material material;
-
 	public String getUrl() {
 		return ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path("/videos/")

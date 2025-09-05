@@ -6,7 +6,6 @@ import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.User;
-import com.coachera.backend.entity.Video;
 import com.coachera.backend.exception.DuplicateOrderIndexException;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.InstructorRepository;
@@ -36,8 +35,6 @@ public class MaterialService {
     private final InstructorRepository instructorRepository;
     // private final OrganizationRepository organizationRepository;
 
-    private final VideoService videoService;
-
     public MaterialDTO createMaterial(Integer sectionId, MaterialDTO materialDTO, User user) {
 
         Section section = sectionRepository.findById(sectionId)
@@ -53,8 +50,7 @@ public class MaterialService {
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
         material.setType(materialDTO.getType());
-        Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
-        material.setVideo(video);
+        material.setVideoUrl(materialDTO.getVideoUrl());
         material.setArticle(materialDTO.getArticle());
 
         Material savedMaterial = materialRepository.save(material);
@@ -74,6 +70,9 @@ public class MaterialService {
 
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
+        material.setType(materialDTO.getType());
+        material.setVideoUrl(materialDTO.getVideoUrl());
+        material.setArticle(materialDTO.getArticle());
 
         Material updatedMaterial = materialRepository.save(material);
         return new MaterialDTO(updatedMaterial);

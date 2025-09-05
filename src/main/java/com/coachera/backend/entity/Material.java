@@ -35,11 +35,12 @@ public class Material extends Auditable {
     @OneToOne(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
     private Quiz quiz;
 
-    @OneToOne(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Video video;
 
     @Column(columnDefinition = "TEXT")
     private String article;
+
+    @Column(name = "video_url")
+    private String videoUrl;
 
     // Business logic methods
     public boolean isVideo() {
