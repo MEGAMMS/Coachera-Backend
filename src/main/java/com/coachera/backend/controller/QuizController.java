@@ -24,10 +24,9 @@ public class QuizController {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
     public ApiResponse<QuizDTO> createQuiz(
-            @PathVariable Integer materialId,
             @Valid @RequestBody QuizDTO quizDTO,
             @AuthenticationPrincipal User user) {
-        QuizDTO createdQuiz = quizService.createQuiz(materialId, quizDTO, user);
+        QuizDTO createdQuiz = quizService.createQuiz(quizDTO, user);
         return ApiResponse.created("Quiz was created successfuly", createdQuiz);
     }
 

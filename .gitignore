@@ -4,8 +4,7 @@ target/
 
 # Images
 uploads
-resources/static/
-**/static/
+
 
 # Seeder images
 src/main/resources/seeder-images/*

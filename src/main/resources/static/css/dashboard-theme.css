@@ -1,0 +1,91 @@
+/*
+ * Custom Theme for Admin Dashboard
+ * Inspired by the Coachera mobile app design
+*/
+
+/* --- Light Mode Variables (Default) --- */
+:root {
+    --brand-dark-teal: #1A2A2A;
+    --brand-accent-teal: #00C497;
+    --brand-light-gray: #F7FAFC;
+    --brand-text-light: #E5E7EB;
+    --brand-text-dark: #1F2937;
+    --card-bg: white;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --card-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --table-header-bg: #F9FAFB;
+    --table-row-border: #E5E7EB;
+    --pagination-border: #E5E7EB;
+    --pagination-text: #6B7280;
+}
+
+/* --- Dark Mode Variables --- */
+html.dark {
+    --brand-light-gray: #111827; /* Dark background */
+    --brand-text-dark: #E5E7EB; /* Light text */
+    --card-bg: #1F2937; /* Darker card background */
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --card-hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    --table-header-bg: #374151;
+    --table-row-border: #374151;
+    --pagination-border: #4B5563;
+    --pagination-text: #9CA3AF;
+}
+
+/* --- General Styling --- */
+body {
+    background-color: var(--brand-light-gray);
+    color: var(--brand-text-dark);
+}
+
+/* --- Sidebar Styling --- */
+#sidebar { background-color: var(--brand-dark-teal); }
+#sidebar .sidebar-link { color: var(--brand-text-light); opacity: 0.8; transition: all 0.2s ease-in-out; }
+#sidebar .sidebar-link:hover, #sidebar .sidebar-link.active { background-color: rgba(255, 255, 255, 0.05); color: white; opacity: 1; transform: translateX(4px); }
+#sidebar .sidebar-link.active { border-right: 3px solid var(--brand-accent-teal); }
+
+/* --- Main Content Styling --- */
+#main-content { background-color: var(--brand-light-gray); }
+
+/* --- Statistics Card Styling --- */
+.stat-card { background-color: var(--card-bg); border-radius: 1rem; box-shadow: var(--card-shadow); transition: all 0.3s ease-in-out; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: var(--card-hover-shadow); }
+.stat-card .text-gray-500 { color: #9CA3AF; }
+html.dark .stat-card .text-gray-500 { color: #6B7280; }
+.stat-card .text-gray-900 { color: var(--brand-text-dark); }
+.stat-card .icon-bg { background-color: #F0FDF4; }
+html.dark .stat-card .icon-bg { background-color: #2a3a3a; }
+.stat-card .icon-color { color: var(--brand-accent-teal); }
+
+/* --- Chart Container Styling --- */
+.chart-container { background-color: var(--card-bg); border-radius: 1rem; padding: 1.5rem; box-shadow: var(--card-shadow); }
+
+/* --- Data Table Styling --- */
+.data-table-container { background-color: var(--card-bg); }
+.data-table thead { background-color: var(--table-header-bg); }
+.data-table tbody tr { background-color: var(--card-bg); border-bottom-color: var(--table-row-border); }
+.data-table tbody tr:hover { background-color: var(--brand-light-gray); }
+.data-table td, .data-table th { color: var(--brand-text-dark); }
+.data-table .font-medium { color: var(--brand-text-dark); }
+
+/* --- Pagination Styling --- */
+.pagination-nav { background-color: var(--card-bg); border-top-color: var(--table-row-border); }
+.pagination-nav span { color: var(--pagination-text); }
+.pagination-nav a {
+    background-color: var(--card-bg);
+    border-color: var(--pagination-border);
+    color: var(--pagination-text);
+}
+.pagination-nav a:hover {
+    background-color: var(--brand-light-gray);
+    color: var(--brand-text-dark);
+}
+.pagination-nav a.active-page {
+    background-color: var(--brand-accent-teal);
+    border-color: var(--brand-accent-teal);
+    color: white;
+}
+html.dark .pagination-nav a.active-page {
+    background-color: var(--brand-accent-teal);
+    color: var(--brand-dark-teal);
+}
