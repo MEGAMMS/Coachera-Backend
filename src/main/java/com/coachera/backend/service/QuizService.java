@@ -4,6 +4,7 @@ import com.coachera.backend.dto.QuizDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.Question;
 import com.coachera.backend.entity.Quiz;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ResourceNotFoundException;
@@ -31,9 +32,10 @@ public class QuizService {
     private final UserRepository userRepository;
     private final InstructorRepository instructorRepository;
 
-    public QuizDTO createQuiz(Integer materialId, QuizDTO quizDTO, User user) {
-        Material material = materialRepository.findById(materialId)
-                .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
+    public QuizDTO createQuiz(QuizDTO quizDTO, User user) {
+        Material material = materialRepository.findById(quizDTO.getMaterialId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Material not found with id: " + quizDTO.getMaterialId()));
 
         if (!isInstructorOfCourse(user, material.getSection().getModule().getCourse())) {
             throw new AccessDeniedException("You are not allowed to create a quiz");
@@ -71,7 +73,7 @@ public class QuizService {
         if (!isInstructorOfCourse(user, quiz.getMaterial().getSection().getModule().getCourse())) {
             throw new AccessDeniedException("You are not allowed to delete this course");
         }
-        
+
         quizRepository.delete(quiz);
     }
 
