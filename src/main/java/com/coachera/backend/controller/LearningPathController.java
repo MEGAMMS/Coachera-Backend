@@ -2,6 +2,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.LearningPathDTO;
+import com.coachera.backend.dto.LearningPathWithCoursersDTO;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
@@ -101,4 +102,10 @@ public class LearningPathController {
                 learningPathId, courseId, organization);
         return ApiResponse.success("Course removed from learning path successfully", updatedLearningPath);
     }
+
+    @GetMapping("/{id}/courses-dto")
+public ApiResponse<?> getLearningPathWithCourses(@PathVariable Integer id) {
+    LearningPathWithCoursersDTO dto = learningPathService.getLearningPathWithCoursesById(id);
+    return ApiResponse.success(dto);
+}
 }
