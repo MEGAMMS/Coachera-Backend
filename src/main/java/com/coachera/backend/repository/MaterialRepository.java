@@ -2,6 +2,7 @@ package com.coachera.backend.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +24,7 @@ public interface MaterialRepository extends JpaRepository<Material, Integer> {
 
     @Query("SELECT COUNT(m) FROM Material m WHERE m.section.module.course = :course")
     long countByCourse(@Param("course") Course course);
+
+    @Query("SELECT m FROM Material m WHERE m.section.module.course.id = :courseId")
+    Set<Material> findByCourseId(@Param("courseId") Integer courseId);
 }

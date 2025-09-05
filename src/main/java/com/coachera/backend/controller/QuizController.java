@@ -2,17 +2,17 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.QuizDTO;
+import com.coachera.backend.entity.User;
 import com.coachera.backend.service.QuizService;
-
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -21,12 +21,13 @@ public class QuizController {
 
     private final QuizService quizService;
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
     public ApiResponse<QuizDTO> createQuiz(
-            @PathVariable Integer materialId,
-            @Valid @RequestBody QuizDTO quizDTO) {
-        QuizDTO createdQuiz = quizService.createQuiz(materialId, quizDTO);
-        return ApiResponse.created("Quiz was created successfuly",createdQuiz);
+            @Valid @RequestBody QuizDTO quizDTO,
+            @AuthenticationPrincipal User user) {
+        QuizDTO createdQuiz = quizService.createQuiz(quizDTO, user);
+        return ApiResponse.created("Quiz was created successfuly", createdQuiz);
     }
 
     @GetMapping("/{quizId}")
@@ -43,12 +44,13 @@ public class QuizController {
         return ApiResponse.success(quizzes);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping("/{quizId}")
     public ApiResponse<Void> deleteQuiz(
-            @PathVariable Integer quizId) {
-        quizService.deleteQuiz(quizId);
+            @PathVariable Integer quizId,
+            @AuthenticationPrincipal User user) {
+        quizService.deleteQuiz(quizId, user);
         return ApiResponse.noContentResponse();
     }
 
-    
 }

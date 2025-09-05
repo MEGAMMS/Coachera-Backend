@@ -35,7 +35,7 @@ public class Certificate extends Auditable {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id", nullable = true)
     private Course course;
 
     @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -48,6 +48,9 @@ public class Certificate extends Auditable {
     @Column(nullable = false)
     private String certificateUrl;
 
+    @Column
+    private String certificatePreviewUrl;
+
     // Additional certificate fields
     @Column
     private String certificateNumber;
@@ -58,7 +61,7 @@ public class Certificate extends Auditable {
     // Helper methods
     public void addStudent(Student student) {
         StudentCertificate studentCertificate = new StudentCertificate(student, this);
-        if(students==null){
+        if (students == null) {
             students = new HashSet<>();
         }
         students.add(studentCertificate);

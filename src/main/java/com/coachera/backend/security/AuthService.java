@@ -1,12 +1,15 @@
 package com.coachera.backend.security;
 
 import com.coachera.backend.dto.AuthResponse;
-import com.coachera.backend.dto.InstructorDTO;
+// import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.LoginRequest;
-import com.coachera.backend.dto.OrganizationDTO;
+// import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.dto.RegisterRequest;
 import com.coachera.backend.dto.RoleDTO;
-import com.coachera.backend.dto.StudentDTO;
+// import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.dto.UserDTO;
 import com.coachera.backend.entity.Image;
 import com.coachera.backend.entity.User;
@@ -26,6 +29,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Import for @Transactional
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -83,23 +88,24 @@ public class AuthService {
                 if (details != null) {
                         switch (registerRequest.getRole()) {
                         case STUDENT:
-                                if (!(details instanceof StudentDTO)) {
+                                if (!(details instanceof StudentRequestDTO)) {
                                 throw new IllegalArgumentException("Invalid details type for STUDENT role. Expected StudentDTO.");
                                 }
-                                studentService.createStudent((StudentDTO) details, savedUser);
+                                studentService.createStudent((StudentRequestDTO) details, savedUser);
                                 break;
                                 
                         case INSTRUCTOR:
-                                if (!(details instanceof InstructorDTO)) {
+                                if (!(details instanceof InstructorRequestDTO)) {
                                 throw new IllegalArgumentException("Invalid details type for INSTRUCTOR role. Expected InstructorDTO.");
                                 }
-                                instructorService.createInstructor((InstructorDTO) details, savedUser);
+                                instructorService.createInstructor((InstructorRequestDTO) details, savedUser);
                                 break;
                         case ORGANIZATION:
-                                if(!(details instanceof OrganizationDTO)){
+                                if(!(details instanceof OrganizationRequestDTO)){
                                         throw new IllegalArgumentException("Invalid details type for ORGNIZATION role. Expected OrganizationDTO.");
                                 }
-                                orgService.createOrganization((OrganizationDTO)details);
+                                orgService.createOrganization((OrganizationRequestDTO)details,savedUser);
+                                break;
                         default:
                                 // For roles that don't require additional details
                                 break;
@@ -113,6 +119,7 @@ public class AuthService {
 
         /**
          * Authenticates a user and generates an access token.
+         * Multiple tokens per user are allowed for multiple sessions.
          * 
          * @param loginRequest DTO containing login credentials.
          * @return AuthResponse containing the access token and username.
@@ -135,7 +142,7 @@ public class AuthService {
                 User user = userRepository.findByUsername(userDetails.getUsername()).get();
                 String username = user.getUsername(); // This is the actual username stored in the User entity
 
-                // Generate our custom simple token
+                // Generate a new token (multiple tokens per user are allowed)
                 String token = tokenService.generateToken(username);
                 UserDTO userDTO = new UserDTO(user);
                 return new AuthResponse(token, userDTO);
@@ -163,5 +170,34 @@ public class AuthService {
                         }
                 }
                 return false;
+        }
+
+        /**
+         * Check if a user has any valid tokens.
+         * 
+         * @param username The username to check.
+         * @return true if user has any valid tokens, false otherwise.
+         */
+        public boolean hasValidToken(String username) {
+                return tokenService.hasValidToken(username);
+        }
+
+        /**
+         * Get all valid tokens for a user.
+         * 
+         * @param username The username to get tokens for.
+         * @return List of all valid tokens for the user.
+         */
+        public List<String> getValidTokens(String username) {
+                return tokenService.getValidTokens(username);
+        }
+
+        /**
+         * Force logout from all devices by invalidating all tokens for a user.
+         * 
+         * @param username The username to force logout from all devices.
+         */
+        public void forceLogoutAllDevices(String username) {
+                tokenService.forceLogoutAllDevices(username);
         }
 }

@@ -1,10 +1,13 @@
 package com.coachera.backend.service;
 
+import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.OrganizationDTO;
+import com.coachera.backend.dto.OrganizationRequestDTO;
 import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.OrganizationRepository;
 import com.coachera.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +27,13 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final CourseRepository courseRepository;
 
-    public OrganizationDTO createOrganization(OrganizationDTO organizationDTO) {
+    public OrganizationDTO createOrganization(OrganizationRequestDTO organizationDTO, User user) {
 
-        User user = userRepository.findById(organizationDTO.getUserId())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User not found with id: " + organizationDTO.getUserId()));
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating Org profile");
+        }
 
         if (organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
             throw new ConflictException("Organization with name '" + organizationDTO.getOrgName() + "' already exists");
@@ -53,9 +57,9 @@ public class OrganizationService {
         return new OrganizationDTO(organizationRepository.findByUserId(userId));
     }
 
-    public OrganizationDTO updateOrganization(Integer id, OrganizationDTO organizationDTO) {
-        Organization existingOrg = organizationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + id));
+    public OrganizationDTO updateOrganization(User user, OrganizationRequestDTO organizationDTO) {
+
+        Organization existingOrg = validateOrg(user);
 
         if (!existingOrg.getOrgName().equals(organizationDTO.getOrgName()) &&
                 organizationRepository.existsByOrgName(organizationDTO.getOrgName())) {
@@ -64,22 +68,42 @@ public class OrganizationService {
 
         modelMapper.map(organizationDTO, existingOrg);
 
-        if (organizationDTO.getUserId() != null &&
-                !organizationDTO.getUserId().equals(existingOrg.getUser().getId())) {
-            User user = userRepository.findById(organizationDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-            existingOrg.setUser(user);
-        }
-
         Organization updatedOrg = organizationRepository.save(existingOrg);
         return new OrganizationDTO(updatedOrg);
     }
 
     public void deleteOrganization(Integer id) {
-        if (!organizationRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Organization not found");
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        if (organization.getUser() != null) {
+            User user = organization.getUser();
+
+            courseRepository.deleteAll(courseRepository.findByOrgId(id));
+            // Break the bidirectional relationship
+            user.setOrganization(null);
+            userRepository.save(user);
         }
-        organizationRepository.deleteById(id);
+        // Delete the student
+        organizationRepository.delete(organization);
+        if (organization.getUser() != null) {
+            // Delete the user (now that access tokens are removed)
+            userRepository.delete(organization.getUser());
+        }
+    }
+
+    public void deleteOrganization(User user) {
+
+        Organization organization = validateOrg(user);
+
+        courseRepository.deleteAll(courseRepository.findByOrgId(organization.getId()));
+
+        // Break the bidirectional relationship
+        user.setOrganization(null);
+        userRepository.save(user);
+
+        // Delete the student
+        organizationRepository.delete(organization);
+        userRepository.delete(user);
     }
 
     public List<OrganizationDTO> getAllOrganizations() {
@@ -94,4 +118,26 @@ public class OrganizationService {
                 .map(OrganizationDTO::new);
     }
 
+    public long countOrganizations() {
+        return organizationRepository.count();
+    }
+
+    public Page<CourseDTO> getMyCourses(User user, Pageable pageable) {
+        Organization org = validateOrg(user);
+        return courseRepository.findByOrgId(org.getId(), pageable)
+                .map(CourseDTO::new);
+    }
+
+    // Helper method
+    private Organization validateOrg(User user) {
+        // Check if user exists
+        userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User must be saved before creating Org profile"));
+
+        // Check if organization exists
+        return organizationRepository.findById(user.getOrganization().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Organization not found with id: " + user.getOrganization().getId()));
+    }
 }

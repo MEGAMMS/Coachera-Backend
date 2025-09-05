@@ -53,6 +53,10 @@ public class Course extends Auditable {
     @Column(nullable = false)
     private BigDecimal rating;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPublished = false;
+
     @OneToOne
     @JoinColumn
     private Image image;
@@ -77,11 +81,19 @@ public class Course extends Auditable {
     @Builder.Default
     private Set<Module> modules = new HashSet<>();
 
+
+    
     // Helper methods for managing categories
     public void addCategory(Category category) {
         CourseCategory courseCategory = new CourseCategory(this, category);
         categories.add(courseCategory);
         category.getCourses().add(courseCategory);
+    }
+    
+    public void addCategories(Set<Category> categories){
+        for (Category Category : categories) {
+            this.addCategory(Category);
+        }
     }
 
     public void removeCategory(Category category) {
@@ -104,25 +116,55 @@ public class Course extends Auditable {
     }
 
     
-public void addInstructor(Instructor instructor) {
-    CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
-    if (instructors == null) {
-        instructors = new HashSet<>();
+    public void addInstructor(Instructor instructor) {
+        if (instructors == null) {
+            instructors = new HashSet<>();
+        }
+
+        // check if relationship already exists
+        boolean exists = instructors.stream()
+                .anyMatch(ci -> ci.getInstructor().equals(instructor));
+
+        if (!exists) {
+            CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
+            instructors.add(courseInstructor);
+
+            // also update instructor side if not already present
+            if (instructor.getCourses() == null) {
+                instructor.setCourses(new HashSet<>());
+            }
+            instructor.getCourses().add(courseInstructor);
+        }
     }
-    instructors.add(courseInstructor);
-    instructor.getCourses().add(courseInstructor);
-}
 
+    public boolean getIsPublished() {
+        return isPublished;
+    }
+    public void setIsPublished(boolean isPublished) {
+        this.isPublished = isPublished;
+    }
 
+    public void removeInstructor(Instructor instructor) {
+        if (instructors == null || instructors.isEmpty()) {
+            return;
+        }
 
-public void removeInstructor(Instructor instructor) {
-    CourseInstructor courseInstructor = new CourseInstructor(instructor, this);
-    instructors.remove(courseInstructor);
-    instructor.getCourses().remove(courseInstructor);
-    courseInstructor.setInstructor(null);
-    courseInstructor.setCourse(null);
-}
+        // find existing join entity
+        CourseInstructor toRemove = instructors.stream()
+                .filter(ci -> ci.getInstructor().equals(instructor))
+                .findFirst()
+                .orElse(null);
 
-    
+        if (toRemove != null) {
+            instructors.remove(toRemove);
 
+            if (instructor.getCourses() != null) {
+                instructor.getCourses().remove(toRemove);
+            }
+
+            // break association explicitly if needed
+            toRemove.setInstructor(null);
+            toRemove.setCourse(null);
+        }
+    }
 }

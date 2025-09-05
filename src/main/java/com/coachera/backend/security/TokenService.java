@@ -6,8 +6,10 @@ import com.coachera.backend.repository.AccessTokenRepository;
 import com.coachera.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -18,13 +20,12 @@ public class TokenService {
 
         /**
          * Generate a new token for given username.
+         * Multiple tokens per user are allowed.
          */
+        @Transactional
         public String generateToken(String username) {
                 User user = userRepo.findByUsername(username)
                                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
-
-                // Remove existing tokens
-                tokenRepo.deleteByUserId(user.getId());
 
                 String token = UUID.randomUUID().toString();
                 AccessToken at = AccessToken.builder()
@@ -48,7 +49,45 @@ public class TokenService {
         /**
          * Invalidate (delete) a token.
          */
+        @Transactional
         public void invalidateToken(String token) {
                 tokenRepo.findByToken(token).ifPresent(at -> tokenRepo.delete(at));
+        }
+
+        /**
+         * Check if user has any valid tokens.
+         */
+        public boolean hasValidToken(String username) {
+                User user = userRepo.findByUsername(username)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+                
+                List<AccessToken> tokens = tokenRepo.findByUserId(user.getId());
+                return tokens.stream()
+                                .anyMatch(token -> token.getExpiresAt().isAfter(LocalDateTime.now()));
+        }
+
+        /**
+         * Get all valid tokens for a user.
+         */
+        public List<String> getValidTokens(String username) {
+                User user = userRepo.findByUsername(username)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+                
+                return tokenRepo.findByUserId(user.getId())
+                                .stream()
+                                .filter(token -> token.getExpiresAt().isAfter(LocalDateTime.now()))
+                                .map(AccessToken::getToken)
+                                .toList();
+        }
+
+        /**
+         * Force logout from all devices by invalidating all tokens for a user.
+         */
+        @Transactional
+        public void forceLogoutAllDevices(String username) {
+                User user = userRepo.findByUsername(username)
+                                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+                
+                tokenRepo.deleteByUserId(user.getId());
         }
 }

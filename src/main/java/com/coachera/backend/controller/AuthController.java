@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -45,5 +47,35 @@ public class AuthController {
             return ApiResponse.success("Logged out successfully.",null);
         }
         return ApiResponse.error(HttpStatus.BAD_REQUEST, "Logout failed. Invalid or missing token.");
+    }
+
+    @GetMapping("/token/status")
+    public ApiResponse<?> checkTokenStatus(@RequestParam String username) {
+        try {
+            boolean hasValidToken = authService.hasValidToken(username);
+            return ApiResponse.success("Token status retrieved successfully", hasValidToken);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/tokens")
+    public ApiResponse<?> getValidTokens(@RequestParam String username) {
+        try {
+            List<String> validTokens = authService.getValidTokens(username);
+            return ApiResponse.success("Valid tokens retrieved successfully", validTokens);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout/all")
+    public ApiResponse<?> forceLogoutAllDevices(@RequestParam String username) {
+        try {
+            authService.forceLogoutAllDevices(username);
+            return ApiResponse.success("Successfully logged out from all devices.", null);
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

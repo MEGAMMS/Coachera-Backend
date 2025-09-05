@@ -3,11 +3,13 @@ package com.coachera.backend.controller;
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.InstructorDTO;
+import com.coachera.backend.dto.InstructorRequestDTO;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.InstructorService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 
@@ -15,20 +17,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/instructors")
 public class InstructorController {
 
     private final InstructorService instructorService;
 
-    public InstructorController(InstructorService instructorService) {
-        this.instructorService = instructorService;
-    }
-
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    // @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
-    public ApiResponse<?> createInstructor(@RequestBody @Valid InstructorDTO instructorDTO,
+    public ApiResponse<?> createInstructor(@RequestBody @Valid InstructorRequestDTO instructorDTO,
             @AuthenticationPrincipal User user) {
         InstructorDTO createdInstructor = instructorService.createInstructor(instructorDTO, user);
         return ApiResponse.created("Instructor was created successfully", createdInstructor);
@@ -42,8 +40,13 @@ public class InstructorController {
 
     @GetMapping
     // @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<?> getAllInstructors(@Valid PaginationRequest paginationRequest) {
+    public ApiResponse<?> getInstructors(@Valid PaginationRequest paginationRequest) {
         return ApiResponse.paginated(instructorService.getInstructors(paginationRequest.toPageable()));
+    }
+
+    @GetMapping("/no-page")
+    public ApiResponse<?> getAllInstructors() {
+        return ApiResponse.success(instructorService.getAllInstructors());
     }
 
     @GetMapping("/{id}")
@@ -55,23 +58,33 @@ public class InstructorController {
     @PutMapping
     @PreAuthorize("hasRole('INSTRUCTOR')")
     public ApiResponse<?> updateInstructor(
-            @RequestBody @Valid InstructorDTO instructorDTO,
+            @RequestBody @Valid InstructorRequestDTO requestDTO,
             @AuthenticationPrincipal User user) {
-        InstructorDTO updatedInstructor = instructorService.updateInstructor(user, instructorDTO);
-        return ApiResponse.success("Instructor was updated successfully",updatedInstructor);
+        InstructorDTO updatedInstructor = instructorService.updateInstructor(user, requestDTO);
+        return ApiResponse.success("Instructor was updated successfully", updatedInstructor);
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<?> deleteInstructor(@PathVariable Integer id) {
-        instructorService.deleteInstructor(id);
+    @DeleteMapping
+    public ApiResponse<?> deleteInstructor(@AuthenticationPrincipal User user) {
+        instructorService.deleteInstructor(user);
         return ApiResponse.noContentResponse();
     }
 
-      @GetMapping("/{instructorId}/courses")
+    // @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{instructorId}/courses")
     public ApiResponse<?> getCoursesByInstructorId(
             @PathVariable Integer instructorId) {
         List<CourseDTO> courses = instructorService.getCoursesByInstructorId(instructorId);
         return ApiResponse.success(courses);
+    }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/courses")
+    public ApiResponse<?> getMyCourses(
+            @AuthenticationPrincipal User user,
+            @Valid PaginationRequest paginationRequest) {
+        // List<CourseDTO> courses = instructorService.getMyCourses(user);
+        return ApiResponse.paginated(instructorService.getMyCourses(user, paginationRequest.toPageable()));
     }
 
     @GetMapping("/courses/{courseId}")
@@ -81,5 +94,11 @@ public class InstructorController {
         return ApiResponse.success(instructors);
     }
 
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @GetMapping("/courses/count")
+    public ApiResponse<?> getMyCoursesCount(@AuthenticationPrincipal User user) {
+        Long count = instructorService.getMyCoursesCount(user);
+        return ApiResponse.success(count);
+    }
 
 }

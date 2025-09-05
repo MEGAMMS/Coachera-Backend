@@ -48,15 +48,19 @@ public class DatabaseSeeder {
         
         // Seed entities by role
         List<Student> students = seedStudents(users);
-        // List<Instructor> instructors = 
-        seedInstructors(users);
+        List<Instructor> instructors = seedInstructors(users);
         List<Organization> orgs = seedOrganizations(users);
         
         // Seed course-related entities
-        List<Course> courses = seedCourses(orgs);
+        // List<Course> courses = seedCourses(orgs);
+        List<Course> courses = seedCoursesWithInst(orgs,instructors);
         seedCategories(courses);
         List<Enrollment> enrollments = seedEnrollments(students, courses);
         seedCertificates(courses);
+
+        // InstructorGenerator.assignCourses(instructors, courses, 4);
+        // courseRepo.saveAll(courses); 
+        // instructorRepo.saveAll(instructors);
         
         // Seed course structure
         List<com.coachera.backend.entity.Module> modules = seedModules(courses);
@@ -80,7 +84,7 @@ public class DatabaseSeeder {
         users.get(0).setRole(RoleType.STUDENT);
         users.get(0).setEmail("student@gmail.com");
         users.get(1).setRole(RoleType.INSTRUCTOR);
-        users.get(1).setEmail("instructer@gmail.com");
+        users.get(1).setEmail("instructor@gmail.com");
         users.get(2).setRole(RoleType.ORGANIZATION);
         users.get(2).setEmail("organization@gmail.com");
         
@@ -91,7 +95,7 @@ public class DatabaseSeeder {
                 users.get(i).setEmail("student" + i + "@gmail.com");
             } else if (i < 10) {
                 users.get(i).setRole(RoleType.INSTRUCTOR);
-                users.get(i).setEmail("instructer" + i + "@gmail.com");
+                users.get(i).setEmail("instructor" + i + "@gmail.com");
             } else {
                 users.get(i).setRole(RoleType.ORGANIZATION);
                 users.get(i).setEmail("organization" + i + "@gmail.com");
@@ -121,6 +125,11 @@ public class DatabaseSeeder {
 
     private List<Course> seedCourses(List<Organization> orgs) {
         List<Course> courses = CourseGenerator.fromOrg(orgs, imageSeeder);
+        return courseRepo.saveAll(courses);
+    }
+
+    private List<Course> seedCoursesWithInst(List<Organization> orgs,List<Instructor> instructors) {
+        List<Course> courses = CourseGenerator.fromOrgAndInst(orgs,instructors, imageSeeder);
         return courseRepo.saveAll(courses);
     }
 

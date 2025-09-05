@@ -12,15 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.entity.Student;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.ConflictException;
 import com.coachera.backend.exception.ResourceNotFoundException;
+import com.coachera.backend.repository.AccessTokenRepository;
 import com.coachera.backend.repository.EnrollmentRepository;
+import com.coachera.backend.repository.FavoriteRepository;
+import com.coachera.backend.repository.ReviewRepository;
 import com.coachera.backend.repository.StudentRepository;
 import com.coachera.backend.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 @Transactional
 public class StudentService {
 
@@ -28,23 +35,15 @@ public class StudentService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final EnrollmentRepository enrollmentRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final ReviewRepository reviewRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
-    public StudentService(StudentRepository studentRepository, 
-                        UserRepository userRepository,
-                        ModelMapper modelMapper,
-                        EnrollmentRepository enrollmentRepository) {
-        this.studentRepository = studentRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
-        this.enrollmentRepository = enrollmentRepository;
-    }
+    public StudentDTO createStudent(StudentRequestDTO studentDTO, User user) {
 
-     public StudentDTO createStudent(StudentDTO studentDTO, User user) {
-        // Ensure user is persisted
-        if (user.getId() == null) {
+        if (!userRepository.findById(user.getId()).isPresent()) {
             throw new IllegalArgumentException("User must be saved before creating student profile");
         }
-        
         if (studentRepository.existsByUserId(user.getId())) {
             throw new ConflictException("User already has a student profile");
         }
@@ -56,24 +55,28 @@ public class StudentService {
         student.setBirthDate(studentDTO.getBirthDate());
         student.setGender(studentDTO.getGender());
         student.setEducation(studentDTO.getEducation());
-        
-        // Handle wallet - set to 0 if not provided
-        student.setWallet(studentDTO.getWallet() != null ? studentDTO.getWallet() : BigDecimal.ZERO);
-        
+
+        // Handle wallet - set to 0
+        student.setWallet(BigDecimal.ZERO);
+
         // Set other optional fields
         student.setPhoneNumber(studentDTO.getPhoneNumber());
         student.setAddress(studentDTO.getAddress());
-        
+
         Student savedStudent = studentRepository.save(student);
-        
+
         // Use the basic constructor that doesn't load collections
         return new StudentDTO(savedStudent);
     }
 
     public StudentDTO getStudentByUser(User user) {
-        Integer studentId = studentRepository.findByUserId(user.getId()).getId();
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        Student student = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
+
         return new StudentDTO(student);
     }
 
@@ -94,35 +97,93 @@ public class StudentService {
                 .map(StudentDTO::new);
     }
 
-    public StudentDTO updateStudent(User userA , StudentDTO studentDTO) {
-        Integer studentId = studentRepository.findByUserId(userA.getId()).getId();
-        Student existingStudent = studentRepository.findById(studentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + studentId));
+    public StudentDTO updateStudent(User user, StudentRequestDTO studentDTO) {
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User must be saved before creating student profile");
+        }
+        Student existingStudent = studentRepository.findById(user.getStudent().getId())
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Student not found with id: " + user.getStudent().getId()));
 
         modelMapper.map(studentDTO, existingStudent);
-        
-        
-        if (studentDTO.getUserId() != null && 
-            !studentDTO.getUserId().equals(existingStudent.getUser().getId())) {
-            User user = userRepository.findById(studentDTO.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + studentDTO.getUserId()));
-            existingStudent.setUser(user);
-        }
 
         Student updatedStudent = studentRepository.save(existingStudent);
         return new StudentDTO(updatedStudent);
     }
 
-    public void deleteStudent(Integer id) {
-        if (!studentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Student not found with id: " + id);
+    public void deleteStudent(User user) {
+
+        if (!userRepository.findById(user.getId()).isPresent()) {
+            throw new IllegalArgumentException("User not found");
         }
-        studentRepository.deleteById(id);
+
+        if (!studentRepository.existsByUserId(user.getId())) {
+            throw new ResourceNotFoundException("Student not found with id: " + user.getId());
+        }
+
+        Student student = studentRepository.findByUserId(user.getId());
+
+        // Delete all student-related entities
+        favoriteRepository.deleteAll(favoriteRepository.findByStudentId(student.getId()));
+        enrollmentRepository.deleteAll(enrollmentRepository.findByStudentId(student.getId()));
+        reviewRepository.deleteAll(reviewRepository.findByStudentId(student.getId()));
+
+        // Clear certificates and skills
+        student.getStudentCertificates().clear();
+        student.getStudentSkills().clear();
+        studentRepository.save(student);
+
+        // Delete access tokens first
+        accessTokenRepository.deleteByUserId(user.getId());
+
+        // Break the bidirectional relationship
+        user.setStudent(null);
+        userRepository.save(user);
+
+        // Delete the student
+        studentRepository.delete(student);
+        userRepository.delete(user);
     }
-    
+
+    public void deleteStudent(Integer id) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+
+        // Delete all student-related entities
+        favoriteRepository.deleteAll(favoriteRepository.findByStudentId(id));
+        enrollmentRepository.deleteAll(enrollmentRepository.findByStudentId(id));
+        reviewRepository.deleteAll(reviewRepository.findByStudentId(id));
+        // Clear certificates and skills
+        student.getStudentCertificates().clear();
+        student.getStudentSkills().clear();
+        studentRepository.save(student);
+        if (student.getUser() != null) {
+            User user = student.getUser();
+
+            // Delete access tokens first
+            accessTokenRepository.deleteByUserId(user.getId());
+
+            // Break the bidirectional relationship
+            user.setStudent(null);
+            userRepository.save(user);
+        }
+        // Delete the student
+        studentRepository.delete(student);
+        if (student.getUser() != null) {
+            // Delete the user (now that access tokens are removed)
+            userRepository.delete(student.getUser());
+        }
+
+    }
+
     public Page<CourseDTO> getEnrolledCoursesByUser(User user, Pageable pageable) {
         Integer studentId = studentRepository.findByUserId(user.getId()).getId();
         return enrollmentRepository.findByStudentId(studentId, pageable)
                 .map(enrollment -> new CourseDTO(enrollment.getCourse()));
+    }
+
+    public long countStudents() {
+        return studentRepository.count();
     }
 }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout}">
+<head>
+    <title>Dashboard Home</title>
+</head>
+<body>
+
+    <div layout:fragment="content">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200">Dashboard Overview</h1>
+            <p class="text-gray-600 dark:text-gray-400">Welcome back! Here's a summary of your application's activity.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Stat Card: Students -->
+            <div class="stat-card p-6 flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-medium text-gray-500">Total Students</div>
+                    <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('totalStudents')} ?: '0'">0</div>
+                </div>
+                <div class="icon-bg rounded-full p-3"><i data-lucide="users" class="w-6 h-6 icon-color"></i></div>
+            </div>
+            <!-- Stat Card: Instructors -->
+            <div class="stat-card p-6 flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-medium text-gray-500">Total Instructors</div>
+                    <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('totalInstructors')} ?: '0'">0</div>
+                </div>
+                <div class="icon-bg rounded-full p-3"><i data-lucide="graduation-cap" class="w-6 h-6 icon-color"></i></div>
+            </div>
+            <!-- Stat Card: Organizations -->
+            <div class="stat-card p-6 flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-medium text-gray-500">Total Organizations</div>
+                    <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('totalorganizations')} ?: '0'">0</div>
+                </div>
+                <div class="icon-bg rounded-full p-3"><i data-lucide="building-2" class="w-6 h-6 icon-color"></i></div>
+            </div>
+            <!-- Stat Card: Subscriptions -->
+            <div class="stat-card p-6 flex items-center justify-between">
+                <div>
+                    <div class="text-sm font-medium text-gray-500">Active Subscriptions</div>
+                    <div class="text-3xl font-bold text-gray-900" th:text="${stats.get('activeSubscriptions')} ?: '0'">0</div>
+                </div>
+                <div class="icon-bg rounded-full p-3"><i data-lucide="gem" class="w-6 h-6 icon-color"></i></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Sales Analytics (Last 6 Months)</h2>
+            <div><canvas id="salesChart"></canvas></div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+        /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                const salesChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['March', 'April', 'May', 'June', 'July', 'August'],
+                        datasets: [{
+                            label: 'Sales ($)',
+                            data: [12000, 19000, 13000, 15000, 22000, 25000],
+                            backgroundColor: 'rgba(34, 211, 238, 0.5)',
+                            borderColor: 'rgba(34, 211, 238, 1)',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                ticks: { color: document.body.classList.contains('dark') ? '#9ca3af' : '#6b7280' },
+                                grid: { color: document.body.classList.contains('dark') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }
+                            },
+                            x: {
+                                ticks: { color: document.body.classList.contains('dark') ? '#9ca3af' : '#6b7280' },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: { 
+                            legend: { 
+                                display: false 
+                            } 
+                        }
+                    }
+                });
+
+                // Update chart colors on theme toggle
+                const themeToggle = document.getElementById('theme-toggle');
+                themeToggle.addEventListener('click', () => {
+                    const isDark = document.body.classList.contains('dark');
+                    salesChart.options.scales.y.ticks.color = isDark ? '#9ca3af' : '#6b7280';
+                    salesChart.options.scales.x.ticks.color = isDark ? '#9ca3af' : '#6b7280';
+                    salesChart.options.scales.y.grid.color = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                    salesChart.update();
+                });
+            });
+        /*]]>*/
+        </script>
+    </th:block>
+
+</body>
+</html>

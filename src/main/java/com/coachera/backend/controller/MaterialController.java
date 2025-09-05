@@ -2,7 +2,6 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.MaterialDTO;
-import com.coachera.backend.entity.Organization;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.MaterialService;
 
@@ -22,24 +21,22 @@ public class MaterialController {
 
     private final MaterialService materialService;
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
     public ApiResponse<?> createMaterial(
-            @PathVariable Integer sectionId,
             @Valid @RequestBody MaterialDTO materialDTO,
             @AuthenticationPrincipal User user) {
-        MaterialDTO createdMaterial = materialService.createMaterial(sectionId, materialDTO);
+        MaterialDTO createdMaterial = materialService.createMaterial(materialDTO, user);
         return ApiResponse.created("Material was created successfully", createdMaterial);
     }
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @PutMapping("/{materialId}")
     public ApiResponse<?> updateMaterial(
             @PathVariable Integer materialId,
             @Valid @RequestBody MaterialDTO materialDTO,
             @AuthenticationPrincipal User user) {
-        Organization org = user.getOrganization();
-        MaterialDTO updatedMaterial = materialService.updateMaterial(materialId, materialDTO, org);
+        MaterialDTO updatedMaterial = materialService.updateMaterial(materialId, materialDTO, user);
         return ApiResponse.success("Material was updated successfully", updatedMaterial);
     }
 
@@ -57,13 +54,12 @@ public class MaterialController {
         return ApiResponse.success(materials);
     }
 
-    @PreAuthorize("hasRole('ORGANIZATION')")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
     @DeleteMapping("/{materialId}")
     public ApiResponse<?> deleteMaterial(
             @PathVariable Integer materialId,
             @AuthenticationPrincipal User user) {
-        Organization org = user.getOrganization();
-        materialService.deleteMaterial(materialId, org);
+        materialService.deleteMaterial(materialId, user);
         return ApiResponse.noContentResponse();
     }
 }

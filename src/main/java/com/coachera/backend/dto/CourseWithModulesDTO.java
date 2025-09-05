@@ -33,7 +33,7 @@ public class CourseWithModulesDTO extends CourseDTO {
         super(course);
         this.modules = course.getModules().stream()
                 .sorted(Comparator.comparingInt(m -> m.getOrderIndex()))
-                .map(module -> new ModuleDTO(module))
+                .map(module -> new ModuleWithSectionsDTO(module))
                 .collect(Collectors.toList());
     }
 }

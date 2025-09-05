@@ -24,5 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
+
+        registry
+            .addResourceHandler("/css/**", "/js/**") 
+            .addResourceLocations("classpath:/static/css/", "classpath:/static/js/"); 
     }
 }

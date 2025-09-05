@@ -2,27 +2,27 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.StudentDTO;
+import com.coachera.backend.dto.StudentRequestDTO;
 import com.coachera.backend.dto.pagination.PaginationRequest;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.StudentService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentService studentService;
-
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
     
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping
-    public ApiResponse<?> createStudent(@RequestBody @Valid StudentDTO studentDTO ,@AuthenticationPrincipal User user) {
+    public ApiResponse<?> createStudent(@RequestBody @Valid StudentRequestDTO studentDTO ,@AuthenticationPrincipal User user) {
 
         StudentDTO createdStudent = studentService.createStudent(studentDTO ,user);
         return ApiResponse.created("Student was created successfully", createdStudent);
@@ -63,18 +63,17 @@ public class StudentController {
     @PreAuthorize("hasRole('STUDENT')")
     public ApiResponse<?> updateStudent(
             @AuthenticationPrincipal User user,
-            @Valid @RequestBody StudentDTO studentDTO) {
+            @Valid @RequestBody StudentRequestDTO studentDTO) {
 
         StudentDTO updatedStudent = studentService.updateStudent(user, studentDTO);
         return ApiResponse.success("Student was updated successfully", updatedStudent);
-
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @PreAuthorize("hasRole('STUDENT')")
-    public ApiResponse<?> deleteStudent(@PathVariable Integer id) {
+    public ApiResponse<?> deleteStudent( @AuthenticationPrincipal User user) {
 
-        studentService.deleteStudent(id);
+        studentService.deleteStudent(user);
         return ApiResponse.noContentResponse();
 
     }

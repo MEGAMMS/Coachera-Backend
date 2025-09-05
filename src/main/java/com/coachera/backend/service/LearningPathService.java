@@ -10,16 +10,22 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.coachera.backend.dto.CourseDTO;
 import com.coachera.backend.dto.LearningPathDTO;
+import com.coachera.backend.dto.LearningPathWithCoursersDTO;
 import com.coachera.backend.entity.*;
 import com.coachera.backend.exception.ResourceNotFoundException;
 import com.coachera.backend.repository.LearningPathRepository;
 import com.coachera.backend.repository.OrganizationRepository;
+
+import lombok.AllArgsConstructor;
+
 import com.coachera.backend.repository.CourseRepository;
 import com.coachera.backend.repository.ImageRepository;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class LearningPathService {
 
     private final LearningPathRepository learningPathRepository;
@@ -27,18 +33,6 @@ public class LearningPathService {
     private final CourseRepository courseRepository;
     private final ImageRepository imageRepository;
     private final ModelMapper modelMapper;
-
-    public LearningPathService(LearningPathRepository learningPathRepository,
-                             OrganizationRepository organizationRepository,
-                             CourseRepository courseRepository,
-                             ImageRepository imageRepository,
-                             ModelMapper modelMapper) {
-        this.learningPathRepository = learningPathRepository;
-        this.organizationRepository = organizationRepository;
-        this.courseRepository = courseRepository;
-        this.imageRepository = imageRepository;
-        this.modelMapper = modelMapper;
-    }
 
     public LearningPathDTO createLearningPath(LearningPathDTO learningPathDTO, Organization organization) {
         // Verify the organization exists (though we're passing it directly, we can still validate)
@@ -158,5 +152,21 @@ public class LearningPathService {
         learningPath.removeCourse(course);
         LearningPath updatedLearningPath = learningPathRepository.save(learningPath);
         return new LearningPathDTO(updatedLearningPath);
+    }
+
+    public List<CourseDTO> getCoursesBylearningPathId(Integer learningPathId) {
+        LearningPath learningPath = learningPathRepository.findById(learningPathId)
+                .orElseThrow(() -> new ResourceNotFoundException("Learning Path not found with id: " + learningPathId));
+
+        return learningPath.getCourses().stream()
+                .map(LearningPathCourse::getCourse)
+                .map(course -> new CourseDTO(course))
+                .collect(Collectors.toList());
+    }
+
+    public LearningPathWithCoursersDTO getLearningPathWithCoursesById(Integer id) {
+        LearningPath learningPath = learningPathRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("LearningPath not found with id: " + id));
+        return new LearningPathWithCoursersDTO(learningPath);
     }
 }
