@@ -51,21 +51,27 @@ public class MaterialService {
         validateMaterialOrderIndexUniqueness(materialDTO.getSectionId(), materialDTO.getOrderIndex(), null);
 
         Material material = new Material();
+
         material.setSection(section);
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
         material.setType(materialDTO.getType());
 
-        if (material.getType().equals(MaterialType.VIDEO)) {
-            Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
-            material.setVideo(video);
-        } else if (material.getType().equals(MaterialType.VIDEO)) {
+        // if (material.getType().equals(MaterialType.VIDEO)) {
+
+        //     Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
+        //     material.setVideo(video);
+
+        // } else 
+        if (material.getType().equals(MaterialType.ARTICLE)) {
 
             material.setArticle(materialDTO.getArticle());
         }
 
-        Material savedMaterial = materialRepository.save(material);
-        return new MaterialDTO(savedMaterial);
+        section.addMaterial(material);
+        sectionRepository.save(section);
+        // Material savedMaterial = materialRepository.save(material);
+        return new MaterialDTO(material);
     }
 
     public MaterialDTO updateMaterial(Integer materialId, MaterialDTO materialDTO, User user) {

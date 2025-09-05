@@ -54,6 +54,11 @@ public class SearchService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public <T, D> Page<D> search(Class<T> entityClass, SearchRequest searchRequest) {
+        if (entityClass.equals(com.coachera.backend.entity.Course.class)) {
+            // Ensure the filter for published courses is always applied
+            searchRequest.getFilters().put("isPublished", true);
+        }
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
