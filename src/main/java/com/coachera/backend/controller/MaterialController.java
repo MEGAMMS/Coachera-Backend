@@ -24,10 +24,9 @@ public class MaterialController {
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
     public ApiResponse<?> createMaterial(
-            @PathVariable Integer sectionId,
             @Valid @RequestBody MaterialDTO materialDTO,
             @AuthenticationPrincipal User user) {
-        MaterialDTO createdMaterial = materialService.createMaterial(sectionId, materialDTO,user);
+        MaterialDTO createdMaterial = materialService.createMaterial(materialDTO, user);
         return ApiResponse.created("Material was created successfully", createdMaterial);
     }
 

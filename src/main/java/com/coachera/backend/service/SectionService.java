@@ -36,11 +36,11 @@ public class SectionService {
     private final UserRepository userRepository;
     private final InstructorRepository instructorRepository;
 
-    public SectionDTO createSection(Integer moduleId, SectionDTO sectionDTO, User user) {
-        Module module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Module not found with id: " + moduleId));
+    public SectionDTO createSection(SectionDTO sectionDTO, User user) {
+        Module module = moduleRepository.findById(sectionDTO.getModuleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Module not found with id: " + sectionDTO.getModuleId()));
 
-        validateSectionOrderIndexUniqueness(moduleId, sectionDTO.getOrderIndex(), null);
+        // validateSectionOrderIndexUniqueness(sectionDTO.getModuleId(), sectionDTO.getOrderIndex(), null);
 
         if (!isInstructorOfCourse(user, module.getCourse())) {
             throw new IllegalArgumentException("Instructor is not assigned to this course");
@@ -51,8 +51,11 @@ public class SectionService {
         section.setTitle(sectionDTO.getTitle());
         section.setOrderIndex(sectionDTO.getOrderIndex());
 
-        Section savedSection = sectionRepository.save(section);
-        return new SectionDTO(savedSection);
+        module.addSection(section);
+        moduleRepository.save(module);
+
+        // Section savedSection = sectionRepository.save(section);
+        return new SectionDTO(section);
     }
 
     public SectionDTO updateSection(Integer sectionId, SectionDTO sectionDTO, User user) {
@@ -65,7 +68,7 @@ public class SectionService {
             throw new IllegalArgumentException("Instructor is not assigned to this course");
         }
 
-        section.setTitle(sectionDTO.getTitle());
+        section.setTitle(sectionDTO.getTitle()); 
         section.setOrderIndex(sectionDTO.getOrderIndex());
 
         if (sectionDTO.getMaterialIds() != null) {

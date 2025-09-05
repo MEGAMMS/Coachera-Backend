@@ -39,12 +39,12 @@ public class ModuleService {
     public ModuleDTO createModule(Integer courseId, ModuleRequestDTO moduleDTO) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + courseId));
-        // validateOrderIndexUniqueness(courseId, moduleDTO.getOrderIndex());
+        validateOrderIndexUniqueness(courseId, moduleDTO.getOrderIndex());
         Module module = new Module();
 
         module.setTitle(moduleDTO.getTitle());
         module.setCourse(course);
-        module.setOrderIndex(0);
+        module.setOrderIndex(moduleDTO.getOrderIndex());
 
         course.addModule(module);
         courseRepository.save(course);
