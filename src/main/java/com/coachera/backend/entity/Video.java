@@ -20,11 +20,16 @@ public class Video extends Auditable {
 	@Column(unique = true)
 	private String uuidName;
 
-	@OneToOne
-	@JoinColumn(name = "material_id", nullable = false, unique = true)
-	private Material material;
+	@Column(name = "external_url")
+	private String externalUrl;
 
 	public String getUrl() {
+		// If it's an external URL, return it directly
+		if (this.externalUrl != null && !this.externalUrl.isEmpty()) {
+			return this.externalUrl;
+		}
+		
+		// Otherwise, return the uploaded file URL
 		return ServletUriComponentsBuilder.fromCurrentContextPath()
 				.path("/videos/")
 				.path(this.uuidName)

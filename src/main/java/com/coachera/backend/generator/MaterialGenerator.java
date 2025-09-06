@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 
 public class MaterialGenerator {
 
-    // private static final String[] VIDEO_URLS = {
-    //     "https://www.youtube.com/watch?v=Q7AOvWpIVHU",
-    //     "https://youtu.be/DQdB7wFEygo?si=U93ySrbYrZf66v6h",
-    //     "https://youtu.be/uJimjSDio_Y?si=ZSbD1yyb-SWwNDl3",
-    //     "https://youtu.be/v5SDSWscaKY?si=rWo3uOUX07eu4Df8",
-    //     "https://youtu.be/6CJiM3E2mAA?si=MpPyh6rKGOaTGE5s"
-    // };
+    private static final String[] VIDEO_URLS = {
+        "https://www.youtube.com/watch?v=Q7AOvWpIVHU",
+        "https://youtu.be/DQdB7wFEygo?si=U93ySrbYrZf66v6h",
+        "https://youtu.be/uJimjSDio_Y?si=ZSbD1yyb-SWwNDl3",
+        "https://youtu.be/v5SDSWscaKY?si=rWo3uOUX07eu4Df8",
+        "https://youtu.be/6CJiM3E2mAA?si=MpPyh6rKGOaTGE5s"
+    };
 
     private static final String[] ARTICLE_CONTENTS = {
         "This is a comprehensive guide on the topic...",
@@ -102,12 +102,12 @@ public class MaterialGenerator {
             .supply(Select.field(Material::getOrderIndex), orderCounter::getAndIncrement)
             .supply(Select.field(Material::getType), () -> type)
             .ignore(Select.field(Material::getQuiz))
-            .ignore(Select.field(Material::getVideo))
+            .ignore(Select.field(Material::getVideoUrl))
             .create();
 
         // Explicitly set content fields based on type
-        // material.setVideoUrl(type == MaterialType.VIDEO ? 
-        //     VIDEO_URLS[random.nextInt(VIDEO_URLS.length)] : null);
+        material.setVideoUrl(type == MaterialType.VIDEO ? 
+            VIDEO_URLS[random.nextInt(VIDEO_URLS.length)] : null);
         material.setArticle(type == MaterialType.ARTICLE ? 
             ARTICLE_CONTENTS[random.nextInt(ARTICLE_CONTENTS.length)] : null);
 

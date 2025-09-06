@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 
 import com.coachera.backend.entity.Enrollment;
 import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.enums.CompletionState;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -43,13 +44,14 @@ public class EnrolledCourseDTO {
 
 
     public static MaterialCompletionDTO notCompleted(Material material, Integer enrollmentId) {
-    MaterialCompletionDTO dto = new MaterialCompletionDTO();
-    dto.setMaterialId(material.getId());
-    dto.setEnrollmentId(enrollmentId);
-    dto.setCompleted(false);
-    // set other fields as needed
-    return dto;
-}
+        MaterialCompletionDTO dto = new MaterialCompletionDTO();
+        dto.setMaterialId(material.getId());
+        dto.setEnrollmentId(enrollmentId);
+        dto.setCompleted(false);
+        dto.setCompletionState(CompletionState.INCOMPLETE);
+        // For incomplete materials, createdAt and updatedAt remain null since no DB record exists
+        return dto;
+    }
     // Constructor from entity
     public EnrolledCourseDTO(Enrollment enrollment, Set<Material> allMaterials) {
         this.enrollmentId = enrollment.getId();

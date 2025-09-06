@@ -3,7 +3,6 @@ package com.coachera.backend.dto;
 import com.coachera.backend.entity.Material;
 import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.entity.Quiz;
-import com.coachera.backend.entity.Video;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,7 @@ public class MaterialDTO extends AuditableDTO {
     @Schema(required = true, example = "VIDEO", description = "Type of material (VIDEO, ARTICLE, QUIZ, PDF, etc.)")
     private MaterialType type;
 
-    @Schema(description = "URL for video content", example = "https://example.com/video.mp4", nullable =true)
+    @Schema(description = "Video URL for video content", example = "https://www.youtube.com/watch?v=example", nullable = true)
     private String videoUrl;
 
     @Schema(description = "Article content in text format", example = "This is a comprehensive article about...")
@@ -48,11 +47,8 @@ public class MaterialDTO extends AuditableDTO {
         this.orderIndex = material.getOrderIndex();
         this.type = material.getType();
 
-        // add vid if exists
-        Video video = material.getVideo();
-        if (video != null) {
-            this.videoUrl = video.getUrl();
-        }
+        // add video URL if exists
+        this.videoUrl = material.getVideoUrl();
         
         // add article (can be null)
         this.article = material.getArticle();
