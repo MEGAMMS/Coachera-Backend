@@ -38,7 +38,7 @@ public class QuestionService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with id: " + quizId));
 
-        validateQuestion(questionDTO);
+        // validateQuestion(questionDTO);
 
         if (!isInstructorOfCourse(user, quiz.getMaterial().getSection().getModule().getCourse())) {
             throw new AccessDeniedException("You are not allowed to add a question to this course");
@@ -61,7 +61,7 @@ public class QuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + questionId));
 
-        validateQuestion(questionDTO);
+        // validateQuestion(questionDTO);
 
         if (!isInstructorOfCourse(user, question.getQuiz().getMaterial().getSection().getModule().getCourse())) {
             throw new AccessDeniedException("You are not allowed to edit this question");

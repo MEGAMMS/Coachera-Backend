@@ -4,6 +4,7 @@ import com.coachera.backend.dto.MaterialDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
+import com.coachera.backend.entity.Material.MaterialType;
 import com.coachera.backend.entity.Section;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.exception.DuplicateOrderIndexException;
@@ -55,8 +56,18 @@ public class MaterialService {
         material.setTitle(materialDTO.getTitle());
         material.setOrderIndex(materialDTO.getOrderIndex());
         material.setType(materialDTO.getType());
-        material.setVideoUrl(materialDTO.getVideoUrl());
-        material.setArticle(materialDTO.getArticle());
+        
+        // if (material.getType().equals(MaterialType.VIDEO)) {
+
+        //     Video video = videoService.getVideoFromUrl(materialDTO.getVideoUrl());
+        //     material.setVideo(video);
+
+        // } else 
+        if (material.getType().equals(MaterialType.ARTICLE)) {
+
+            material.setArticle(materialDTO.getArticle());
+        }
+
 
         section.addMaterial(material);
         sectionRepository.save(section);
@@ -116,9 +127,10 @@ public class MaterialService {
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + materialId));
 
         // Verify organization ownership
-        if (!isInstructorOfCourse(user, material.getSection().getModule().getCourse())) {
-            throw new AuthorizationDeniedException("You don't have permission to modify this material");
-        }
+        // if (!isInstructorOfCourse(user, material.getSection().getModule().getCourse())) {
+        //     throw new AuthorizationDeniedException("You don't have permission to modify this material");
+        // }
+
         materialRepository.delete(material);
     }
 

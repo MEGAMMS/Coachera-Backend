@@ -1,6 +1,7 @@
 package com.coachera.backend.service;
 
 import com.coachera.backend.dto.QuizDTO;
+import com.coachera.backend.dto.QuizResponseDTO;
 import com.coachera.backend.entity.Course;
 import com.coachera.backend.entity.Instructor;
 import com.coachera.backend.entity.Material;
@@ -33,7 +34,7 @@ public class QuizService {
 
     private final QuestionService questionService;
 
-    public QuizDTO createQuiz(QuizDTO quizDTO, User user) {
+    public QuizResponseDTO createQuiz(QuizDTO quizDTO, User user) {
         Material material = materialRepository.findById(quizDTO.getMaterialId())
                 .orElseThrow(
                         () -> new ResourceNotFoundException("Material not found with id: " + quizDTO.getMaterialId()));
@@ -50,25 +51,25 @@ public class QuizService {
                     .forEach(questionDTO -> questionService.createQuestion(quiz.getId(), questionDTO, user));
         }
 
-        Quiz savedQuiz = quizRepository.save(quiz);
-        return new QuizDTO(savedQuiz);
+        // Quiz savedQuiz = quizRepository.save(quiz);
+        return new QuizResponseDTO(quiz);
     }
 
     @Transactional(readOnly = true)
-    public QuizDTO getQuizById(Integer quizId) {
+    public QuizResponseDTO getQuizById(Integer quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz not found with id: " + quizId));
-        return new QuizDTO(quiz);
+        return new QuizResponseDTO(quiz);
     }
 
     @Transactional(readOnly = true)
-    public List<QuizDTO> getAllQuizzesByMaterialId(Integer materialId) {
+    public List<QuizResponseDTO> getAllQuizzesByMaterialId(Integer materialId) {
         if (!materialRepository.existsById(materialId)) {
             throw new ResourceNotFoundException("Material not found with id: " + materialId);
         }
 
         return quizRepository.findByMaterialId(materialId).stream()
-                .map(QuizDTO::new)
+                .map(QuizResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
