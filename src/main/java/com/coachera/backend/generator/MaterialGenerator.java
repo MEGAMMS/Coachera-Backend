@@ -31,10 +31,11 @@ public class MaterialGenerator {
     };
 
     private static final String[] ARTICLE_CONTENTS = {
-            "This is a comprehensive guide on the topic...",
-            "In this article, we'll explore the key concepts...",
-            "Learn the fundamentals with this detailed explanation...",
-            "Advanced techniques and best practices covered here..."
+            "# Introduction\n\nWelcome to our comprehensive guide...",
+            "## Key Concepts\n\n- First concept\n- Second concept\n- Third concept",
+            "### Detailed Explanation\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit...",
+            "## Advanced Techniques\n\n1. **Technique One**\n   - Description\n   - Example\n\n2. **Technique Two**\n   - Description\n   - Code snippet:\n     ```java\n     System.out.println(\"Hello World\");\n     ```",
+            "# Conclusion\n\nFinal thoughts and additional resources..."
     };
 
     private static final MaterialType[] MATERIAL_TYPES = MaterialType.values();
