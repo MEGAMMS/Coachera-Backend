@@ -56,7 +56,4 @@ public class Material extends Auditable {
     public boolean isQuiz() {
         return type == MaterialType.QUIZ;
     }
-
-    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MaterialCompletion> completions = new HashSet<>();
 }
