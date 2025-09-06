@@ -5,10 +5,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "questions")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Question extends Auditable{
+public class Question extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -34,4 +35,12 @@ public class Question extends Auditable{
 
     @Column(name = "answer_index_correct", nullable = false)
     private Integer correctAnswerIndex;
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
+        if (quiz != null && !quiz.getQuestions().contains(this)) {
+            quiz.getQuestions().add(this);
+        }
+    }
+
 }

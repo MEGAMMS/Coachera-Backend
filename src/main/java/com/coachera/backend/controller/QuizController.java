@@ -2,6 +2,7 @@ package com.coachera.backend.controller;
 
 import com.coachera.backend.dto.ApiResponse;
 import com.coachera.backend.dto.QuizDTO;
+import com.coachera.backend.dto.QuizResponseDTO;
 import com.coachera.backend.entity.User;
 import com.coachera.backend.service.QuizService;
 
@@ -23,24 +24,24 @@ public class QuizController {
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
-    public ApiResponse<QuizDTO> createQuiz(
+    public ApiResponse<?> createQuiz(
             @Valid @RequestBody QuizDTO quizDTO,
             @AuthenticationPrincipal User user) {
-        QuizDTO createdQuiz = quizService.createQuiz(quizDTO, user);
+        QuizResponseDTO createdQuiz = quizService.createQuiz(quizDTO, user);
         return ApiResponse.created("Quiz was created successfuly", createdQuiz);
     }
 
     @GetMapping("/{quizId}")
-    public ApiResponse<QuizDTO> getQuizById(
+    public ApiResponse<?> getQuizById(
             @PathVariable Integer quizId) {
-        QuizDTO quizDTO = quizService.getQuizById(quizId);
+        QuizResponseDTO quizDTO = quizService.getQuizById(quizId);
         return ApiResponse.success(quizDTO);
     }
 
     @GetMapping("/materials/{materialId}")
-    public ApiResponse<List<QuizDTO>> getAllQuizzesByMaterialId(
+    public ApiResponse<?> getAllQuizzesByMaterialId(
             @PathVariable Integer materialId) {
-        List<QuizDTO> quizzes = quizService.getAllQuizzesByMaterialId(materialId);
+        List<QuizResponseDTO> quizzes = quizService.getAllQuizzesByMaterialId(materialId);
         return ApiResponse.success(quizzes);
     }
 

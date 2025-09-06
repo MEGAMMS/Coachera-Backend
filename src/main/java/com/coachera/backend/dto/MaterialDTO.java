@@ -38,7 +38,7 @@ public class MaterialDTO extends AuditableDTO {
     private String article;
 
     @Schema(description = "Quiz attached to this material")
-    private QuizDTO quiz;
+    private QuizResponseDTO quiz;
 
     public MaterialDTO(Material material) {
         this.id = material.getId();
@@ -56,7 +56,7 @@ public class MaterialDTO extends AuditableDTO {
         // add quiz if exists
         Quiz quizEntity = material.getQuiz();
         if (quizEntity != null) {
-            this.quiz = new QuizDTO(quizEntity);
+            this.quiz = new QuizResponseDTO(quizEntity);
         }
 
         this.setCreatedAt(material.getCreatedAt());

@@ -52,4 +52,12 @@ public class Quiz extends Auditable {
             questions.removeIf(q -> q.getId().equals(questionId));
         }
     }
+
+    public void setMaterial(Material material) {
+        this.material = material;
+        if (material != null && material.getQuiz() != this) {
+            material.setQuiz(this);
+        }
+    }
+
 }

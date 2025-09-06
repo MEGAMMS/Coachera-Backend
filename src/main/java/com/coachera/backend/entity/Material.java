@@ -1,5 +1,8 @@
 package com.coachera.backend.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,7 +41,7 @@ public class Material extends Auditable {
     @Column(name = "video_url")
     private String videoUrl;
 
-    @Column(columnDefinition = "TEXT",nullable = true)
+    @Column(columnDefinition = "TEXT", nullable = true)
     private String article;
 
     // Business logic methods
@@ -53,4 +56,7 @@ public class Material extends Auditable {
     public boolean isQuiz() {
         return type == MaterialType.QUIZ;
     }
+
+    @OneToMany(mappedBy = "material", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MaterialCompletion> completions = new HashSet<>();
 }
