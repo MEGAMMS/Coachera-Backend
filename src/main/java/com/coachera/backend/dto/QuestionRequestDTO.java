@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "Question Request Data Transfer Object (without correct answer)")
 public class QuestionRequestDTO {
+    @Schema(example = "1", description = "Question ID")
+    private Integer id;
+    
     @Schema(example = "What is the capital of France?", description = "Question content")
     private String content;
 
@@ -34,6 +37,7 @@ public class QuestionRequestDTO {
     private Integer correctAnswerIndex;
 
     public QuestionRequestDTO(Question question){
+        this.id = question.getId();
         this.content = question.getContent();
         this.answer1 = question.getAnswer1();
         this.answer2 = question.getAnswer2();
